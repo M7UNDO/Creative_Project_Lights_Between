@@ -1127,7 +1127,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 6b911390c5825014e8377183a7837d3f, type: 2}
+  - {fileID: 2100000, guid: ae0e2a74e4a4d784bba6b256920962d6, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1180,6 +1180,7 @@ GameObject:
   - component: {fileID: 2474065582499688522}
   - component: {fileID: 2962934413498362618}
   - component: {fileID: 2962934413498362622}
+  - component: {fileID: 2962934413498362623}
   - component: {fileID: 2962934413498362621}
   - component: {fileID: 2962934413498362620}
   m_Layer: 6
@@ -1361,6 +1362,26 @@ MonoBehaviour:
   CinemachineCameraTarget: {fileID: 7487355409635496875}
   TopClamp: 90
   BottomClamp: -90
+--- !u!114 &2962934413498362623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2962934413498362608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f916f16f06750a439953d8f9ce3e8c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Headbob
+  _enable: 1
+  _cameraTarget: {fileID: 7487355409635496876}
+  _walkAmplitude: 0.015
+  _walkFrequency: 10
+  _sprintAmplitude: 0.03
+  _sprintFrequency: 14
+  _toggleSpeed: 0.1
+  _resetSpeed: 10
 --- !u!1 &7487355409635496875
 GameObject:
   m_ObjectHideFlags: 0
