@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
@@ -49,6 +50,28 @@ public class FPSController : MonoBehaviour
     [Tooltip("How far in degrees can you move the camera down")]
     public float BottomClamp = -90.0f;
 
+    [Header("Interaction Settings")]
+    [Space(5)]
+
+    [SerializeField] public float interactionRange = 5f;
+    [SerializeField] private LayerMask interactionLayer;
+
+    [SerializeField] private Outline objectOutline;
+    [SerializeField] private Image defaultCrosshair;
+    [SerializeField] private Image interactableCrosshair;
+
+    public bool isInteractable = false;
+    public bool isInteracting;
+    private IInteractable currentInteractable;
+    private IKeyInventory _keyInventory;
+    private WorldSpaceInteractableUI _currentWorldUI;
+
+    public Transform FlashlightAnchor;
+
+    public bool isInspecting;
+    public bool isInMiniGame;
+
+
     // cinemachine
     private float _cinemachineTargetPitch;
 
@@ -62,6 +85,9 @@ public class FPSController : MonoBehaviour
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
+    public InputHandler InputHandler => _input;
+    public CharacterController Controller => _controller;
+
 
 #if ENABLE_INPUT_SYSTEM
     private PlayerInput _playerInput;
@@ -72,7 +98,7 @@ public class FPSController : MonoBehaviour
 
     private const float _threshold = 0.01f;
 
-    private bool IsCurrentDeviceMouse
+    public bool IsCurrentDeviceMouse
     {
         get
         {
@@ -113,6 +139,8 @@ public class FPSController : MonoBehaviour
         JumpAndGravity();
         GroundedCheck();
         Move();
+        DetectInteractable();
+        Interact();
     }
 
     private void LateUpdate()
@@ -247,6 +275,119 @@ public class FPSController : MonoBehaviour
         }
     }
 
+    public void DetectInteractable()
+    {
+
+        WorldSpaceInteractableUI newWorldUI = null;
+        currentInteractable = null;
+        isInteractable = false;
+
+        Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
+        Debug.DrawRay(ray.origin, ray.direction * interactionRange, Color.red);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer))
+        {
+            bool hasInteractable = hit.collider.TryGetComponent<IInteractable>(out var interactable);
+            bool hasPower = hit.collider.TryGetComponent<IToolPower>(out var powerItem);
+
+            if (hasInteractable || hasPower)
+            {
+                if (hasInteractable)
+                {
+                    currentInteractable = interactable;
+                    isInteractable = true;
+                }
+
+                string basePrompt = "";
+
+                /*if (hit.collider.TryGetComponent<Door>(out Door door))
+                {
+                    basePrompt = door.promptMessage;
+                }
+                else if (hit.collider.TryGetComponent<DoorScript>(out DoorScript doorScript))
+                {
+                    doorScript.UpdatePromptMessage(_keyInventory);
+                    basePrompt = doorScript.promptMessage;
+                }
+                else if (hit.collider.TryGetComponent<ToolPickup>(out ToolPickup pickup))
+                {
+                    basePrompt = "Pick up";
+                }
+                else if (hit.collider.TryGetComponent<GeneratorPowerSystem>(out GeneratorPowerSystem generator))
+                {
+                    basePrompt = generator.promptMessage;
+                }
+                else if (hit.collider.TryGetComponent<ElectricBoxBreaker>(out ElectricBoxBreaker electricBox))
+                {
+                    basePrompt = electricBox.promptMessage;
+                }
+                else if (hit.collider.TryGetComponent<NarrativeInspectableItem>(out NarrativeInspectableItem item))
+                {
+                    basePrompt = item.InteractionPrompt;
+                }
+                else if (hit.collider.TryGetComponent<KeroseneLampScript>(out KeroseneLampScript paraffinLamp))
+                {
+                    basePrompt = "Paraffin Lamp";
+                }
+                else if (hasInteractable)
+                {
+                    basePrompt = "Interact";
+                }*/
+
+                if (hasPower && powerItem.UsesPower)
+                {
+                    int powerPercent = Mathf.FloorToInt((powerItem.CurrentPower / powerItem.MaxPower) * 100f);
+
+                    if (!string.IsNullOrEmpty(basePrompt))
+                    {
+                        basePrompt = $"{basePrompt} {powerPercent}%";
+                    }
+                    else
+                    {
+                        basePrompt = $"Paraffin Lamp {powerPercent}%";
+                    }
+                }
+
+                newWorldUI = hit.collider.GetComponentInChildren<WorldSpaceInteractableUI>();
+
+                if (newWorldUI != null && !isInspecting)
+                {
+                    newWorldUI.ShowPrompt(basePrompt, isInteractable);
+                }
+
+                objectOutline = hit.collider.GetComponent<Outline>() ?? hit.collider.GetComponentInChildren<Outline>();
+
+                if (objectOutline != null)
+                {
+                    bool showCrosshairs = !isInspecting;
+                    objectOutline.enabled = showCrosshairs;
+                }
+            }
+        }
+
+        if (_currentWorldUI != null && _currentWorldUI != newWorldUI)
+        {
+            _currentWorldUI.HidePrompt();
+        }
+
+        _currentWorldUI = newWorldUI;
+    }
+
+
+
+    public void Interact()
+    {
+        if (_input.interact)
+        {
+
+        }
+    }
+
+    private void UpdateCrosshair()
+    {
+
+    }
+
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
     {
         if (lfAngle < -360f) lfAngle += 360f;
@@ -265,5 +406,6 @@ public class FPSController : MonoBehaviour
         // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
         Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
     }
-}
 
+
+}
