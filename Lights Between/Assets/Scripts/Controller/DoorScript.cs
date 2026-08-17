@@ -1,16 +1,228 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class DoorScript : MonoBehaviour
+[RequireComponent(typeof(AudioSource))]
+public class DoorScript : MonoBehaviour, IInteractable
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [Header("Door Movement")]
+    public bool open;
+    public float smooth = 0.5f;
+    public float DoorOpenAngle = -90.0f;
+    public float DoorCloseAngle = 0.0f;
+
+    [Header("Lock Settings")]
+    [SerializeField] private bool isLocked = false;
+    [SerializeField] private string requiredKeyID = "";
+    [SerializeField] private bool consumeKeyOnUse = true;
+
+    [Header("Audio")]
+    public AudioSource asource;
+    public AudioClip openDoor, closeDoor, lockedDoorSound, unlockDoorSound;
+
+    [Header("Juice / Visual Feedback")]
+    [SerializeField] private Transform doorMeshTransform;
+    [SerializeField] private float shakeDuration = 0.2f;
+    [SerializeField] private float shakeMagnitude = 2.0f;
+
+    public string promptMessage { get; private set; }
+
+    public bool toggle;
+    private Coroutine rotationCoroutine;
+    private Coroutine shakeCoroutine;
+    private NavMeshObstacle navObstacle;
+
+    public bool IsLocked => isLocked;
+
+    private void Start()
     {
-        
+        asource = GetComponent<AudioSource>();
+        navObstacle = GetComponent<NavMeshObstacle>();
+        if (navObstacle == null)
+        {
+            navObstacle = GetComponentInChildren<NavMeshObstacle>();
+        }
+
+        if (doorMeshTransform == null)
+        {
+            doorMeshTransform = transform;
+        }
+
+        UpdatePromptMessage(null);
+        UpdateNavObstacleState();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        
+        if (!open && other.CompareTag("Creature"))
+        {
+            ForceOpen();
+        }
+    }
+
+    public void UpdatePromptMessage(IKeyInventory playerInventory)
+    {
+        if (isLocked)
+        {
+            if (playerInventory != null && playerInventory.HasKey(requiredKeyID))
+            {
+                promptMessage = "Unlock Door";
+            }
+            else
+            {
+                promptMessage = "Locked";
+            }
+            return;
+        }
+
+        promptMessage = toggle ? "Close" : "Open";
+    }
+
+    public void Interact()
+    {
+        Interact(null);
+    }
+
+    public void Interact(IKeyInventory playerInventory)
+    {
+        if (isLocked)
+        {
+            if (playerInventory != null && playerInventory.HasKey(requiredKeyID))
+            {
+                Unlock(playerInventory);
+            }
+            else
+            {
+                OnAttemptOpenLocked();
+                return;
+            }
+        }
+
+        toggle = !toggle;
+        UpdatePromptMessage(playerInventory);
+
+        OpenDoor();
+
+        float targetAngle = toggle ? DoorOpenAngle : DoorCloseAngle;
+
+        if (rotationCoroutine != null)
+        {
+            StopCoroutine(rotationCoroutine);
+        }
+        rotationCoroutine = StartCoroutine(AnimateRotation(targetAngle));
+    }
+
+    private void Unlock(IKeyInventory playerInventory)
+    {
+        if (consumeKeyOnUse && playerInventory != null)
+        {
+            playerInventory.ConsumeKey(requiredKeyID);
+        }
+
+        isLocked = false;
+
+        if (asource != null && unlockDoorSound != null)
+        {
+            asource.PlayOneShot(unlockDoorSound);
+        }
+    }
+
+    private void OnAttemptOpenLocked()
+    {
+        if (asource != null && lockedDoorSound != null)
+        {
+            asource.PlayOneShot(lockedDoorSound);
+        }
+
+        if (shakeCoroutine != null)
+        {
+            StopCoroutine(shakeCoroutine);
+        }
+        shakeCoroutine = StartCoroutine(ShakeDoorHandle());
+    }
+
+    private IEnumerator ShakeDoorHandle()
+    {
+        Quaternion originalRotation = doorMeshTransform.localRotation;
+        float elapsed = 0.0f;
+
+        while (elapsed < shakeDuration)
+        {
+            float zOffset = Random.Range(-1f, 1f) * shakeMagnitude;
+            doorMeshTransform.localRotation = originalRotation * Quaternion.Euler(0, 0, zOffset);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        doorMeshTransform.localRotation = originalRotation;
+    }
+
+    public void ForceOpen()
+    {
+        if (open) return;
+
+        isLocked = false;
+        toggle = true;
+        open = true;
+        UpdatePromptMessage(null);
+
+        UpdateNavObstacleState();
+
+        if (asource != null && openDoor != null)
+        {
+            asource.clip = openDoor;
+            asource.Play();
+        }
+
+        if (rotationCoroutine != null)
+        {
+            StopCoroutine(rotationCoroutine);
+        }
+        rotationCoroutine = StartCoroutine(AnimateRotation(DoorOpenAngle));
+    }
+
+    private IEnumerator AnimateRotation(float targetAngle)
+    {
+        Quaternion targetRotation = Quaternion.Euler(0, targetAngle, 0);
+
+        while (Quaternion.Angle(doorMeshTransform.localRotation, targetRotation) > 0.1f)
+        {
+            doorMeshTransform.localRotation = Quaternion.Slerp(
+                doorMeshTransform.localRotation,
+                targetRotation,
+                Time.deltaTime * 5f * smooth
+            );
+            yield return null;
+        }
+
+        doorMeshTransform.localRotation = targetRotation;
+    }
+
+    public void OpenDoor()
+    {
+        open = !open;
+        UpdateNavObstacleState();
+
+        if (asource != null)
+        {
+            asource.clip = open ? openDoor : closeDoor;
+            asource.Play();
+        }
+    }
+
+    private void UpdateNavObstacleState()
+    {
+        if (navObstacle == null) return;
+
+        if (open)
+        {
+            navObstacle.carving = false;
+            navObstacle.enabled = false;
+        }
+        else
+        {
+            navObstacle.enabled = true;
+            navObstacle.carving = true;
+        }
     }
 }

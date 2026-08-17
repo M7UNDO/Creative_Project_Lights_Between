@@ -13,7 +13,6 @@ public class InputHandler : MonoBehaviour
     public bool interact;
     public bool wheel;
     public bool toggleFlashlight;
-    public bool cycleFlashlightCookie;
     public bool placementModeOn;
     public bool placementModeOff;
     public bool placeObject;
@@ -28,80 +27,52 @@ public class InputHandler : MonoBehaviour
     public bool cursorInputForLook = true;
     public bool blockLookInput;
 
-#if ENABLE_INPUT_SYSTEM
-    public void OnMove(InputValue value)
+    private PlayerControls playerControls;
+
+    private void Awake()
     {
-        MoveInput(value.Get<Vector2>());
+        playerControls = new PlayerControls();
     }
 
-    public void OnLook(InputValue value)
+    private void OnEnable()
     {
-        if (cursorInputForLook && !blockLookInput)
-        {
-            LookInput(value.Get<Vector2>());
-        }
+        playerControls.Player.Move.performed += ctx => MoveInput(ctx.ReadValue<Vector2>());
+        playerControls.Player.Move.canceled += ctx => MoveInput(Vector2.zero);
+
+        playerControls.Player.Look.performed += ctx => { if (cursorInputForLook && !blockLookInput) LookInput(ctx.ReadValue<Vector2>()); };
+        playerControls.Player.Look.canceled += ctx => LookInput(Vector2.zero);
+
+        playerControls.Player.WheelNavigate.performed += ctx => WheelNavigateInput(ctx.ReadValue<Vector2>());
+        playerControls.Player.WheelNavigate.canceled += ctx => WheelNavigateInput(Vector2.zero);
+
+        playerControls.Player.Jump.performed += ctx => JumpInput(true);
+        playerControls.Player.Jump.canceled += ctx => JumpInput(false);
+
+        playerControls.Player.Sprint.performed += ctx => SprintInput(true);
+        playerControls.Player.Sprint.canceled += ctx => SprintInput(false);
+
+        playerControls.Player.Interact.performed += ctx => InteractInput(true);
+        playerControls.Player.Interact.canceled += ctx => InteractInput(false);
+
+        playerControls.Player.Wheel.performed += ctx => WheelInput(true);
+        playerControls.Player.Wheel.canceled += ctx => WheelInput(false);
+
+        playerControls.Player.Flashlight.performed += ctx => ToggleFlashlightInput(true);
+        playerControls.Player.Flashlight.canceled += ctx => ToggleFlashlightInput(false);
+
+        playerControls.Player.PlaceObject.performed += ctx => PlaceObjectInput(true);
+        playerControls.Player.PlaceObject.canceled += ctx => PlaceObjectInput(false);
+
+        playerControls.Player.Cancel.performed += ctx => CancelInput(true);
+        playerControls.Player.Cancel.canceled += ctx => CancelInput(false);
+
+        playerControls.Enable();
     }
 
-    public void OnWheelNavigate(InputValue value)
+    private void OnDisable()
     {
-        WheelNavigateInput(value.Get<Vector2>());
+        playerControls.Disable();
     }
-
-    public void OnJump(InputValue value)
-    {
-        JumpInput(value.isPressed);
-    }
-
-    public void OnSprint(InputValue value)
-    {
-        SprintInput(value.isPressed);
-    }
-
-    public void OnInteract(InputValue value)
-    {
-        InteractInput(value.isPressed);
-    }
-
-    public void OnWheel(InputValue value)
-    {
-        WheelInput(value.isPressed);
-    }
-
-    public void OnToggleFlashlight(InputValue value)
-    {
-        ToggleFlashlightInput(value.isPressed);
-    }
-
-    public void OnCycleFlashlightCookie(InputValue value)
-    {
-        CycleFlashlightCookieInput(value.isPressed);
-    }
-
-    public void OnEnterPlacementMode(InputValue value)
-    {
-        PlacementModeOnInput(value.isPressed);
-    }
-
-    public void OnExitPlacementMode(InputValue value)
-    {
-        PlacementModeOffInput(value.isPressed);
-    }
-
-    public void OnPlaceObject(InputValue value)
-    {
-        PlaceObjectInput(value.isPressed);
-    }
-
-    public void OnCancel(InputValue value)
-    {
-        CancelInput(value.isPressed);
-    }
-
-    public void OnTimedAction(InputValue value)
-    {
-        TimedActionInput(value.isPressed);
-    }
-#endif
 
     public void MoveInput(Vector2 newMoveDirection)
     {
@@ -141,11 +112,6 @@ public class InputHandler : MonoBehaviour
     public void ToggleFlashlightInput(bool newFlashlightState)
     {
         toggleFlashlight = newFlashlightState;
-    }
-
-    public void CycleFlashlightCookieInput(bool newCycleState)
-    {
-        cycleFlashlightCookie = newCycleState;
     }
 
     public void PlacementModeOnInput(bool newPlacementState)
@@ -189,7 +155,6 @@ public class InputHandler : MonoBehaviour
         interact = false;
         wheel = false;
         toggleFlashlight = false;
-        cycleFlashlightCookie = false;
         placementModeOn = false;
         placementModeOff = false;
         placeObject = false;

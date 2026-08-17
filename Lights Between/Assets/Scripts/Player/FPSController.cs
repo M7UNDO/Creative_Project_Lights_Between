@@ -56,7 +56,6 @@ public class FPSController : MonoBehaviour
     [SerializeField] public float interactionRange = 5f;
     [SerializeField] private LayerMask interactionLayer;
 
-    [SerializeField] private Outline objectOutline;
     [SerializeField] private Image defaultCrosshair;
     [SerializeField] private Image interactableCrosshair;
 
@@ -300,11 +299,8 @@ public class FPSController : MonoBehaviour
 
                 string basePrompt = "";
 
-                /*if (hit.collider.TryGetComponent<Door>(out Door door))
-                {
-                    basePrompt = door.promptMessage;
-                }
-                else if (hit.collider.TryGetComponent<DoorScript>(out DoorScript doorScript))
+
+                if (hit.collider.TryGetComponent<DoorScript>(out DoorScript doorScript))
                 {
                     doorScript.UpdatePromptMessage(_keyInventory);
                     basePrompt = doorScript.promptMessage;
@@ -321,18 +317,18 @@ public class FPSController : MonoBehaviour
                 {
                     basePrompt = electricBox.promptMessage;
                 }
-                else if (hit.collider.TryGetComponent<NarrativeInspectableItem>(out NarrativeInspectableItem item))
+                /*else if (hit.collider.TryGetComponent<NarrativeInspectableItem>(out NarrativeInspectableItem item))
                 {
                     basePrompt = item.InteractionPrompt;
                 }
                 else if (hit.collider.TryGetComponent<KeroseneLampScript>(out KeroseneLampScript paraffinLamp))
                 {
                     basePrompt = "Paraffin Lamp";
-                }
+                }*/
                 else if (hasInteractable)
                 {
                     basePrompt = "Interact";
-                }*/
+                }
 
                 if (hasPower && powerItem.UsesPower)
                 {
@@ -354,14 +350,6 @@ public class FPSController : MonoBehaviour
                 {
                     newWorldUI.ShowPrompt(basePrompt, isInteractable);
                 }
-
-                objectOutline = hit.collider.GetComponent<Outline>() ?? hit.collider.GetComponentInChildren<Outline>();
-
-                if (objectOutline != null)
-                {
-                    bool showCrosshairs = !isInspecting;
-                    objectOutline.enabled = showCrosshairs;
-                }
             }
         }
 
@@ -377,15 +365,63 @@ public class FPSController : MonoBehaviour
 
     public void Interact()
     {
-        if (_input.interact)
+        if (currentInteractable != null)
         {
+            if (_input.interact)
+            {
 
+                if (currentInteractable is DoorScript door)
+                {
+                    door.Interact(_keyInventory);
+                }
+                else
+                {
+                    currentInteractable.Interact();
+                }
+
+                if (currentInteractable is not GeneratorPowerSystem)
+                {
+                    _input.interact = false;
+                }
+            }
         }
     }
 
     private void UpdateCrosshair()
     {
+        bool showCrosshairs = !isInspecting;
+        bool hasHoverInfo = isInteractable;
 
+        if (defaultCrosshair!= null && interactableCrosshair != null)
+        {
+            defaultCrosshair.gameObject.SetActive(showCrosshairs && !hasHoverInfo);
+            interactableCrosshair.gameObject.SetActive(showCrosshairs && hasHoverInfo);
+        }
+    }
+
+    public void SetMiniGameMode(bool active)
+    {
+        isInMiniGame = active;
+        //EvaluateHUDState();
+
+        if (_input != null)
+        {
+            _input.move = Vector2.zero;
+            _input.look = Vector2.zero;
+            _input.sprint = false;
+            _input.interact = false;
+            _input.wheel = false;
+            _input.ClearLookInput();
+
+            _input.cursorInputForLook = !active;
+            _input.blockLookInput = active;
+        }
+
+        if (active)
+        {
+            //StopFootsteps();
+            //ClearInteractionState();
+        }
     }
 
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
