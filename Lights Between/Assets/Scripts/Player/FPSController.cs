@@ -139,6 +139,7 @@ public class FPSController : MonoBehaviour
         GroundedCheck();
         Move();
         DetectInteractable();
+        UpdateCrosshair();
         Interact();
     }
 
@@ -387,15 +388,20 @@ public class FPSController : MonoBehaviour
         }
     }
 
-    private void UpdateCrosshair()
+    public void UpdateCrosshair()
     {
-        bool showCrosshairs = !isInspecting;
-        bool hasHoverInfo = isInteractable;
-
-        if (defaultCrosshair!= null && interactableCrosshair != null)
+        if (defaultCrosshair != null && interactableCrosshair != null)
         {
-            defaultCrosshair.gameObject.SetActive(showCrosshairs && !hasHoverInfo);
-            interactableCrosshair.gameObject.SetActive(showCrosshairs && hasHoverInfo);
+            if (isInteractable)
+            {
+                defaultCrosshair.gameObject.SetActive(false);
+                interactableCrosshair.gameObject.SetActive(true);
+            }
+            else
+            {
+                defaultCrosshair.gameObject.SetActive(true);
+                interactableCrosshair.gameObject.SetActive(false);
+            }
         }
     }
 
