@@ -117,6 +117,7 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         {
             TryFuelClick();
             confirmWasPressed = true;
+            print("pressed");
         }
 
         if (!input.timedAction)

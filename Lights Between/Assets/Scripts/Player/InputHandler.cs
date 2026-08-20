@@ -54,6 +54,9 @@ public class InputHandler : MonoBehaviour
         playerControls.Player.Interact.performed += ctx => InteractInput(true);
         playerControls.Player.Interact.canceled += ctx => InteractInput(false);
 
+        playerControls.Player.TimedAction.performed += ctx => TimedActionInput(true);
+        playerControls.Player.TimedAction.canceled += ctx => TimedActionInput(false);
+
         playerControls.Player.Wheel.performed += ctx => WheelInput(true);
         playerControls.Player.Wheel.canceled += ctx => WheelInput(false);
 
