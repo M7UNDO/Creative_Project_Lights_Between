@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(AudioSource))]
 public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
 {
     [Header("Generator State")]

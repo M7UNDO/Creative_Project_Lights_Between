@@ -135,6 +135,7 @@ public class FPSController : MonoBehaviour
 
     private void Update()
     {
+        if(isInMiniGame) return;
         JumpAndGravity();
         GroundedCheck();
         Move();
@@ -145,6 +146,7 @@ public class FPSController : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (isInMiniGame) return;
         CameraRotation();
     }
 
