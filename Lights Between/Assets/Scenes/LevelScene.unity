@@ -3340,6 +3340,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5956281446342914481, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
   m_PrefabInstance: {fileID: 1135934324}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &1145277937
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 4.5625
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.41
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 22.231499
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+      propertyPath: m_Name
+      value: MorrowHouse2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
 --- !u!114 &1173150736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15947,3 +16004,4 @@ SceneRoots:
   - {fileID: 886053830}
   - {fileID: 598611416}
   - {fileID: 1978813655}
+  - {fileID: 1145277937}
