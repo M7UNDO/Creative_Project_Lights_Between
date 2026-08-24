@@ -258,10 +258,10 @@ GameObject:
   - component: {fileID: 6713025311658168329}
   - component: {fileID: 3709658973647542550}
   - component: {fileID: 3417045823273159294}
-  - component: {fileID: 598906471037887865}
   - component: {fileID: 7425235209728253818}
   - component: {fileID: 5221348402817466955}
-  m_Layer: 6
+  - component: {fileID: 6066283571434261785}
+  m_Layer: 7
   m_Name: Switch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -340,32 +340,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &598906471037887865
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8443165324476345605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4727a91b22963d347af5e3e6c385d524, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightSwitch
-  electricBoxBreaker: {fileID: 0}
-  isSwitchOn: 0
-  switchHandleTransform: {fileID: 6713025311658168329}
-  switchOffRotationEuler: {x: 12, y: 0, z: 0}
-  switchOnRotationEuler: {x: -12, y: 0, z: 0}
-  smoothSpeed: 1.5
-  connectedLights: []
-  connectedLightObjects: []
-  lightRenderers: []
-  lightOffMaterial: {fileID: 2100000, guid: f96678681680a8046bb47a86e68172d8, type: 2}
-  lightOnMaterial: {fileID: 2100000, guid: 72229350afb86794c983b899f6d9e92b, type: 2}
-  audioSource: {fileID: 6532867075839193531}
-  switchOnSFX: {fileID: 8300000, guid: 03a0fc4c4b37c3543a848d03616c04cd, type: 3}
-  switchOffSFX: {fileID: 8300000, guid: 03a0fc4c4b37c3543a848d03616c04cd, type: 3}
 --- !u!65 &7425235209728253818
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -405,6 +379,33 @@ MonoBehaviour:
   precomputeOutline: 0
   bakeKeys: []
   bakeValues: []
+--- !u!114 &6066283571434261785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8443165324476345605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b3ae1a09dcdbf349afdebd06392454c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightSwitch
+  electricBoxBreaker: {fileID: 0}
+  drainPerLight: 0.05
+  isSwitchOn: 0
+  switchHandleTransform: {fileID: 6713025311658168329}
+  switchOffRotationEuler: {x: 12, y: 0, z: 0}
+  switchOnRotationEuler: {x: -12, y: 0, z: 0}
+  smoothSpeed: 1.5
+  connectedLights: []
+  connectedLightObjects: []
+  lightRenderers: []
+  lightOffMaterial: {fileID: 0}
+  lightOnMaterial: {fileID: 0}
+  audioSource: {fileID: 0}
+  switchOnSFX: {fileID: 0}
+  switchOffSFX: {fileID: 0}
 --- !u!1 &8652737374567342422
 GameObject:
   m_ObjectHideFlags: 0
