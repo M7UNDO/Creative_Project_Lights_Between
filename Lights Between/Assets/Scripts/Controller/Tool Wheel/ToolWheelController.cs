@@ -29,10 +29,17 @@ public class ToolWheelController : MonoBehaviour
     private int selectedIndex = -1;
     private int lastSelectedIndex = -1;
 
+    [Header("SFX")]
+    [SerializeField] private AudioSource toolWheelSource;
+    public AudioClip SlotHover;
+    public AudioClip SlotRelease;
+    [SerializeField] private AudioClip wheelOpen;
+    [SerializeField] private AudioClip wheelClose;
+
     private void Awake()
     {
         if (input == null) input = GetComponent<InputHandler>();
-        if(fpsController == null) fpsController = GetComponent<FPSController>();
+        if (fpsController == null) fpsController = GetComponent<FPSController>();
         if (inventory == null) inventory = GetComponent<PlayerToolInventory>();
         if (equipmentManager == null) equipmentManager = GetComponent<ToolEquipmentManager>();
         if (toolUIManager == null) toolUIManager = GetComponent<ToolUIManager>();
@@ -53,13 +60,11 @@ public class ToolWheelController : MonoBehaviour
         {
             OpenWheel();
             if (hud != null) hud.SetActive(false);
-
         }
         else if (!input.wheel && isWheelOpen)
         {
             CloseWheel();
             if (hud != null) hud.SetActive(true);
-
         }
 
         if (isWheelOpen)
@@ -76,7 +81,13 @@ public class ToolWheelController : MonoBehaviour
 
         if (radialWheelUI != null)
         {
+            VolumeBlurController.Instance.SetMenuBlurState(true);
             radialWheelUI.SetActive(true);
+
+            if (toolWheelSource != null && wheelOpen != null)
+            {
+                toolWheelSource.PlayOneShot(wheelOpen);
+            }
         }
 
         RefreshWheel();
@@ -119,7 +130,20 @@ public class ToolWheelController : MonoBehaviour
 
         if (radialWheelUI != null)
         {
+            VolumeBlurController.Instance.SetMenuBlurState(false);
             radialWheelUI.SetActive(false);
+
+            if (toolWheelSource != null)
+            {
+                if (SlotRelease != null && indexToUse >= 0)
+                {
+                    toolWheelSource.PlayOneShot(SlotRelease);
+                }
+                else if (wheelClose != null)
+                {
+                    toolWheelSource.PlayOneShot(wheelClose);
+                }
+            }
         }
 
         Cursor.lockState = CursorLockMode.Locked;
@@ -192,24 +216,29 @@ public class ToolWheelController : MonoBehaviour
         }
 
         float anglePerSlot = 360f / slots.Length;
+        int newSelectedIndex = Mathf.RoundToInt(angle / anglePerSlot) % slots.Length;
 
-        selectedIndex = Mathf.RoundToInt(angle / anglePerSlot) % slots.Length;
-        lastSelectedIndex = selectedIndex;
+        if (newSelectedIndex != selectedIndex)
+        {
+            selectedIndex = newSelectedIndex;
+            lastSelectedIndex = selectedIndex;
 
-        ClearHighlights();
-        slots[selectedIndex].SetHighlight(true);
+            ClearHighlights();
+            slots[selectedIndex].SetHighlight(true);
+            PlaySlotHoverSound();
 
-        if (slots[selectedIndex].Tool != null)
-        {
-            UpdateCenterText(slots[selectedIndex].Tool.toolName);
-        }
-        else if (selectedIndex == unequipSlotIndex)
-        {
-            UpdateCenterText("Unequip");
-        }
-        else
-        {
-            UpdateCenterText(string.Empty);
+            if (slots[selectedIndex].Tool != null)
+            {
+                UpdateCenterText(slots[selectedIndex].Tool.toolName);
+            }
+            else if (selectedIndex == unequipSlotIndex)
+            {
+                UpdateCenterText("Unequip");
+            }
+            else
+            {
+                UpdateCenterText(string.Empty);
+            }
         }
     }
 
@@ -252,6 +281,14 @@ public class ToolWheelController : MonoBehaviour
         if (centerItemNameText != null)
         {
             centerItemNameText.text = text;
+        }
+    }
+
+    public void PlaySlotHoverSound()
+    {
+        if (toolWheelSource != null && SlotHover != null)
+        {
+            toolWheelSource.PlayOneShot(SlotHover);
         }
     }
 }

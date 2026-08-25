@@ -10,6 +10,8 @@ public class ToolSlot : MonoBehaviour
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color highlightedColor = Color.yellow;
 
+    [SerializeField] private ToolWheelController wheelController;
+
     private ToolClass tool;
 
     public ToolClass Tool => tool;
@@ -33,6 +35,11 @@ public class ToolSlot : MonoBehaviour
                     break;
                 }
             }
+        }
+
+        if (wheelController == null)
+        {
+            wheelController = GetComponentInParent<ToolWheelController>();
         }
 
         SetHighlight(false);
