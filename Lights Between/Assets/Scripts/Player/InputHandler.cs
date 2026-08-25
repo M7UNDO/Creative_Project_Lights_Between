@@ -8,7 +8,6 @@ public class InputHandler : MonoBehaviour
     public Vector2 look;
     public Vector2 wheelNavigate;
 
-    public bool jump;
     public bool sprint;
     public bool interact;
     public bool wheel;
@@ -44,9 +43,6 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Player.WheelNavigate.performed += ctx => WheelNavigateInput(ctx.ReadValue<Vector2>());
         playerControls.Player.WheelNavigate.canceled += ctx => WheelNavigateInput(Vector2.zero);
-
-        playerControls.Player.Jump.performed += ctx => JumpInput(true);
-        playerControls.Player.Jump.canceled += ctx => JumpInput(false);
 
         playerControls.Player.Sprint.performed += ctx => SprintInput(true);
         playerControls.Player.Sprint.canceled += ctx => SprintInput(false);
@@ -90,11 +86,6 @@ public class InputHandler : MonoBehaviour
     public void WheelNavigateInput(Vector2 newWheelNavigateDirection)
     {
         wheelNavigate = newWheelNavigateDirection;
-    }
-
-    public void JumpInput(bool newJumpState)
-    {
-        jump = newJumpState;
     }
 
     public void SprintInput(bool newSprintState)
@@ -153,7 +144,6 @@ public class InputHandler : MonoBehaviour
         look = Vector2.zero;
         wheelNavigate = Vector2.zero;
 
-        jump = false;
         sprint = false;
         interact = false;
         wheel = false;

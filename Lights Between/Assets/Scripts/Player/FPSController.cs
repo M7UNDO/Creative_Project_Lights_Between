@@ -50,6 +50,28 @@ public class FPSController : MonoBehaviour
     [Tooltip("How far in degrees can you move the camera down")]
     public float BottomClamp = -90.0f;
 
+    [Header("Movement SFX")]
+    [Space(5)]
+    public bool playingFootsteps = false;
+    [SerializeField] private float walkFootstepSpeed = 0.5f;
+    [SerializeField] private float sprintFootstepSpeed = 0.3f;
+    [SerializeField] private float currentFootstepSpeed;
+
+    [Header("Walk Footstep Clips")]
+    [SerializeField] private AudioClip[] woodWalkFootstepClips;
+    [SerializeField] private AudioClip[] tileWalkFootstepClips;
+    [SerializeField] private AudioClip[] carpetWalkFootstepClips;
+    [SerializeField] private AudioClip[] defaultWalkFootstepClips;
+
+    [Header("Run Footstep Clips")]
+    [SerializeField] private AudioClip[] woodRunFootstepClips;
+    [SerializeField] private AudioClip[] tileRunFootstepClips;
+    [SerializeField] private AudioClip[] carpetRunFootstepClips;
+    [SerializeField] private AudioClip[] defaultRunFootstepClips;
+
+    [SerializeField] private AudioSource stepSFX;
+    [SerializeField] private float groundRayDistance = 1.5f;
+
     [Header("Interaction Settings")]
     [Space(5)]
 
@@ -70,7 +92,7 @@ public class FPSController : MonoBehaviour
     public bool isInspecting;
     public bool isInMiniGame;
 
-
+    private float _footstepTimer;
     // cinemachine
     private float _cinemachineTargetPitch;
 
@@ -136,9 +158,10 @@ public class FPSController : MonoBehaviour
     private void Update()
     {
         if(isInMiniGame) return;
-        JumpAndGravity();
+        ApplyGravity();
         GroundedCheck();
         Move();
+        HandleFootsteps();
         DetectInteractable();
         UpdateCrosshair();
         Interact();
@@ -229,48 +252,101 @@ public class FPSController : MonoBehaviour
         _controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
     }
 
-    private void JumpAndGravity()
+    private void HandleFootsteps()
     {
-        if (Grounded)
+        bool isMoving = _input.move.sqrMagnitude > 0.01f;
+        bool isSprinting = _input.sprint && isMoving;
+        bool shouldPlayFootsteps = isMoving && Grounded;
+
+        currentFootstepSpeed = isSprinting ? sprintFootstepSpeed : walkFootstepSpeed;
+
+        if (shouldPlayFootsteps)
         {
-            // reset the fall timeout timer
-            _fallTimeoutDelta = FallTimeout;
+            playingFootsteps = true;
+            _footstepTimer -= Time.deltaTime;
 
-            // stop our velocity dropping infinitely when grounded
-            if (_verticalVelocity < 0.0f)
+            if (_footstepTimer <= 0f)
             {
-                _verticalVelocity = -2f;
-            }
-
-            // Jump
-            if (_input.jump && _jumpTimeoutDelta <= 0.0f)
-            {
-                // the square root of H * -2 * G = how much velocity needed to reach desired height
-                _verticalVelocity = Mathf.Sqrt(JumpHeight * -2f * Gravity);
-            }
-
-            // jump timeout
-            if (_jumpTimeoutDelta >= 0.0f)
-            {
-                _jumpTimeoutDelta -= Time.deltaTime;
+                PlayFootstepsSFX();
+                _footstepTimer = currentFootstepSpeed;
             }
         }
         else
         {
-            // reset the jump timeout timer
-            _jumpTimeoutDelta = JumpTimeout;
+            playingFootsteps = false;
 
-            // fall timeout
+            if (!isMoving)
+            {
+                _footstepTimer = 0f;
+            }
+        }
+    }
+
+    public void StopFootsteps()
+    {
+        playingFootsteps = false;
+        _footstepTimer = 0f;
+    }
+
+    public void PlayFootstepsSFX()
+    {
+        if (stepSFX == null) return;
+
+        bool isSprinting = _input.sprint && _input.move.sqrMagnitude > 0.01f;
+
+        AudioClip[] chosenClips = GetFootstepClips(isSprinting);
+
+        if (chosenClips == null || chosenClips.Length == 0)
+            return;
+
+        int chosenStep = Random.Range(0, chosenClips.Length);
+
+        stepSFX.pitch = Random.Range(0.9f, 1.15f);
+        stepSFX.PlayOneShot(chosenClips[chosenStep]);
+    }
+
+    private AudioClip[] GetFootstepClips(bool isSprinting)
+    {
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, groundRayDistance, GroundLayers))
+        {
+            if (hit.collider.CompareTag("Wood"))
+            {
+                return isSprinting ? woodRunFootstepClips : woodWalkFootstepClips;
+            }
+
+            if (hit.collider.CompareTag("Tile"))
+            {
+                return isSprinting ? tileRunFootstepClips : tileWalkFootstepClips;
+            }
+
+            if (hit.collider.CompareTag("Carpet"))
+            {
+                return isSprinting ? carpetRunFootstepClips : carpetWalkFootstepClips;
+            }
+        }
+
+        return isSprinting ? defaultRunFootstepClips : defaultWalkFootstepClips;
+    }
+
+    private void ApplyGravity()
+    {
+        if (Grounded)
+        {
+            _fallTimeoutDelta = FallTimeout;
+
+            if (_verticalVelocity < 0.0f)
+            {
+                _verticalVelocity = -2f;
+            }
+        }
+        else
+        {
             if (_fallTimeoutDelta >= 0.0f)
             {
                 _fallTimeoutDelta -= Time.deltaTime;
             }
-
-            // if we are not grounded, do not jump
-            _input.jump = false;
         }
 
-        // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
         if (_verticalVelocity < _terminalVelocity)
         {
             _verticalVelocity += Gravity * Time.deltaTime;
@@ -427,7 +503,7 @@ public class FPSController : MonoBehaviour
 
         if (active)
         {
-            //StopFootsteps();
+            StopFootsteps();
             //ClearInteractionState();
         }
     }
