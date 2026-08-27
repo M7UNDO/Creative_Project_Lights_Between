@@ -1,12 +1,26 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 public class WorldSpaceInteractableUI : MonoBehaviour
 {
+    public static HashSet<WorldSpaceInteractableUI> AllInteractableUIs = new HashSet<WorldSpaceInteractableUI>();
+
+    public enum UIState
+    {
+        Hidden,
+        Skeleton,
+        FullPrompt
+    }
+
     [SerializeField] private Canvas worldCanvas;
     [SerializeField] private TextMeshProUGUI promptTextContainer;
     [SerializeField] private GameObject inputIconObject;
+    [SerializeField] private GameObject skeletonIconObject;
+
+    [Header("Detection Ranges")]
+    [SerializeField] private float proximityDistance = 8f;
 
     [Header("Icon Colors")]
     [SerializeField] private Color activeColor = Color.white;
@@ -14,6 +28,11 @@ public class WorldSpaceInteractableUI : MonoBehaviour
 
     private Transform _mainCameraTransform;
     private Image _inputIconImage;
+    private Image _skeletonIconImage;
+    private UIState _currentState = UIState.Hidden;
+
+    public float ProximityDistance => proximityDistance;
+    public UIState CurrentState => _currentState;
 
     private void Awake()
     {
@@ -27,7 +46,22 @@ public class WorldSpaceInteractableUI : MonoBehaviour
             _inputIconImage = inputIconObject.GetComponent<Image>();
         }
 
-        HidePrompt();
+        if (skeletonIconObject != null)
+        {
+            _skeletonIconImage = skeletonIconObject.GetComponent<Image>();
+        }
+
+        SetUIState(UIState.Hidden);
+    }
+
+    private void OnEnable()
+    {
+        AllInteractableUIs.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        AllInteractableUIs.Remove(this);
     }
 
     private void LateUpdate()
@@ -38,34 +72,62 @@ public class WorldSpaceInteractableUI : MonoBehaviour
         }
     }
 
+    public void SetUIState(UIState newState, string message = "", bool showInputIcon = true, bool isInteractable = true)
+    {
+        _currentState = newState;
+
+        switch (newState)
+        {
+            case UIState.Hidden:
+                if (worldCanvas != null) worldCanvas.enabled = false;
+                break;
+
+            case UIState.Skeleton:
+                if (worldCanvas != null) worldCanvas.enabled = true;
+                if (promptTextContainer != null) promptTextContainer.gameObject.SetActive(false);
+                if (inputIconObject != null) inputIconObject.SetActive(false);
+                if (skeletonIconObject != null)
+                {
+                    skeletonIconObject.SetActive(true);
+                    if (_skeletonIconImage != null)
+                    {
+                        _skeletonIconImage.color = isInteractable ? activeColor : disabledColor;
+                    }
+                }
+                break;
+
+            case UIState.FullPrompt:
+                if (worldCanvas != null) worldCanvas.enabled = true;
+                if (promptTextContainer != null)
+                {
+                    promptTextContainer.gameObject.SetActive(true);
+                    promptTextContainer.text = message;
+                }
+                if (skeletonIconObject != null) skeletonIconObject.SetActive(false);
+                if (inputIconObject != null)
+                {
+                    inputIconObject.SetActive(showInputIcon);
+                    if (_inputIconImage != null)
+                    {
+                        _inputIconImage.color = isInteractable ? activeColor : disabledColor;
+                    }
+                }
+                break;
+        }
+    }
+
     public void ShowPrompt(string message, bool showInputIcon = true, bool isInteractable = true)
     {
-        if (worldCanvas != null)
-        {
-            worldCanvas.enabled = true;
-        }
+        SetUIState(UIState.FullPrompt, message, showInputIcon, isInteractable);
+    }
 
-        if (promptTextContainer != null)
-        {
-            promptTextContainer.text = message;
-        }
-
-        if (inputIconObject != null)
-        {
-            inputIconObject.SetActive(showInputIcon);
-
-            if (_inputIconImage != null)
-            {
-                _inputIconImage.color = isInteractable ? activeColor : disabledColor;
-            }
-        }
+    public void ShowSkeleton(bool isInteractable = true)
+    {
+        SetUIState(UIState.Skeleton, "", false, isInteractable);
     }
 
     public void HidePrompt()
     {
-        if (worldCanvas != null)
-        {
-            worldCanvas.enabled = false;
-        }
+        SetUIState(UIState.Hidden);
     }
 }

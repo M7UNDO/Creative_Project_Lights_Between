@@ -86,6 +86,10 @@ public class FPSController : MonoBehaviour
     public bool isInteracting;
     private IInteractable currentInteractable;
     private IKeyInventory _keyInventory;
+
+    [Header("Proximity Detection")]
+    [SerializeField] private float proximityRadius = 8f;
+    private readonly Collider[] _proximityBuffer = new Collider[16];
     private WorldSpaceInteractableUI _currentWorldUI;
 
     public Transform FlashlightAnchor;
@@ -356,10 +360,11 @@ public class FPSController : MonoBehaviour
 
     public void DetectInteractable()
     {
-        WorldSpaceInteractableUI newWorldUI = null;
+        WorldSpaceInteractableUI targetedWorldUI = null;
         currentInteractable = null;
         isInteractable = false;
 
+        // 1. Direct Target Raycast (Full Text Prompt Target Identification)
         Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
         Debug.DrawRay(ray.origin, ray.direction * interactionRange, Color.red);
 
@@ -379,7 +384,6 @@ public class FPSController : MonoBehaviour
                 string basePrompt = "";
                 bool canCurrentlyInteract = true;
 
-                // Evaluate state-specific prompt and interaction validity
                 if (hit.collider.TryGetComponent<DoorScript>(out DoorScript doorScript))
                 {
                     doorScript.UpdatePromptMessage(_keyInventory);
@@ -426,22 +430,38 @@ public class FPSController : MonoBehaviour
                     }
                 }
 
-                newWorldUI = hit.collider.GetComponentInChildren<WorldSpaceInteractableUI>();
+                targetedWorldUI = hit.collider.GetComponentInChildren<WorldSpaceInteractableUI>();
 
-                if (newWorldUI != null && !isInspecting)
+                if (targetedWorldUI != null && !isInspecting)
                 {
-                    newWorldUI.ShowPrompt(basePrompt, isInteractable, canCurrentlyInteract);
+                    targetedWorldUI.ShowPrompt(basePrompt, isInteractable, canCurrentlyInteract);
                 }
             }
         }
 
-        if (_currentWorldUI != null && _currentWorldUI != newWorldUI)
+        // 2. Proximity Pass Across All Interactables in Scene
+        foreach (var ui in WorldSpaceInteractableUI.AllInteractableUIs)
         {
-            _currentWorldUI.HidePrompt();
+            if (ui == null) continue;
+
+            // Skip the element currently targeted by raycast (it already has FullPrompt applied)
+            if (ui == targetedWorldUI) continue;
+
+            float distance = Vector3.Distance(transform.position, ui.transform.position);
+
+            if (distance <= ui.ProximityDistance)
+            {
+                ui.ShowSkeleton(true);
+            }
+            else
+            {
+                ui.HidePrompt();
+            }
         }
 
-        _currentWorldUI = newWorldUI;
+        _currentWorldUI = targetedWorldUI;
     }
+
 
 
 
