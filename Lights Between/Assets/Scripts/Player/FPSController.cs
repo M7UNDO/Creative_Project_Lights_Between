@@ -356,7 +356,6 @@ public class FPSController : MonoBehaviour
 
     public void DetectInteractable()
     {
-
         WorldSpaceInteractableUI newWorldUI = null;
         currentInteractable = null;
         isInteractable = false;
@@ -378,36 +377,34 @@ public class FPSController : MonoBehaviour
                 }
 
                 string basePrompt = "";
+                bool canCurrentlyInteract = true;
 
-
+                // Evaluate state-specific prompt and interaction validity
                 if (hit.collider.TryGetComponent<DoorScript>(out DoorScript doorScript))
                 {
                     doorScript.UpdatePromptMessage(_keyInventory);
                     basePrompt = doorScript.promptMessage;
-                }
-                else if (hit.collider.TryGetComponent<ToolPickup>(out ToolPickup pickup))
-                {
-                    basePrompt = "Pick up";
+                    canCurrentlyInteract = doorScript.CanInteract(_keyInventory);
                 }
                 else if (hit.collider.TryGetComponent<GeneratorPowerSystem>(out GeneratorPowerSystem generator))
                 {
                     basePrompt = generator.promptMessage;
+                    canCurrentlyInteract = generator.CanInteract();
+                }
+                else if (hit.collider.TryGetComponent<ToolPickup>(out ToolPickup pickup))
+                {
+                    basePrompt = "Pick up";
+                    canCurrentlyInteract = true;
                 }
                 else if (hit.collider.TryGetComponent<ElectricBoxBreaker>(out ElectricBoxBreaker electricBox))
                 {
                     basePrompt = electricBox.promptMessage;
+                    canCurrentlyInteract = true;
                 }
-                /*else if (hit.collider.TryGetComponent<NarrativeInspectableItem>(out NarrativeInspectableItem item))
-                {
-                    basePrompt = item.InteractionPrompt;
-                }
-                else if (hit.collider.TryGetComponent<KeroseneLampScript>(out KeroseneLampScript paraffinLamp))
-                {
-                    basePrompt = "Paraffin Lamp";
-                }*/
                 else if (hasInteractable)
                 {
                     basePrompt = "Interact";
+                    canCurrentlyInteract = true;
                 }
 
                 if (hasPower && powerItem.UsesPower)
@@ -428,7 +425,8 @@ public class FPSController : MonoBehaviour
 
                 if (newWorldUI != null && !isInspecting)
                 {
-                    newWorldUI.ShowPrompt(basePrompt, isInteractable);
+                    // Pass showInputIcon (true when interactable exists) and the availability state
+                    newWorldUI.ShowPrompt(basePrompt, isInteractable, canCurrentlyInteract);
                 }
             }
         }

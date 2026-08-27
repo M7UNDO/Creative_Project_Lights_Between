@@ -63,6 +63,8 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         markerDirection = 1f;
         confirmWasPressed = false;
 
+        VolumeBlurController.Instance.SetMenuBlurState(true);
+
         if (input != null)
         {
             input.ResetInputValues();
@@ -189,6 +191,7 @@ public class GeneratorFuelMiniGame : MonoBehaviour
     private void CompleteMiniGame()
     {
         isMiniGameActive = false;
+        VolumeBlurController.Instance.SetMenuBlurState(false);
 
         if (miniGamePanel != null)
         {
@@ -212,6 +215,7 @@ public class GeneratorFuelMiniGame : MonoBehaviour
     public void CancelMiniGame()
     {
         isMiniGameActive = false;
+        VolumeBlurController.Instance.SetMenuBlurState(false);
 
         if (miniGamePanel != null)
         {

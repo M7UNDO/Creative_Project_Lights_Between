@@ -133,6 +133,23 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
         }
     }
 
+    public bool CanInteract()
+    {
+        if (isPoweredOn) return false;
+
+        if (!hasFuel)
+        {
+            if (playerEquipmentManager == null || playerInventory == null) return false;
+
+            bool isHoldingFuel = playerEquipmentManager.CurrentTool != null &&
+                                playerEquipmentManager.CurrentTool.toolType == ToolType.GeneratorFuel;
+
+            return isHoldingFuel || playerInventory.HasToolType(ToolType.GeneratorFuel);
+        }
+
+        return true;
+    }
+
     public void Interact()
     {
         if (isPoweredOn)
@@ -170,7 +187,7 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
             return;
         }
 
-      InputHandler input = FindFirstObjectByType<InputHandler>();
+        InputHandler input = FindFirstObjectByType<InputHandler>();
 
         if (input != null)
         {

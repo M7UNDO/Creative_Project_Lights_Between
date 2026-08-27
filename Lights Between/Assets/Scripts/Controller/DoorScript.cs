@@ -60,6 +60,12 @@ public class DoorScript : MonoBehaviour, IInteractable
         }
     }
 
+    public bool CanInteract(IKeyInventory playerInventory = null)
+    {
+        if (!isLocked) return true;
+        return playerInventory != null && playerInventory.HasKey(requiredKeyID);
+    }
+
     public void UpdatePromptMessage(IKeyInventory playerInventory)
     {
         if (isLocked)
