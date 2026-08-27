@@ -87,9 +87,8 @@ public class FPSController : MonoBehaviour
     private IInteractable currentInteractable;
     private IKeyInventory _keyInventory;
 
-    [Header("Proximity Detection")]
-    [SerializeField] private float proximityRadius = 8f;
-    private readonly Collider[] _proximityBuffer = new Collider[16];
+    [Header("Proximity & Occlusion Settings")]
+    [SerializeField] private LayerMask occlusionLayer;
     private WorldSpaceInteractableUI _currentWorldUI;
 
     public Transform FlashlightAnchor;
@@ -439,19 +438,35 @@ public class FPSController : MonoBehaviour
             }
         }
 
-        // 2. Proximity Pass Across All Interactables in Scene
+        // 2. Proximity Pass Across All Interactables with Line-of-Sight (LOS) Check
+        Vector3 origin = _mainCamera.transform.position;
+
         foreach (var ui in WorldSpaceInteractableUI.AllInteractableUIs)
         {
             if (ui == null) continue;
 
-            // Skip the element currently targeted by raycast (it already has FullPrompt applied)
+            // Direct raycast target already managed above
             if (ui == targetedWorldUI) continue;
 
             float distance = Vector3.Distance(transform.position, ui.transform.position);
 
             if (distance <= ui.ProximityDistance)
             {
-                ui.ShowSkeleton(true);
+                Vector3 targetPos = ui.transform.position;
+                Vector3 direction = (targetPos - origin).normalized;
+                float checkDistance = Vector3.Distance(origin, targetPos);
+
+                // Raycast check for walls/obstacles between camera and UI component
+                if (Physics.Raycast(origin, direction, out RaycastHit losHit, checkDistance, occlusionLayer))
+                {
+                    // Line of sight is blocked by an obstacle/wall
+                    ui.HidePrompt();
+                }
+                else
+                {
+                    // Clear line of sight
+                    ui.ShowSkeleton(true);
+                }
             }
             else
             {
