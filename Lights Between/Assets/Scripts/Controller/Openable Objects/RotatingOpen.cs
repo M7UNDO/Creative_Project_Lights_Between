@@ -10,6 +10,8 @@ public class RotatingOpenable : BaseOpenable
     private Quaternion closedRotation;
     private Quaternion openRotation;
 
+
+
     protected override void Awake()
     {
         base.Awake();
