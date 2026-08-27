@@ -52,6 +52,7 @@ public class FPSController : MonoBehaviour
 
     [Header("Movement SFX")]
     [Space(5)]
+
     public bool playingFootsteps = false;
     [SerializeField] private float walkFootstepSpeed = 0.5f;
     [SerializeField] private float sprintFootstepSpeed = 0.3f;
