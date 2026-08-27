@@ -39,7 +39,7 @@ public abstract class BaseOpenable : MonoBehaviour, IInteractable
 
     private void UpdatePromptMessage()
     {
-        promptMessage = isOpen ? $"Close {customObjectName}" : $"Open {customObjectName}";
+        promptMessage = isOpen ? "Close":"Open";
     }
 
     private void PlayInteractionSFX()

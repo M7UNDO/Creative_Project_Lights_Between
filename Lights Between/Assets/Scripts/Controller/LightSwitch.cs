@@ -30,7 +30,7 @@ public class LightSwitch : MonoBehaviour, IInteractable
     [SerializeField] private AudioClip switchOnSFX;
     [SerializeField] private AudioClip switchOffSFX;
 
-    public string promptMessage { get; private set; }
+    public string promptMessage;
 
     private Quaternion offRotation;
     private Quaternion onRotation;

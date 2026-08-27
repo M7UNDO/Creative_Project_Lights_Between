@@ -401,6 +401,11 @@ public class FPSController : MonoBehaviour
                     basePrompt = electricBox.promptMessage;
                     canCurrentlyInteract = true;
                 }
+                else if (hit.collider.TryGetComponent<BaseOpenable>(out BaseOpenable openable))
+                {
+                    basePrompt = openable.promptMessage;
+                    canCurrentlyInteract = true;
+                }
                 else if (hasInteractable)
                 {
                     basePrompt = "Interact";
@@ -425,7 +430,6 @@ public class FPSController : MonoBehaviour
 
                 if (newWorldUI != null && !isInspecting)
                 {
-                    // Pass showInputIcon (true when interactable exists) and the availability state
                     newWorldUI.ShowPrompt(basePrompt, isInteractable, canCurrentlyInteract);
                 }
             }
