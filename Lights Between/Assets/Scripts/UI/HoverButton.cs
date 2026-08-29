@@ -118,11 +118,6 @@ public class HoverButton : MonoBehaviour,
 
         PlaySFX(hoverSFX);
 
-        // Optional: Only update tab text color if this button belongs to a TabController
-        if (associatedTabController != null)
-        {
-            associatedTabController.UpdateTabTextHoverState(tabIndex, true);
-        }
     }
 
     public void OnDeselect(BaseEventData eventData)
@@ -130,11 +125,6 @@ public class HoverButton : MonoBehaviour,
         isSelected = false;
         targetPosX = startPosX;
 
-        // Optional: Only revert tab text color if this button belongs to a TabController
-        if (associatedTabController != null)
-        {
-            associatedTabController.UpdateTabTextHoverState(tabIndex, false);
-        }
     }
 
     public void OnSubmit(BaseEventData eventData)

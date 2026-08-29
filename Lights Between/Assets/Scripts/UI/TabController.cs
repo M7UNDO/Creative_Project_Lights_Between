@@ -11,9 +11,8 @@ public class TabController : MonoBehaviour
     [SerializeField] private GameObject[] pages;
 
     [Header("Tab Text Colours")]
-    [SerializeField] private Color selectedTextColour;
-    [SerializeField] private Color deselectedTextColour;
-    [SerializeField] private Color hoverTextColour;
+    [SerializeField] private Color selectedTextColour = Color.white;
+    [SerializeField] private Color deselectedTextColour = Color.black;
 
     [Header("Settings")]
     [SerializeField] private bool startWithActiveTab = true;
@@ -40,11 +39,6 @@ public class TabController : MonoBehaviour
             if (tabButtons[i] != null)
             {
                 tabTexts[i] = tabButtons[i].GetComponentInChildren<TextMeshProUGUI>();
-
-                if (tabButtons[i].TryGetComponent<HoverButton>(out var hoverBtn))
-                {
-                    hoverBtn.SetupTabController(this, i);
-                }
             }
         }
     }
@@ -127,22 +121,38 @@ public class TabController : MonoBehaviour
 
         for (int i = 0; i < tabButtons.Length; i++)
         {
-            bool isSelected = i == tabNo;
+            bool isSelected = (i == tabNo);
 
+            // Handle page activation
             if (i < pages.Length && pages[i] != null)
             {
                 pages[i].SetActive(isSelected);
-
-                if (isSelected)
-                {
-                    FocusFirstElementInPage(pages[i]);
-                }
             }
 
+            // Update Tab Text Colors based on active state
             if (tabTexts[i] != null)
             {
                 tabTexts[i].color = isSelected ? selectedTextColour : deselectedTextColour;
             }
+
+            // Sync HighlightButton's selection state safely via BaseEventData
+            if (tabButtons[i] != null)
+            {
+                if (isSelected)
+                {
+                    ExecuteEvents.Execute(tabButtons[i].gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.selectHandler);
+                }
+                else
+                {
+                    ExecuteEvents.Execute(tabButtons[i].gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.deselectHandler);
+                }
+            }
+        }
+
+        // Drop focus into the active page's first selectable element
+        if (pages[tabNo] != null)
+        {
+            FocusFirstElementInPage(pages[tabNo]);
         }
     }
 
@@ -153,6 +163,7 @@ public class TabController : MonoBehaviour
 
         GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
 
+        // Check if focus is already on a tab button
         for (int i = 0; i < tabButtons.Length; i++)
         {
             if (tabButtons[i] != null && tabButtons[i].gameObject == currentSelected)
@@ -161,31 +172,17 @@ public class TabController : MonoBehaviour
             }
         }
 
+        // Focus was inside a page layer; return focus back up to the active tab button
         if (tabButtons[currentTab] != null)
         {
             EventSystem.current.SetSelectedGameObject(tabButtons[currentTab].gameObject);
+
+            // Re-trigger select handler so HighlightButton updates state cleanly
+            ExecuteEvents.Execute(tabButtons[currentTab].gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.selectHandler);
             return true;
         }
 
         return false;
-    }
-
-    public void UpdateTabTextHoverState(int tabNo, bool isHovered)
-    {
-        if (!IsValidTab(tabNo)) return;
-
-        if (tabTexts[tabNo] != null)
-        {
-            if (isHovered)
-            {
-                if (tabNo != currentTab)
-                    tabTexts[tabNo].color = hoverTextColour;
-            }
-            else
-            {
-                tabTexts[tabNo].color = (tabNo == currentTab) ? selectedTextColour : deselectedTextColour;
-            }
-        }
     }
 
     private void FocusFirstElementInPage(GameObject page)

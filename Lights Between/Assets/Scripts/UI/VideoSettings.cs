@@ -131,23 +131,25 @@ public class VideoSettingsManager : MonoBehaviour
         currentResolutionIndex = PlayerPrefs.GetInt("ResolutionIndex", currentResolutionIndex);
         currentVSyncIndex = PlayerPrefs.GetInt("VSync", QualitySettings.vSyncCount > 0 ? 1 : 0);
 
-        int savedFramerate = PlayerPrefs.GetInt("Framerate", -1);
+        int savedFramerate = PlayerPrefs.GetInt("Framerate", 60);
 
-        if (savedFramerate == 30)
+        switch (savedFramerate)
         {
-            currentFramerateIndex = 0;
-        }
-        else if (savedFramerate == 60)
-        {
-            currentFramerateIndex = 1;
-        }
-        else if (savedFramerate == 120)
-        {
-            currentFramerateIndex = 2;
-        }
-        else
-        {
-            currentFramerateIndex = 3;
+            case 30:
+                currentFramerateIndex = 0;
+                break;
+            case 60:
+                currentFramerateIndex = 1;
+                break;
+            case 120:
+                currentFramerateIndex = 2;
+                break;
+            case -1:
+                currentFramerateIndex = 3;
+                break;
+            default:
+                currentFramerateIndex = 1;
+                break;
         }
 
         currentResolutionIndex = Mathf.Clamp(currentResolutionIndex, 0, resolutions.Length - 1);
@@ -319,9 +321,9 @@ public class VideoSettingsManager : MonoBehaviour
 
     public void ResetToDefaults()
     {
-        currentDisplayModeIndex = 1; // Fullscreen
-        currentVSyncIndex = 1;       // Off
-        currentFramerateIndex = 1;   // Unlimited
+        currentDisplayModeIndex = 1;
+        currentVSyncIndex = 0;
+        currentFramerateIndex = 1;
 
         for (int i = 0; i < resolutions.Length; i++)
         {
