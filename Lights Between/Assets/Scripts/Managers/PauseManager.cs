@@ -163,7 +163,7 @@ public class PauseScript : MonoBehaviour
         lastProcessedFrame = Time.frameCount;
         IsPaused = true;
         Time.timeScale = 0f;
-
+        VolumeBlurController.Instance.SetMenuBlurState(true);
         /*if (musicManager != null && musicManager.levelScene)
         {
             musicManager.PauseMusic();
@@ -190,7 +190,7 @@ public class PauseScript : MonoBehaviour
     {
         IsPaused = false;
         Time.timeScale = 1f;
-
+        VolumeBlurController.Instance.SetMenuBlurState(false);
         /*if (musicManager != null && musicManager.levelScene)
         {
             musicManager.UnpauseMusic();

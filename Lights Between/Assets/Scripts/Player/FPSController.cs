@@ -75,6 +75,7 @@ public class FPSController : MonoBehaviour
 
     [Header("Interaction Settings")]
     [Space(5)]
+    public Canvas hudCanvas;
 
     [SerializeField] public float interactionRange = 5f;
     [SerializeField] private LayerMask interactionLayer;
@@ -161,7 +162,7 @@ public class FPSController : MonoBehaviour
 
     private void Update()
     {
-        if(isInMiniGame) return;
+        if(isInMiniGame || PauseScript.IsPaused) return;
         ApplyGravity();
         GroundedCheck();
         Move();
@@ -173,7 +174,7 @@ public class FPSController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isInMiniGame) return;
+        if (isInMiniGame || PauseScript.IsPaused) return;
         CameraRotation();
     }
 
@@ -521,10 +522,26 @@ public class FPSController : MonoBehaviour
         }
     }
 
+    public void EvaluateHUDState()
+    {
+        if (hudCanvas == null) return;
+
+        bool shouldShowHUD = //!SimpleTutorialPromptManager.IsTutorialActive
+                          !isInspecting
+                          && !isInMiniGame
+                          // !isJumpscareActive
+                          && !LevelManager.IsGameOver;
+
+        if (hudCanvas.gameObject.activeSelf != shouldShowHUD)
+        {
+            hudCanvas.gameObject.SetActive(shouldShowHUD);
+        }
+    }
+
     public void SetMiniGameMode(bool active)
     {
         isInMiniGame = active;
-        //EvaluateHUDState();
+        EvaluateHUDState();
 
         if (_input != null)
         {
