@@ -217,6 +217,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ContinueDialogue"",
+                    ""type"": ""Button"",
+                    ""id"": ""5dfbbb39-285b-4762-8d75-bec68a6e5be2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ExitDialogue"",
+                    ""type"": ""Button"",
+                    ""id"": ""cffa9295-f306-45e7-adbb-0e5d3104ce9b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -613,6 +631,50 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""aa3cf164-9dfe-4fa2-87ac-5e8014067f06"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardMouse"",
+                    ""action"": ""ContinueDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5f18f4d7-0a1b-4388-8e67-11a00e84805b"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ContinueDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""868a3219-cea7-4e88-a895-a8bd44863cdc"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ExitDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ec139a39-9de0-4c9e-a8ca-9c52b0ec3a33"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ExitDialogue"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1203,6 +1265,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_PlaceObject = m_Player.FindAction("PlaceObject", throwIfNotFound: true);
         m_Player_Start = m_Player.FindAction("Start", throwIfNotFound: true);
         m_Player_Select = m_Player.FindAction("Select", throwIfNotFound: true);
+        m_Player_ContinueDialogue = m_Player.FindAction("ContinueDialogue", throwIfNotFound: true);
+        m_Player_ExitDialogue = m_Player.FindAction("ExitDialogue", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1310,6 +1374,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_PlaceObject;
     private readonly InputAction m_Player_Start;
     private readonly InputAction m_Player_Select;
+    private readonly InputAction m_Player_ContinueDialogue;
+    private readonly InputAction m_Player_ExitDialogue;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1378,6 +1444,14 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Select => m_Wrapper.m_Player_Select;
         /// <summary>
+        /// Provides access to the underlying input action "Player/ContinueDialogue".
+        /// </summary>
+        public InputAction @ContinueDialogue => m_Wrapper.m_Player_ContinueDialogue;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ExitDialogue".
+        /// </summary>
+        public InputAction @ExitDialogue => m_Wrapper.m_Player_ExitDialogue;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1445,6 +1519,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Select.started += instance.OnSelect;
             @Select.performed += instance.OnSelect;
             @Select.canceled += instance.OnSelect;
+            @ContinueDialogue.started += instance.OnContinueDialogue;
+            @ContinueDialogue.performed += instance.OnContinueDialogue;
+            @ContinueDialogue.canceled += instance.OnContinueDialogue;
+            @ExitDialogue.started += instance.OnExitDialogue;
+            @ExitDialogue.performed += instance.OnExitDialogue;
+            @ExitDialogue.canceled += instance.OnExitDialogue;
         }
 
         /// <summary>
@@ -1498,6 +1578,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Select.started -= instance.OnSelect;
             @Select.performed -= instance.OnSelect;
             @Select.canceled -= instance.OnSelect;
+            @ContinueDialogue.started -= instance.OnContinueDialogue;
+            @ContinueDialogue.performed -= instance.OnContinueDialogue;
+            @ContinueDialogue.canceled -= instance.OnContinueDialogue;
+            @ExitDialogue.started -= instance.OnExitDialogue;
+            @ExitDialogue.performed -= instance.OnExitDialogue;
+            @ExitDialogue.canceled -= instance.OnExitDialogue;
         }
 
         /// <summary>
@@ -1883,6 +1969,20 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSelect(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ContinueDialogue" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnContinueDialogue(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ExitDialogue" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnExitDialogue(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

@@ -368,7 +368,7 @@ public class FPSController : MonoBehaviour
         Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
         Debug.DrawRay(ray.origin, ray.direction * interactionRange, Color.red);
 
-        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer))
+        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))
         {
             bool hasInteractable = hit.collider.TryGetComponent<IInteractable>(out var interactable);
             bool hasPower = hit.collider.TryGetComponent<IToolPower>(out var powerItem);
