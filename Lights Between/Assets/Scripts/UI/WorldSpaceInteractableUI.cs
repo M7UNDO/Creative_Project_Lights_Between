@@ -27,7 +27,7 @@ public class WorldSpaceInteractableUI : MonoBehaviour
     [SerializeField] private Color disabledColor = new Color(200f / 255f, 200f / 255f, 200f / 255f, 128f / 255f);
 
     private Transform _mainCameraTransform;
-    private Image _inputIconImage;
+    public Image _inputIconImage;
     private Image _skeletonIconImage;
     private UIState _currentState = UIState.Hidden;
     private bool _isDisabledBySystem;
@@ -43,7 +43,7 @@ public class WorldSpaceInteractableUI : MonoBehaviour
             _mainCameraTransform = Camera.main.transform;
         }
 
-        if (inputIconObject != null)
+        if (inputIconObject == null)
         {
             _inputIconImage = inputIconObject.GetComponent<Image>();
         }
