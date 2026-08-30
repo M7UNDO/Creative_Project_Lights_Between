@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!23 &3018083 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5229457066956131804, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 4279607056347025334}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &13764573 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6787531970228139314, guid: 212f51662187668499cd4684030da373, type: 3}
@@ -250,7 +255,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_Name
-      value: LightSource
+      value: HallLightSource
       objectReference: {fileID: 0}
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_IsActive
@@ -1900,6 +1905,30 @@ PrefabInstance:
       propertyPath: electricBoxBreaker
       value: 
       objectReference: {fileID: 7150751199688817447}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: lightRenderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLights.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'lightRenderers.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1124178572}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLights.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1669399746}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLightObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLightObjects.Array.data[0]'
+      value: 
+      objectReference: {fileID: 669380240}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2187,6 +2216,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c96580cbfcbcca048a192aca5a4f4a9f, type: 3}
+--- !u!23 &200801362 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5229457066956131804, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 759542521}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &205635498
 GameObject:
   m_ObjectHideFlags: 0
@@ -2565,59 +2599,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4308180571162496930, guid: 342824165047f2e449d091837d7f71a8, type: 3}
   m_PrefabInstance: {fileID: 1261432443}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &227083423
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 227083424}
-  - component: {fileID: 227083425}
-  m_Layer: 10
-  m_Name: FoyerLightZone
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &227083424
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 227083423}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -1.6885087, y: -2, z: -5.3277645}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 410640799}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &227083425
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 227083423}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 16.075611, y: 13.761115, z: 6.311132}
-  m_Center: {x: -1.9797263, y: 4.6668367, z: 2.6556315}
 --- !u!1001 &229099320
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2837,7 +2818,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_Name
-      value: LightSource
+      value: LivingLightSource
       objectReference: {fileID: 0}
     - target: {fileID: 1635216411687689545, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_IsActive
@@ -3220,6 +3201,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -5531377078525358311, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
+--- !u!23 &284969001 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5229457066956131804, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 21660557}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &292847999
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3345,6 +3331,11 @@ MonoBehaviour:
 Transform:
   m_CorrespondingSourceObject: {fileID: 6055804163808292965, guid: 26ec2d565eaef114da23d237d55f13c9, type: 3}
   m_PrefabInstance: {fileID: 1953760505}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &303934951 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 2681834745678773360, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 504967364}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &306199348
 PrefabInstance:
@@ -3720,9 +3711,17 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7150751199688817447}
     - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: lightRenderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
       propertyPath: connectedLights.Array.size
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'lightRenderers.Array.data[0]'
+      value: 
+      objectReference: {fileID: 423394050}
     - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
       propertyPath: 'connectedLights.Array.data[0]'
       value: 
@@ -4141,6 +4140,7 @@ Transform:
   - {fileID: 384751118}
   - {fileID: 1493441116}
   - {fileID: 230359039}
+  - {fileID: 619770665}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &377197547
@@ -4941,6 +4941,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
   m_PrefabInstance: {fileID: 1145277937}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &423394050 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5229457066956131804, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 628081211}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &424011576
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5358,6 +5363,34 @@ PrefabInstance:
       propertyPath: electricBoxBreaker
       value: 
       objectReference: {fileID: 7150751199688817447}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: lightRenderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLights.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'lightRenderers.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1558010311}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLights.Array.data[0]'
+      value: 
+      objectReference: {fileID: 303934951}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLightObjects.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLightObjects.Array.data[0]'
+      value: 
+      objectReference: {fileID: 681854496}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLightObjects.Array.data[1]'
+      value: 
+      objectReference: {fileID: 164074325}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5840,6 +5873,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+      propertyPath: m_Name
+      value: Basement LightSource
+      objectReference: {fileID: 0}
     - target: {fileID: 4513371836318446552, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 7.375
@@ -6785,6 +6822,56 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c4507b03e1641774486fdb8f62952390, type: 3}
+--- !u!108 &611119654 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 2681834745678773360, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 759542521}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &619770664
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 619770665}
+  - component: {fileID: 619770666}
+  m_Layer: 0
+  m_Name: LightCullManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &619770665
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619770664}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 375588230}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &619770666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619770664}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c68bab5de7d982743a1c33a42f97b3ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightCullManager
+  maxVisibleDistance: 25
 --- !u!1 &624271392
 GameObject:
   m_ObjectHideFlags: 0
@@ -6858,7 +6945,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_Name
-      value: LightSource
+      value: KitchenLightSource
       objectReference: {fileID: 0}
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_IsActive
@@ -8034,7 +8121,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_Name
-      value: LightSource
+      value: StorageLightSource
       objectReference: {fileID: 0}
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_IsActive
@@ -8274,6 +8361,30 @@ PrefabInstance:
       propertyPath: electricBoxBreaker
       value: 
       objectReference: {fileID: 7150751199688817447}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: lightRenderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLights.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'lightRenderers.Array.data[0]'
+      value: 
+      objectReference: {fileID: 866539935}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLights.Array.data[0]'
+      value: 
+      objectReference: {fileID: 773332345}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLightObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLightObjects.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1092948381}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -8289,7 +8400,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_Name
-      value: LightSource
+      value: HallLightSource 2
       objectReference: {fileID: 0}
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_IsActive
@@ -8573,6 +8684,16 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 5956281446342914481, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
   m_PrefabInstance: {fileID: 770609793}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &773332345 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 2681834745678773360, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 238308655}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &782261949 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 2681834745678773360, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 21660557}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &792221920
 PrefabInstance:
@@ -9311,6 +9432,11 @@ Transform:
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7939316342907842542, guid: e7f00dc1274aeee4eafcd49822ad5cd9, type: 3}
   m_PrefabInstance: {fileID: 349690480}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &866539935 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5229457066956131804, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 238308655}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &871623924 stripped
 Transform:
@@ -12148,6 +12274,30 @@ PrefabInstance:
       propertyPath: electricBoxBreaker
       value: 
       objectReference: {fileID: 7150751199688817447}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: lightRenderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLights.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'lightRenderers.Array.data[0]'
+      value: 
+      objectReference: {fileID: 3018083}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLights.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1045698880}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLightObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLightObjects.Array.data[0]'
+      value: 
+      objectReference: {fileID: 1651246891}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -12862,6 +13012,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3528df3dacb249f46b23920cad666a64, type: 3}
+--- !u!108 &1045698880 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 2681834745678773360, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 4279607056347025334}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1052209711 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3521311997139952811, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
@@ -14208,6 +14363,11 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!23 &1124178572 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5229457066956131804, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 2030289049}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1127989153
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14911,31 +15071,28 @@ PrefabInstance:
     - {fileID: 5769484663829117588, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
-      insertIndex: 24
-      addedObject: {fileID: 227083424}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
-      insertIndex: 28
+      insertIndex: 27
       addedObject: {fileID: 1663672036}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
-      insertIndex: 29
+      insertIndex: 28
       addedObject: {fileID: 1813646317}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
-      insertIndex: 30
+      insertIndex: 29
       addedObject: {fileID: 2021716035}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
-      insertIndex: 31
+      insertIndex: 30
       addedObject: {fileID: 1335896240}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
-      insertIndex: 32
+      insertIndex: 31
       addedObject: {fileID: 2099872443}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
-      insertIndex: 33
+      insertIndex: 32
       addedObject: {fileID: 1440908069}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
-      insertIndex: 34
+      insertIndex: 33
       addedObject: {fileID: 1402646179}
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
-      insertIndex: 35
+      insertIndex: 34
       addedObject: {fileID: 2122415249}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: -6958764681636083868, guid: 9e0afbe06161f644aa5e6cb404569dca, type: 3}
@@ -15463,6 +15620,30 @@ PrefabInstance:
       propertyPath: electricBoxBreaker
       value: 
       objectReference: {fileID: 7150751199688817447}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: lightRenderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLights.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'lightRenderers.Array.data[0]'
+      value: 
+      objectReference: {fileID: 200801362}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLights.Array.data[0]'
+      value: 
+      objectReference: {fileID: 611119654}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLightObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLightObjects.Array.data[0]'
+      value: 
+      objectReference: {fileID: 861036631}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -16098,6 +16279,34 @@ PrefabInstance:
       propertyPath: electricBoxBreaker
       value: 
       objectReference: {fileID: 7150751199688817447}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: lightRenderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLights.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'lightRenderers.Array.data[0]'
+      value: 
+      objectReference: {fileID: 284969001}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLights.Array.data[0]'
+      value: 
+      objectReference: {fileID: 782261949}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLights.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1604095998}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: connectedLightObjects.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6066283571434261785, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
+      propertyPath: 'connectedLightObjects.Array.data[0]'
+      value: 
+      objectReference: {fileID: 53759707}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -20961,6 +21170,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84088048bd88d4f44a6276f5e62c2c6e, type: 3}
+--- !u!23 &1558010311 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 5229457066956131804, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 504967364}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1566891115
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21240,6 +21454,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1599662114}
   m_CullTransparentMesh: 1
+--- !u!108 &1604095998 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 2681834745678773360, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 767290912}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1611827396 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4757523319932715620, guid: b2b22fc223484ed49a8fb45aed4e084a, type: 3}
@@ -21500,6 +21719,10 @@ PrefabInstance:
     - target: {fileID: 3909627935186924799, guid: 143e286fe7ec04a49891fddc9d9e0600, type: 3}
       propertyPath: m_Layer
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3909627935186924799, guid: 143e286fe7ec04a49891fddc9d9e0600, type: 3}
+      propertyPath: m_TagString
+      value: Key
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -22326,6 +22549,11 @@ Transform:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4308170994332864, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
   m_PrefabInstance: {fileID: 1322534164}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &1669399746 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 2681834745678773360, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+  m_PrefabInstance: {fileID: 2030289049}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1671508642
 PrefabInstance:
@@ -25824,7 +26052,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_Name
-      value: LightSource
+      value: Bathroom LightSource
       objectReference: {fileID: 0}
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_IsActive
@@ -27872,7 +28100,7 @@ MonoBehaviour:
   isPoweredOn: 0
   maxFuel: 100
   baseFuelDrainRate: 0.14
-  connectedBreaker: {fileID: 0}
+  connectedBreaker: {fileID: 7150751199688817447}
   holdInteraction: {fileID: 33060008063014840}
   fuelMiniGame: {fileID: 1281291466}
   noFuelPrompt: Fuel Empty
@@ -32524,11 +32752,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_Name
-      value: LightSource
+      value: FoyerLightSource
       objectReference: {fileID: 0}
     - target: {fileID: 1228046525966750129, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2681834745678773360, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+      propertyPath: m_SpotAngle
+      value: 149.82127
+      objectReference: {fileID: 0}
+    - target: {fileID: 2681834745678773360, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
+      propertyPath: m_InnerSpotAngle
+      value: 77.91483
       objectReference: {fileID: 0}
     - target: {fileID: 4513371836318446552, guid: 9a2de2dd7349097418fb9121a52b24e3, type: 3}
       propertyPath: m_LocalPosition.x

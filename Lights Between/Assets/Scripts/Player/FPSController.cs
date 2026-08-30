@@ -188,11 +188,17 @@ public class FPSController : MonoBehaviour
     {
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<InputHandler>();
+        _keyInventory = GetComponent<IKeyInventory>();
+        if (_keyInventory == null)
+        {
+            _keyInventory = GetComponentInChildren<IKeyInventory>();
+        }
 #if ENABLE_INPUT_SYSTEM
         _playerInput = GetComponent<PlayerInput>();
 #else
 			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
+
 
         // reset our timeouts on start
         _jumpTimeoutDelta = JumpTimeout;
@@ -201,7 +207,7 @@ public class FPSController : MonoBehaviour
 
     private void Update()
     {
-        if(isInMiniGame || PauseScript.IsPaused) return;
+        if(isInMiniGame || isInspecting || PauseScript.IsPaused) return;
         ApplyGravity();
         GroundedCheck();
         Move();
@@ -213,7 +219,7 @@ public class FPSController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isInMiniGame || PauseScript.IsPaused) return;
+        if (isInMiniGame || isInspecting || PauseScript.IsPaused) return;
         CameraRotation();
     }
 
