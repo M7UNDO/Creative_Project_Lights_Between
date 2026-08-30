@@ -13,9 +13,21 @@ public class InspectableObject : MonoBehaviour, IInteractable
     [TextArea(2, 4)]
     [SerializeField] private string[] internalThoughts;
 
+    [Header("UI Reference")]
+    [SerializeField] private WorldSpaceInteractableUI worldUI;
+
     public string PromptMessage => promptMessage;
     public Transform InspectCameraTransform => inspectCameraTransform != null ? inspectCameraTransform : transform;
     public string[] InternalThoughts => internalThoughts;
+    public WorldSpaceInteractableUI WorldUI => worldUI;
+
+    private void Awake()
+    {
+        if (worldUI == null)
+        {
+            worldUI = GetComponentInChildren<WorldSpaceInteractableUI>();
+        }
+    }
 
     public void Interact()
     {

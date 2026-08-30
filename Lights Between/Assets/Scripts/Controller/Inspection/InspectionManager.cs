@@ -34,7 +34,6 @@ public class InspectionManager : MonoBehaviour
 
     private Vector3 originalCamPosition;
     private Quaternion originalCamRotation;
-    private Transform originalCamParent;
 
     private int currentThoughtIndex;
     private bool isInspecting;
@@ -90,12 +89,17 @@ public class InspectionManager : MonoBehaviour
         if (isInspecting || isTransitioningCamera) return;
 
         currentObject = inspectable;
+
+        if (currentObject != null && currentObject.WorldUI != null)
+        {
+            currentObject.WorldUI.SetSystemDisabled(true);
+        }
+
         playerController = FindFirstObjectByType<FPSController>();
 
         if (playerController != null)
         {
-            playerController.SetMiniGameMode(true);
-            playerController.isInspecting = true;
+            playerController.SetInspectionMode(true);
         }
 
         originalCamPosition = mainCameraTransform.position;
@@ -251,8 +255,12 @@ public class InspectionManager : MonoBehaviour
 
         if (playerController != null)
         {
-            playerController.isInspecting = false;
-            playerController.SetMiniGameMode(false);
+            playerController.SetInspectionMode(false);
+        }
+
+        if (currentObject != null && currentObject.WorldUI != null)
+        {
+            currentObject.WorldUI.SetSystemDisabled(false);
         }
     }
 

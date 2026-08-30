@@ -94,8 +94,47 @@ public class FPSController : MonoBehaviour
 
     public Transform FlashlightAnchor;
 
-    public bool isInspecting;
-    public bool isInMiniGame;
+    private bool _isInspecting;
+    public bool isInspecting
+    {
+        get => _isInspecting;
+        set
+        {
+            if (_isInspecting != value)
+            {
+                _isInspecting = value;
+                EvaluateHUDState();
+            }
+        }
+    }
+
+    private bool _isInMiniGame;
+    public bool isInMiniGame
+    {
+        get => _isInMiniGame;
+        set
+        {
+            if (_isInMiniGame != value)
+            {
+                _isInMiniGame = value;
+                EvaluateHUDState();
+            }
+        }
+    }
+
+    private bool _isJumpscareActive;
+    public bool isJumpscareActive
+    {
+        get => _isJumpscareActive;
+        set
+        {
+            if (_isJumpscareActive != value)
+            {
+                _isJumpscareActive = value;
+                EvaluateHUDState();
+            }
+        }
+    }
 
     private float _footstepTimer;
     // cinemachine
@@ -364,7 +403,6 @@ public class FPSController : MonoBehaviour
         currentInteractable = null;
         isInteractable = false;
 
-        // 1. Direct Target Raycast (Full Text Prompt Target Identification)
         Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
         Debug.DrawRay(ray.origin, ray.direction * interactionRange, Color.red);
 
@@ -478,9 +516,6 @@ public class FPSController : MonoBehaviour
         _currentWorldUI = targetedWorldUI;
     }
 
-
-
-
     public void Interact()
     {
         if (currentInteractable != null)
@@ -502,6 +537,18 @@ public class FPSController : MonoBehaviour
                     _input.interact = false;
                 }
             }
+        }
+    }
+
+    public void ClearInteractionState()
+    {
+        currentInteractable = null;
+        isInteractable = false;
+
+        if (_currentWorldUI != null)
+        {
+            _currentWorldUI.HidePrompt();
+            _currentWorldUI = null;
         }
     }
 
@@ -527,14 +574,38 @@ public class FPSController : MonoBehaviour
         if (hudCanvas == null) return;
 
         bool shouldShowHUD = //!SimpleTutorialPromptManager.IsTutorialActive
-                          !isInspecting
-                          && !isInMiniGame
-                          // !isJumpscareActive
-                          && !LevelManager.IsGameOver;
+                           !isInspecting
+                           && !isInMiniGame
+                           && !isJumpscareActive
+                           && !LevelManager.IsGameOver;
 
         if (hudCanvas.gameObject.activeSelf != shouldShowHUD)
         {
             hudCanvas.gameObject.SetActive(shouldShowHUD);
+        }
+    }
+
+    public void SetInspectionMode(bool inspecting)
+    {
+        isInspecting = inspecting;
+
+        ClearInteractionState();
+        UpdateCrosshair();
+
+        if (_input != null)
+        {
+            _input.move = Vector2.zero;
+            _input.look = Vector2.zero;
+            _input.sprint = false;
+            _input.ClearLookInput();
+
+            _input.cursorInputForLook = !inspecting;
+            _input.blockLookInput = inspecting;
+        }
+
+        if (inspecting)
+        {
+            StopFootsteps();
         }
     }
 

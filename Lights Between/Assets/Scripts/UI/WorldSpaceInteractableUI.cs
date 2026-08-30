@@ -30,9 +30,11 @@ public class WorldSpaceInteractableUI : MonoBehaviour
     private Image _inputIconImage;
     private Image _skeletonIconImage;
     private UIState _currentState = UIState.Hidden;
+    private bool _isDisabledBySystem;
 
     public float ProximityDistance => proximityDistance;
     public UIState CurrentState => _currentState;
+    public bool IsDisabledBySystem => _isDisabledBySystem;
 
     private void Awake()
     {
@@ -72,8 +74,24 @@ public class WorldSpaceInteractableUI : MonoBehaviour
         }
     }
 
+    public void SetSystemDisabled(bool disabled)
+    {
+        _isDisabledBySystem = disabled;
+        if (_isDisabledBySystem)
+        {
+            SetUIState(UIState.Hidden);
+        }
+    }
+
     public void SetUIState(UIState newState, string message = "", bool showInputIcon = true, bool isInteractable = true)
     {
+        if (_isDisabledBySystem)
+        {
+            if (worldCanvas != null) worldCanvas.enabled = false;
+            _currentState = UIState.Hidden;
+            return;
+        }
+
         _currentState = newState;
 
         switch (newState)
