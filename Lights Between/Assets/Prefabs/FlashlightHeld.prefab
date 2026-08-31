@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7079076008736518626}
   - component: {fileID: 6177159714341115767}
-  m_Layer: 9
+  - component: {fileID: 9082187123987179839}
+  m_Layer: 10
   m_Name: FlashLightZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53,6 +54,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 3.482613}
   m_Center: {x: 0, y: 0.08, z: 1.2413065}
+--- !u!114 &9082187123987179839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2197618662182222458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61f2062db18daaa40ba74cbbda1b909a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightZone
+  isActive: 1
 --- !u!1 &8181050455219353647
 GameObject:
   m_ObjectHideFlags: 0

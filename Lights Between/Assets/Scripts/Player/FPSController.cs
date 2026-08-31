@@ -207,7 +207,7 @@ public class FPSController : MonoBehaviour
 
     private void Update()
     {
-        if(isInMiniGame || isInspecting || PauseScript.IsPaused) return;
+        if(isInMiniGame || isInspecting || isJumpscareActive || PauseScript.IsPaused) return;
         ApplyGravity();
         GroundedCheck();
         Move();
@@ -219,7 +219,7 @@ public class FPSController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isInMiniGame || isInspecting || PauseScript.IsPaused) return;
+        if (isInMiniGame || isInspecting || isJumpscareActive || PauseScript.IsPaused) return;
         CameraRotation();
     }
 
@@ -252,6 +252,32 @@ public class FPSController : MonoBehaviour
 
             // rotate the player left and right
             transform.Rotate(Vector3.up * _rotationVelocity);
+        }
+    }
+
+    public void ForceLookAt(Vector3 targetPosition)
+    {
+        Vector3 forwardDir = targetPosition - transform.position;
+        forwardDir.y = 0f;
+
+        if (forwardDir.sqrMagnitude > 0.01f)
+        {
+            transform.rotation = Quaternion.LookRotation(forwardDir);
+        }
+
+        if (_mainCamera != null)
+        {
+            Vector3 camToTarget = targetPosition - _mainCamera.transform.position;
+            Quaternion targetRotation = Quaternion.LookRotation(camToTarget);
+
+            float pitch = targetRotation.eulerAngles.x;
+            if (pitch > 180f)
+            {
+                pitch -= 360f;
+            }
+
+            _cinemachineTargetPitch = Mathf.Clamp(pitch, BottomClamp, TopClamp);
+            CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
         }
     }
 
@@ -592,6 +618,30 @@ public class FPSController : MonoBehaviour
     }
 
     public void SetInspectionMode(bool inspecting)
+    {
+        isInspecting = inspecting;
+
+        ClearInteractionState();
+        UpdateCrosshair();
+
+        if (_input != null)
+        {
+            _input.move = Vector2.zero;
+            _input.look = Vector2.zero;
+            _input.sprint = false;
+            _input.ClearLookInput();
+
+            _input.cursorInputForLook = !inspecting;
+            _input.blockLookInput = inspecting;
+        }
+
+        if (inspecting)
+        {
+            StopFootsteps();
+        }
+    }
+
+    public void SetJumpScareMode(bool inspecting)
     {
         isInspecting = inspecting;
 
