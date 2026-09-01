@@ -23,7 +23,8 @@ public class TabController : MonoBehaviour
 
     private TextMeshProUGUI[] tabTexts;
     private int currentTab = -1;
-    private InputActionReference navigationActionRef;
+    private InputAction boundNextAction;
+    private InputAction boundPreviousAction;
 
     private void Awake()
     {
@@ -43,27 +44,39 @@ public class TabController : MonoBehaviour
         }
     }
 
-    public void InitializeTabNavigation(InputActionReference actionRef)
+    public void InitializeTabNavigation(InputAction previousTabAction, InputAction nextTabAction)
     {
-        if (navigationActionRef != null)
+        UnsubscribeActions();
+
+        boundPreviousAction = previousTabAction;
+        boundNextAction = nextTabAction;
+
+        if (boundPreviousAction != null)
         {
-            navigationActionRef.action.performed -= OnTabNavigationPerformed;
+            boundPreviousAction.performed += OnPreviousTabPerformed;
         }
 
-        navigationActionRef = actionRef;
-
-        if (navigationActionRef != null)
+        if (boundNextAction != null)
         {
-            navigationActionRef.action.Enable();
-            navigationActionRef.action.performed += OnTabNavigationPerformed;
+            boundNextAction.performed += OnNextTabPerformed;
         }
     }
 
     private void OnDestroy()
     {
-        if (navigationActionRef != null)
+        UnsubscribeActions();
+    }
+
+    private void UnsubscribeActions()
+    {
+        if (boundPreviousAction != null)
         {
-            navigationActionRef.action.performed -= OnTabNavigationPerformed;
+            boundPreviousAction.performed -= OnPreviousTabPerformed;
+        }
+
+        if (boundNextAction != null)
+        {
+            boundNextAction.performed -= OnNextTabPerformed;
         }
     }
 
@@ -75,35 +88,31 @@ public class TabController : MonoBehaviour
         }
     }
 
-    private void OnTabNavigationPerformed(InputAction.CallbackContext context)
+    private void OnPreviousTabPerformed(InputAction.CallbackContext context)
     {
-        if (EventSystem.current == null) return;
+        CycleTab(-1);
+    }
 
-        GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
-        bool interactingWithTabs = false;
+    private void OnNextTabPerformed(InputAction.CallbackContext context)
+    {
+        CycleTab(1);
+    }
 
-        for (int i = 0; i < tabButtons.Length; i++)
-        {
-            if (tabButtons[i] != null && tabButtons[i].gameObject == currentSelected)
-            {
-                interactingWithTabs = true;
-                break;
-            }
-        }
+    private void CycleTab(int direction)
+    {
+        if (tabButtons == null || tabButtons.Length == 0) return;
 
-        if (!interactingWithTabs) return;
-
-        float value = context.ReadValue<float>();
-        if (value == 0) return;
-
-        int nextTab = currentTab + (value > 0 ? 1 : -1);
+        int nextTab = currentTab + direction;
 
         if (nextTab >= tabButtons.Length) nextTab = 0;
         if (nextTab < 0) nextTab = tabButtons.Length - 1;
 
         if (tabButtons[nextTab] != null)
         {
-            EventSystem.current.SetSelectedGameObject(tabButtons[nextTab].gameObject);
+            if (EventSystem.current != null)
+            {
+                EventSystem.current.SetSelectedGameObject(tabButtons[nextTab].gameObject);
+            }
             ActivateTab(nextTab);
         }
     }
@@ -123,19 +132,16 @@ public class TabController : MonoBehaviour
         {
             bool isSelected = (i == tabNo);
 
-            // Handle page activation
             if (i < pages.Length && pages[i] != null)
             {
                 pages[i].SetActive(isSelected);
             }
 
-            // Update Tab Text Colors based on active state
             if (tabTexts[i] != null)
             {
                 tabTexts[i].color = isSelected ? selectedTextColour : deselectedTextColour;
             }
 
-            // Sync HighlightButton's selection state safely via BaseEventData
             if (tabButtons[i] != null)
             {
                 if (isSelected)
@@ -149,7 +155,6 @@ public class TabController : MonoBehaviour
             }
         }
 
-        // Drop focus into the active page's first selectable element
         if (pages[tabNo] != null)
         {
             FocusFirstElementInPage(pages[tabNo]);
@@ -163,7 +168,6 @@ public class TabController : MonoBehaviour
 
         GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
 
-        // Check if focus is already on a tab button
         for (int i = 0; i < tabButtons.Length; i++)
         {
             if (tabButtons[i] != null && tabButtons[i].gameObject == currentSelected)
@@ -172,12 +176,9 @@ public class TabController : MonoBehaviour
             }
         }
 
-        // Focus was inside a page layer; return focus back up to the active tab button
         if (tabButtons[currentTab] != null)
         {
             EventSystem.current.SetSelectedGameObject(tabButtons[currentTab].gameObject);
-
-            // Re-trigger select handler so HighlightButton updates state cleanly
             ExecuteEvents.Execute(tabButtons[currentTab].gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.selectHandler);
             return true;
         }

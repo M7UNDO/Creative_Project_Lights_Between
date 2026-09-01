@@ -205,7 +205,7 @@ public class FPSController : MonoBehaviour
 
     private void Update()
     {
-        if(isInMiniGame || isInspecting || isJumpscareActive || PauseScript.IsPaused) return;
+        if(isInMiniGame || isInspecting || isJumpscareActive) return;
         ApplyGravity();
         GroundedCheck();
         Move();
@@ -217,7 +217,7 @@ public class FPSController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isInMiniGame || isInspecting || isJumpscareActive || PauseScript.IsPaused) return;
+        if (isInMiniGame || isInspecting || isJumpscareActive) return;
         CameraRotation();
     }
 

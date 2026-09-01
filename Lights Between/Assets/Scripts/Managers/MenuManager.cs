@@ -89,7 +89,7 @@ public class MainManager : MonoBehaviour
 
         if (tabController != null && selectInput != null)
         {
-            tabController.InitializeTabNavigation(selectInput);
+            //tabController.InitializeTabNavigation(selectInput);
         }
 
         if (hasSeenIntro)
