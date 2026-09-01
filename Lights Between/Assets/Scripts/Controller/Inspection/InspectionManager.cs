@@ -11,6 +11,9 @@ public class InspectionManager : MonoBehaviour
     [SerializeField] private InputActionReference advanceDialogueAction;
     [SerializeField] private InputActionReference exitInspectionAction;
 
+    [Header("Hold Settings")]
+    [SerializeField] private HoldInteraction exitHoldInteraction;
+
     [Header("UI References")]
     [SerializeField] private CanvasGroup inspectionCanvasGroup;
     [SerializeField] private TMP_Text dialogueText;
@@ -65,7 +68,13 @@ public class InspectionManager : MonoBehaviour
         if (exitInspectionAction != null)
         {
             exitInspectionAction.action.Enable();
-            exitInspectionAction.action.performed += OnExitPerformed;
+            exitInspectionAction.action.started += OnExitStarted;
+            exitInspectionAction.action.canceled += OnExitCanceled;
+        }
+
+        if (exitHoldInteraction != null)
+        {
+            exitHoldInteraction.onHoldCompleted.AddListener(EndInspection);
         }
     }
 
@@ -79,8 +88,14 @@ public class InspectionManager : MonoBehaviour
 
         if (exitInspectionAction != null)
         {
-            exitInspectionAction.action.performed -= OnExitPerformed;
+            exitInspectionAction.action.started -= OnExitStarted;
+            exitInspectionAction.action.canceled -= OnExitCanceled;
             exitInspectionAction.action.Disable();
+        }
+
+        if (exitHoldInteraction != null)
+        {
+            exitHoldInteraction.onHoldCompleted.RemoveListener(EndInspection);
         }
     }
 
@@ -107,6 +122,11 @@ public class InspectionManager : MonoBehaviour
 
         currentThoughtIndex = 0;
         isInspecting = true;
+
+        if (exitHoldInteraction != null)
+        {
+            exitHoldInteraction.ResetHold();
+        }
 
         StartCoroutine(EnterInspectionRoutine());
     }
@@ -151,10 +171,22 @@ public class InspectionManager : MonoBehaviour
         }
     }
 
-    private void OnExitPerformed(InputAction.CallbackContext context)
+    private void OnExitStarted(InputAction.CallbackContext context)
     {
         if (!isInspecting || isTransitioningCamera) return;
-        EndInspection();
+
+        if (exitHoldInteraction != null)
+        {
+            exitHoldInteraction.BeginHold();
+        }
+    }
+
+    private void OnExitCanceled(InputAction.CallbackContext context)
+    {
+        if (exitHoldInteraction != null)
+        {
+            exitHoldInteraction.CancelHold();
+        }
     }
 
     private void ShowNextThought()
@@ -229,6 +261,11 @@ public class InspectionManager : MonoBehaviour
     {
         isTransitioningCamera = true;
         canAdvance = false;
+
+        if (exitHoldInteraction != null)
+        {
+            exitHoldInteraction.ResetHold();
+        }
 
         if (ellipsisCoroutine != null) StopCoroutine(ellipsisCoroutine);
         if (ellipsisText != null) ellipsisText.gameObject.SetActive(false);

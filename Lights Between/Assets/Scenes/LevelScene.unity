@@ -3299,6 +3299,7 @@ GameObject:
   m_Component:
   - component: {fileID: 230359039}
   - component: {fileID: 230359040}
+  - component: {fileID: 230359041}
   m_Layer: 0
   m_Name: InspectionManager
   m_TagString: Untagged
@@ -3335,6 +3336,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InspectionManager
   advanceDialogueAction: {fileID: 6880856943361457348, guid: b28cb1f9c25d5ed4c8f044a0ec6e47a1, type: 3}
   exitInspectionAction: {fileID: 2999586790779681344, guid: b28cb1f9c25d5ed4c8f044a0ec6e47a1, type: 3}
+  exitHoldInteraction: {fileID: 230359041}
   inspectionCanvasGroup: {fileID: 491927072}
   dialogueText: {fileID: 491927071}
   ellipsisText: {fileID: 491927070}
@@ -3347,6 +3349,106 @@ MonoBehaviour:
   maxPitch: 1.05
   mainCameraTransform: {fileID: 7526303553422054391}
   cameraTransitionSpeed: 5
+--- !u!114 &230359041
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230359038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9897ffac3ed8fca478fece59856328eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoldInteraction
+  holdDuration: 2.5
+  resetProgressWhenReleased: 1
+  canRepeat: 1
+  holdProgressUI: {fileID: 491927080}
+  onHoldStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onHoldCancelled:
+    m_PersistentCalls:
+      m_Calls: []
+  onHoldCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!1 &234304157
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 234304158}
+  - component: {fileID: 234304160}
+  - component: {fileID: 234304159}
+  m_Layer: 5
+  m_Name: RadialFill
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &234304158
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234304157}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 491927078}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 40, y: 40}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &234304159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234304157}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.88235295, b: 0.39215687, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: ce2f7ab8fea12eb4497f5f940634f0bb, type: 3}
+  m_Type: 3
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 2
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &234304160
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234304157}
+  m_CullTransparentMesh: 1
 --- !u!4 &235308010 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2372675452166014669, guid: 8485224fd043fff4ab0784b0fbab9a80, type: 3}
@@ -7636,11 +7738,17 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 4556897510045152605, guid: e6aec8a93dc5def46bbac9aeb5b84229, type: 3}
     - {fileID: 7596410886508759178, guid: e6aec8a93dc5def46bbac9aeb5b84229, type: 3}
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2572922003688881795, guid: e6aec8a93dc5def46bbac9aeb5b84229, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 234304158}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 701574910568395700, guid: e6aec8a93dc5def46bbac9aeb5b84229, type: 3}
       insertIndex: -1
       addedObject: {fileID: 491927077}
+    - targetCorrespondingSourceObject: {fileID: 701574910568395700, guid: e6aec8a93dc5def46bbac9aeb5b84229, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 491927080}
   m_SourcePrefab: {fileID: 100100000, guid: e6aec8a93dc5def46bbac9aeb5b84229, type: 3}
 --- !u!224 &491927068 stripped
 RectTransform:
@@ -7706,6 +7814,25 @@ MonoBehaviour:
   keyboardSprite: {fileID: 21300000, guid: ec0da0998bbde1b4d9df347d14370b49, type: 3}
   xboxSprite: {fileID: 21300000, guid: 96c37e96df762b843951da4414327223, type: 3}
   playStationSprite: {fileID: 21300000, guid: f75f11571ec9eea42af938b8c48c76fd, type: 3}
+--- !u!224 &491927078 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2572922003688881795, guid: e6aec8a93dc5def46bbac9aeb5b84229, type: 3}
+  m_PrefabInstance: {fileID: 491927067}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &491927080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 491927069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf22d85e03ea794daf3d2fe00572706, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoldProgressUI
+  progressRoot: {fileID: 491927069}
+  progressImage: {fileID: 234304159}
 --- !u!4 &493588053 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7409134780951943707, guid: a26b9f5fa7cc27b44a80336d3b1ef849, type: 3}

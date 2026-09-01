@@ -16,6 +16,9 @@ public class DoorScript : MonoBehaviour, IInteractable
     [SerializeField] private string requiredKeyID = "";
     [SerializeField] private bool consumeKeyOnUse = true;
 
+    [Header("Hold Interaction")]
+    [SerializeField] private HoldInteraction holdInteraction;
+
     [Header("Audio")]
     public AudioSource asource;
     public AudioClip openDoor, closeDoor, lockedDoorSound, unlockDoorSound;
@@ -31,6 +34,7 @@ public class DoorScript : MonoBehaviour, IInteractable
     private Coroutine rotationCoroutine;
     private Coroutine shakeCoroutine;
     private NavMeshObstacle navObstacle;
+    private IKeyInventory cachedInventory;
 
     public bool IsLocked => isLocked;
 
@@ -48,8 +52,21 @@ public class DoorScript : MonoBehaviour, IInteractable
             doorMeshTransform = transform;
         }
 
+        if (holdInteraction != null)
+        {
+            holdInteraction.onHoldCompleted.AddListener(OnUnlockHoldCompleted);
+        }
+
         UpdatePromptMessage(null);
         UpdateNavObstacleState();
+    }
+
+    private void OnDestroy()
+    {
+        if (holdInteraction != null)
+        {
+            holdInteraction.onHoldCompleted.RemoveListener(OnUnlockHoldCompleted);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -72,7 +89,7 @@ public class DoorScript : MonoBehaviour, IInteractable
         {
             if (playerInventory != null && playerInventory.HasKey(requiredKeyID))
             {
-                promptMessage = "Unlock Door";
+                promptMessage = "Hold to Unlock Door";
             }
             else
             {
@@ -91,19 +108,51 @@ public class DoorScript : MonoBehaviour, IInteractable
 
     public void Interact(IKeyInventory playerInventory)
     {
+        cachedInventory = playerInventory;
+
         if (isLocked)
         {
             if (playerInventory != null && playerInventory.HasKey(requiredKeyID))
             {
-                Unlock(playerInventory);
+                if (holdInteraction != null)
+                {
+                    if (!holdInteraction.IsHolding)
+                    {
+                        holdInteraction.BeginHold();
+                    }
+                }
+                else
+                {
+                    Unlock(playerInventory);
+                    ToggleDoorState(playerInventory);
+                }
             }
             else
             {
                 OnAttemptOpenLocked();
-                return;
             }
+            return;
         }
 
+        ToggleDoorState(playerInventory);
+    }
+
+    public void CancelInteraction()
+    {
+        if (holdInteraction != null && holdInteraction.IsHolding)
+        {
+            holdInteraction.CancelHold();
+        }
+    }
+
+    private void OnUnlockHoldCompleted()
+    {
+        Unlock(cachedInventory);
+        ToggleDoorState(cachedInventory);
+    }
+
+    private void ToggleDoorState(IKeyInventory playerInventory)
+    {
         toggle = !toggle;
         UpdatePromptMessage(playerInventory);
 
@@ -166,6 +215,11 @@ public class DoorScript : MonoBehaviour, IInteractable
     public void ForceOpen()
     {
         if (open) return;
+
+        if (holdInteraction != null)
+        {
+            holdInteraction.ResetHold();
+        }
 
         isLocked = false;
         toggle = true;
