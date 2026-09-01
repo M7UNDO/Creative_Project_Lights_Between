@@ -161,6 +161,7 @@ public class InspectionManager : MonoBehaviour
     {
         if (currentThoughtIndex >= currentObject.InternalThoughts.Length)
         {
+            dialogueText.text = string.Empty;
             EndInspection();
             return;
         }

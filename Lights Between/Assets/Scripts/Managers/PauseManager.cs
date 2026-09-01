@@ -51,6 +51,8 @@ public class PauseScript : MonoBehaviour
     [SerializeField] private InputActionReference backInput;
     [SerializeField] private InputActionReference selectInput;
 
+    private InputHandler inputHandler;
+
     private void Start()
     {
         if (tabController == null)
@@ -67,6 +69,8 @@ public class PauseScript : MonoBehaviour
         {
             musicManager = FindFirstObjectByType<BackgroundMusicManager>();
         }
+
+        inputHandler = FindFirstObjectByType<InputHandler>();
 
         ForceResume();
     }
@@ -163,11 +167,11 @@ public class PauseScript : MonoBehaviour
         lastProcessedFrame = Time.frameCount;
         IsPaused = true;
         Time.timeScale = 0f;
-        VolumeBlurController.Instance.SetMenuBlurState(true);
-        /*if (musicManager != null && musicManager.levelScene)
+
+        if (VolumeBlurController.Instance != null)
         {
-            musicManager.PauseMusic();
-        }*/
+            VolumeBlurController.Instance.SetMenuBlurState(true);
+        }
 
         if (pauseCanvas != null) pauseCanvas.SetActive(true);
         if (pausePanel != null) pausePanel.SetActive(true);
@@ -177,6 +181,17 @@ public class PauseScript : MonoBehaviour
         SetPauseCanvasVisible(true);
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+
+        if (inputHandler == null)
+        {
+            inputHandler = FindFirstObjectByType<InputHandler>();
+        }
+
+        if (inputHandler != null)
+        {
+            inputHandler.cursorLocked = false;
+            inputHandler.ResetInputValues();
+        }
 
         SetSelected(pauseFirstSelected);
     }
@@ -190,11 +205,11 @@ public class PauseScript : MonoBehaviour
     {
         IsPaused = false;
         Time.timeScale = 1f;
-        VolumeBlurController.Instance.SetMenuBlurState(false);
-        /*if (musicManager != null && musicManager.levelScene)
+
+        if (VolumeBlurController.Instance != null)
         {
-            musicManager.UnpauseMusic();
-        }*/
+            VolumeBlurController.Instance.SetMenuBlurState(false);
+        }
 
         if (pausePanel != null) pausePanel.SetActive(false);
         if (settingsPanel != null) settingsPanel.SetActive(false);
@@ -204,6 +219,16 @@ public class PauseScript : MonoBehaviour
         SetPauseCanvasVisible(false);
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        if (inputHandler == null)
+        {
+            inputHandler = FindFirstObjectByType<InputHandler>();
+        }
+
+        if (inputHandler != null)
+        {
+            inputHandler.cursorLocked = true;
+        }
 
         if (EventSystem.current != null)
         {
@@ -239,14 +264,12 @@ public class PauseScript : MonoBehaviour
 
     public void RestartLevel()
     {
-        //SimpleTutorialPromptManager.ResetTutorialSession();
         ForceResume();
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public void LoadMainMenu()
     {
-        //SimpleTutorialPromptManager.ResetTutorialSession();
         ForceResume();
         SceneManager.LoadScene(mainMenuSceneName);
     }
