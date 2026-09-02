@@ -87,6 +87,7 @@ public class FPSController : MonoBehaviour
     public bool isInteracting;
     private IInteractable currentInteractable;
     private IKeyInventory _keyInventory;
+    private IInteractable _lastInteractable;
 
     [Header("Proximity & Occlusion Settings")]
     [SerializeField] private LayerMask occlusionLayer;
@@ -414,7 +415,6 @@ public class FPSController : MonoBehaviour
         isInteractable = false;
 
         Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
-        Debug.DrawRay(ray.origin, ray.direction * interactionRange, Color.red);
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))
         {
@@ -487,13 +487,21 @@ public class FPSController : MonoBehaviour
             }
         }
 
+        if (currentInteractable != _lastInteractable)
+        {
+            if (_lastInteractable is DoorScript lastDoor)
+            {
+                lastDoor.CancelInteract();
+            }
+        }
+
+        _lastInteractable = currentInteractable;
+
         Vector3 origin = _mainCamera.transform.position;
 
         foreach (var ui in WorldSpaceInteractableUI.AllInteractableUIs)
         {
             if (ui == null) continue;
-
-            // Direct raycast target already managed above
             if (ui == targetedWorldUI) continue;
 
             float distance = Vector3.Distance(transform.position, ui.transform.position);
@@ -528,19 +536,30 @@ public class FPSController : MonoBehaviour
         {
             if (_input.interact)
             {
-
                 if (currentInteractable is DoorScript door)
                 {
                     door.Interact(_keyInventory);
+
+                    if (!door.IsUnlocking)
+                    {
+                        _input.interact = false;
+                    }
                 }
                 else
                 {
                     currentInteractable.Interact();
-                }
 
-                if (currentInteractable is not GeneratorPowerSystem)
+                    if (currentInteractable is not GeneratorPowerSystem)
+                    {
+                        _input.interact = false;
+                    }
+                }
+            }
+            else
+            {
+                if (currentInteractable is DoorScript door)
                 {
-                    _input.interact = false;
+                    door.CancelInteract();
                 }
             }
         }

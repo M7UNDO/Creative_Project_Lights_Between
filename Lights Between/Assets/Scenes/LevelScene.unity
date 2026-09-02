@@ -10131,7 +10131,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &670471102
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20317,6 +20317,22 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4308170994332864, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5999999
@@ -23860,6 +23876,22 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4308170994332864, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5999999
@@ -23993,6 +24025,22 @@ PrefabInstance:
     - target: {fileID: 1827861296418864, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
       propertyPath: m_Layer
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4308170994332864, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
       propertyPath: m_LocalScale.x
@@ -24204,13 +24252,12 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: Basement_Key
   consumeKeyOnUse: 1
-  holdInteraction: {fileID: 1335896251}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
-  doorMeshTransform: {fileID: 0}
+  doorMeshTransform: {fileID: 1335896241}
   shakeDuration: 0.2
   shakeMagnitude: 0.5
   toggle: 0
@@ -25114,6 +25161,22 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4308170994332864, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5999999
@@ -25321,7 +25384,6 @@ MonoBehaviour:
   isLocked: 0
   requiredKeyID: 
   consumeKeyOnUse: 1
-  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -26500,7 +26562,6 @@ MonoBehaviour:
   isLocked: 0
   requiredKeyID: 
   consumeKeyOnUse: 1
-  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -28048,7 +28109,6 @@ MonoBehaviour:
   isLocked: 0
   requiredKeyID: 
   consumeKeyOnUse: 1
-  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -33180,7 +33240,6 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: 
   consumeKeyOnUse: 1
-  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -34426,6 +34485,26 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4308170994332864, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5999999
@@ -34633,7 +34712,6 @@ MonoBehaviour:
   isLocked: 0
   requiredKeyID: 
   consumeKeyOnUse: 1
-  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -35908,6 +35986,22 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4308170994332864, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5999999
@@ -36115,7 +36209,6 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: Nope
   consumeKeyOnUse: 1
-  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -36564,6 +36657,22 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4222329071303694, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4308170994332864, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.5999999
@@ -36771,7 +36880,6 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: Garage_Key
   consumeKeyOnUse: 1
-  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}

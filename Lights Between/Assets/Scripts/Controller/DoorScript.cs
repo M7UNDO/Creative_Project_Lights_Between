@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(AudioSource))]
 public class DoorScript : MonoBehaviour, IInteractable
@@ -8,7 +9,7 @@ public class DoorScript : MonoBehaviour, IInteractable
     [Header("Door Movement")]
     public bool open;
     public float smooth = 0.5f;
-    public float DoorOpenAngle = -90.0f;
+    public float DoorOpenAngle = 90.0f;
     public float DoorCloseAngle = 0.0f;
 
     [Header("Lock Settings")]
@@ -16,15 +17,13 @@ public class DoorScript : MonoBehaviour, IInteractable
     [SerializeField] private string requiredKeyID = "";
     [SerializeField] private bool consumeKeyOnUse = true;
 
-    [Header("Hold Interaction")]
-    [SerializeField] private HoldInteraction holdInteraction;
-
     [Header("Audio")]
     public AudioSource asource;
     public AudioClip openDoor, closeDoor, lockedDoorSound, unlockDoorSound;
 
     [Header("Juice / Visual Feedback")]
     [SerializeField] private Transform doorMeshTransform;
+    [SerializeField] private Transform handleTransform;
     [SerializeField] private float shakeDuration = 0.2f;
     [SerializeField] private float shakeMagnitude = 2.0f;
 
@@ -34,14 +33,18 @@ public class DoorScript : MonoBehaviour, IInteractable
     private Coroutine rotationCoroutine;
     private Coroutine shakeCoroutine;
     private NavMeshObstacle navObstacle;
-    private IKeyInventory cachedInventory;
+
+    private HoldInteraction holdInteraction;
+    private IKeyInventory currentInventoryHolding;
 
     public bool IsLocked => isLocked;
+    public bool IsUnlocking => holdInteraction != null && holdInteraction.IsHolding;
 
     private void Start()
     {
         asource = GetComponent<AudioSource>();
         navObstacle = GetComponent<NavMeshObstacle>();
+
         if (navObstacle == null)
         {
             navObstacle = GetComponentInChildren<NavMeshObstacle>();
@@ -52,21 +55,14 @@ public class DoorScript : MonoBehaviour, IInteractable
             doorMeshTransform = transform;
         }
 
+        holdInteraction = GetComponent<HoldInteraction>();
         if (holdInteraction != null)
         {
-            holdInteraction.onHoldCompleted.AddListener(OnUnlockHoldCompleted);
+            holdInteraction.onHoldCompleted.AddListener(OnHoldUnlockComplete);
         }
 
         UpdatePromptMessage(null);
         UpdateNavObstacleState();
-    }
-
-    private void OnDestroy()
-    {
-        if (holdInteraction != null)
-        {
-            holdInteraction.onHoldCompleted.RemoveListener(OnUnlockHoldCompleted);
-        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -108,23 +104,18 @@ public class DoorScript : MonoBehaviour, IInteractable
 
     public void Interact(IKeyInventory playerInventory)
     {
-        cachedInventory = playerInventory;
-
         if (isLocked)
         {
             if (playerInventory != null && playerInventory.HasKey(requiredKeyID))
             {
                 if (holdInteraction != null)
                 {
-                    if (!holdInteraction.IsHolding)
-                    {
-                        holdInteraction.BeginHold();
-                    }
+                    currentInventoryHolding = playerInventory;
+                    holdInteraction.BeginHold();
                 }
                 else
                 {
                     Unlock(playerInventory);
-                    ToggleDoorState(playerInventory);
                 }
             }
             else
@@ -134,25 +125,6 @@ public class DoorScript : MonoBehaviour, IInteractable
             return;
         }
 
-        ToggleDoorState(playerInventory);
-    }
-
-    public void CancelInteraction()
-    {
-        if (holdInteraction != null && holdInteraction.IsHolding)
-        {
-            holdInteraction.CancelHold();
-        }
-    }
-
-    private void OnUnlockHoldCompleted()
-    {
-        Unlock(cachedInventory);
-        ToggleDoorState(cachedInventory);
-    }
-
-    private void ToggleDoorState(IKeyInventory playerInventory)
-    {
         toggle = !toggle;
         UpdatePromptMessage(playerInventory);
 
@@ -167,6 +139,20 @@ public class DoorScript : MonoBehaviour, IInteractable
         rotationCoroutine = StartCoroutine(AnimateRotation(targetAngle));
     }
 
+    public void CancelInteract()
+    {
+        if (holdInteraction != null && holdInteraction.IsHolding)
+        {
+            holdInteraction.CancelHold();
+            currentInventoryHolding = null;
+        }
+    }
+
+    private void OnHoldUnlockComplete()
+    {
+        Unlock(currentInventoryHolding);
+    }
+
     private void Unlock(IKeyInventory playerInventory)
     {
         if (consumeKeyOnUse && playerInventory != null)
@@ -175,6 +161,9 @@ public class DoorScript : MonoBehaviour, IInteractable
         }
 
         isLocked = false;
+        currentInventoryHolding = null;
+
+        UpdatePromptMessage(null);
 
         if (asource != null && unlockDoorSound != null)
         {
@@ -198,28 +187,23 @@ public class DoorScript : MonoBehaviour, IInteractable
 
     private IEnumerator ShakeDoorHandle()
     {
-        Quaternion originalRotation = doorMeshTransform.localRotation;
+        Quaternion originalRotation = handleTransform.localRotation;
         float elapsed = 0.0f;
 
         while (elapsed < shakeDuration)
         {
             float zOffset = Random.Range(-1f, 1f) * shakeMagnitude;
-            doorMeshTransform.localRotation = originalRotation * Quaternion.Euler(0, 0, zOffset);
+            handleTransform.localRotation = originalRotation * Quaternion.Euler(0, 0, zOffset);
             elapsed += Time.deltaTime;
             yield return null;
         }
 
-        doorMeshTransform.localRotation = originalRotation;
+        handleTransform.localRotation = originalRotation;
     }
 
     public void ForceOpen()
     {
         if (open) return;
-
-        if (holdInteraction != null)
-        {
-            holdInteraction.ResetHold();
-        }
 
         isLocked = false;
         toggle = true;

@@ -14,14 +14,23 @@ public class HoldProgressUI : MonoBehaviour
 
     public void Show()
     {
-        if (progressRoot != null)
-            progressRoot.SetActive(true);
+        /*if (progressRoot != null)
+            progressRoot.SetActive(true);*/
+        if (progressImage != null)
+        {
+            progressImage.gameObject.SetActive(true);
+        }
     }
 
     public void Hide()
     {
-        if (progressRoot != null)
-            progressRoot.SetActive(false);
+        /*if (progressRoot != null)
+            progressRoot.SetActive(false);*/
+
+        if(progressImage != null)
+        {
+            progressImage.gameObject.SetActive(false);
+        }
 
         SetProgress(0f);
     }
