@@ -10881,6 +10881,11 @@ Transform:
   - {fileID: 632311668}
   m_Father: {fileID: 1542091760}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &716164995 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 623762653450191944, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+  m_PrefabInstance: {fileID: 1402646178}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &716735896
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -18885,6 +18890,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a88f773caeec3cb49b184b2fb777765a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ToolSlot
+--- !u!4 &1118288699 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 623762653450191944, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+  m_PrefabInstance: {fileID: 1440908068}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1119945355
 GameObject:
   m_ObjectHideFlags: 0
@@ -22369,6 +22379,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.64204603, y: 0.16053414, z: 0.039877117}
   m_Center: {x: -0.24619065, y: -0.0115196975, z: -0.06}
+--- !u!4 &1263869799 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 623762653450191944, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+  m_PrefabInstance: {fileID: 2122415248}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1265072453
 GameObject:
   m_ObjectHideFlags: 0
@@ -24263,10 +24278,10 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 1335896241}
-  handleTransform: {fileID: 0}
+  handleTransform: {fileID: 2000618091}
   shakeDuration: 0.2
-  shakeMagnitude: 0.5
-  handleRotateOffset: {x: 0, y: 0, z: -45}
+  shakeMagnitude: 1
+  handleRotateOffset: {x: 0, y: 0, z: -30}
   handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &1335896245
@@ -25398,10 +25413,10 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
-  handleTransform: {fileID: 0}
+  handleTransform: {fileID: 716164995}
   shakeDuration: 0.2
-  shakeMagnitude: 2
-  handleRotateOffset: {x: 0, y: 0, z: -45}
+  shakeMagnitude: 1
+  handleRotateOffset: {x: 0, y: 0, z: -30}
   handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &1402646184
@@ -26579,10 +26594,10 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
-  handleTransform: {fileID: 0}
+  handleTransform: {fileID: 1118288699}
   shakeDuration: 0.2
-  shakeMagnitude: 2
-  handleRotateOffset: {x: 0, y: 0, z: -45}
+  shakeMagnitude: 1
+  handleRotateOffset: {x: 0, y: 0, z: -30}
   handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &1440908074
@@ -28131,7 +28146,7 @@ MonoBehaviour:
   doorMeshTransform: {fileID: 0}
   handleTransform: {fileID: 390021134}
   shakeDuration: 0.2
-  shakeMagnitude: 2
+  shakeMagnitude: 1
   handleRotateOffset: {x: 0, y: 0, z: -30}
   handleAnimationTime: 0.15
   toggle: 0
@@ -33085,6 +33100,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1032809543}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1919757430 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 623762653450191944, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+  m_PrefabInstance: {fileID: 2021716034}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1921509107 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2820009953851812387, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
@@ -33270,8 +33290,8 @@ MonoBehaviour:
   doorMeshTransform: {fileID: 0}
   handleTransform: {fileID: 1663186842}
   shakeDuration: 0.2
-  shakeMagnitude: 2
-  handleRotateOffset: {x: 0, y: 0, z: -45}
+  shakeMagnitude: 1
+  handleRotateOffset: {x: 0, y: 0, z: -30}
   handleAnimationTime: 0.15
   toggle: 0
 --- !u!82 &1953506322
@@ -34046,6 +34066,11 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4791715119117929106, guid: b592142e8fac74849a62e16c05925066, type: 3}
+--- !u!4 &2000618091 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 623762653450191944, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+  m_PrefabInstance: {fileID: 1335896239}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2002116520 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6209183500758386056, guid: 3e8527859b819264daa3997f31be4c17, type: 3}
@@ -34743,10 +34768,10 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
-  handleTransform: {fileID: 0}
+  handleTransform: {fileID: 1919757430}
   shakeDuration: 0.2
-  shakeMagnitude: 2
-  handleRotateOffset: {x: 0, y: 0, z: -45}
+  shakeMagnitude: 1
+  handleRotateOffset: {x: 0, y: 0, z: -30}
   handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &2021716040
@@ -36243,10 +36268,10 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
-  handleTransform: {fileID: 0}
+  handleTransform: {fileID: 1118288699}
   shakeDuration: 0.2
-  shakeMagnitude: 0.5
-  handleRotateOffset: {x: 0, y: 0, z: -45}
+  shakeMagnitude: 1
+  handleRotateOffset: {x: 0, y: 0, z: -30}
   handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &2099872448
@@ -36917,10 +36942,10 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
-  handleTransform: {fileID: 0}
+  handleTransform: {fileID: 1263869799}
   shakeDuration: 0.2
-  shakeMagnitude: 0.5
-  handleRotateOffset: {x: 0, y: 0, z: -45}
+  shakeMagnitude: 1
+  handleRotateOffset: {x: 0, y: 0, z: -30}
   handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &2122415254
