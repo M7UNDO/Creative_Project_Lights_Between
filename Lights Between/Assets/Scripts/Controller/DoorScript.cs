@@ -26,12 +26,15 @@ public class DoorScript : MonoBehaviour, IInteractable
     [SerializeField] private Transform handleTransform;
     [SerializeField] private float shakeDuration = 0.2f;
     [SerializeField] private float shakeMagnitude = 2.0f;
+    [SerializeField] private Vector3 handleRotateOffset = new Vector3(0f, 0f, -45f);
+    [SerializeField] private float handleAnimationTime = 0.15f;
 
     public string promptMessage { get; private set; }
 
     public bool toggle;
     private Coroutine rotationCoroutine;
     private Coroutine shakeCoroutine;
+    private Coroutine handleCoroutine;
     private NavMeshObstacle navObstacle;
 
     private HoldInteraction holdInteraction;
@@ -125,6 +128,8 @@ public class DoorScript : MonoBehaviour, IInteractable
             return;
         }
 
+        TriggerHandleAnimation();
+
         toggle = !toggle;
         UpdatePromptMessage(playerInventory);
 
@@ -165,6 +170,8 @@ public class DoorScript : MonoBehaviour, IInteractable
 
         UpdatePromptMessage(null);
 
+        TriggerHandleAnimation();
+
         if (asource != null && unlockDoorSound != null)
         {
             asource.PlayOneShot(unlockDoorSound);
@@ -187,6 +194,8 @@ public class DoorScript : MonoBehaviour, IInteractable
 
     private IEnumerator ShakeDoorHandle()
     {
+        if (handleTransform == null) yield break;
+
         Quaternion originalRotation = handleTransform.localRotation;
         float elapsed = 0.0f;
 
@@ -194,6 +203,45 @@ public class DoorScript : MonoBehaviour, IInteractable
         {
             float zOffset = Random.Range(-1f, 1f) * shakeMagnitude;
             handleTransform.localRotation = originalRotation * Quaternion.Euler(0, 0, zOffset);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        handleTransform.localRotation = originalRotation;
+    }
+
+    private void TriggerHandleAnimation()
+    {
+        if (handleTransform == null) return;
+
+        if (handleCoroutine != null)
+        {
+            StopCoroutine(handleCoroutine);
+        }
+        handleCoroutine = StartCoroutine(AnimateHandleDown());
+    }
+
+    private IEnumerator AnimateHandleDown()
+    {
+        Quaternion originalRotation = handleTransform.localRotation;
+        Quaternion targetRotation = originalRotation * Quaternion.Euler(handleRotateOffset);
+        float elapsed = 0.0f;
+
+        while (elapsed < handleAnimationTime)
+        {
+            float t = elapsed / handleAnimationTime;
+            handleTransform.localRotation = Quaternion.Slerp(originalRotation, targetRotation, t);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        handleTransform.localRotation = targetRotation;
+
+        elapsed = 0.0f;
+        while (elapsed < handleAnimationTime)
+        {
+            float t = elapsed / handleAnimationTime;
+            handleTransform.localRotation = Quaternion.Slerp(targetRotation, originalRotation, t);
             elapsed += Time.deltaTime;
             yield return null;
         }

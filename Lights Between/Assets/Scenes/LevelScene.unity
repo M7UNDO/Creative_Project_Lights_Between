@@ -5573,6 +5573,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cfc7596704bbd7f489156fcd4c05c7e9, type: 3}
+--- !u!4 &390021134 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 623762653450191944, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+  m_PrefabInstance: {fileID: 1145406045}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &392815582 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4353351978565450685, guid: e7f00dc1274aeee4eafcd49822ad5cd9, type: 3}
@@ -24258,8 +24263,11 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 1335896241}
+  handleTransform: {fileID: 0}
   shakeDuration: 0.2
   shakeMagnitude: 0.5
+  handleRotateOffset: {x: 0, y: 0, z: -45}
+  handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &1335896245
 BoxCollider:
@@ -25390,8 +25398,11 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
+  handleTransform: {fileID: 0}
   shakeDuration: 0.2
   shakeMagnitude: 2
+  handleRotateOffset: {x: 0, y: 0, z: -45}
+  handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &1402646184
 BoxCollider:
@@ -26568,8 +26579,11 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
+  handleTransform: {fileID: 0}
   shakeDuration: 0.2
   shakeMagnitude: 2
+  handleRotateOffset: {x: 0, y: 0, z: -45}
+  handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &1440908074
 BoxCollider:
@@ -28115,8 +28129,11 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
+  handleTransform: {fileID: 390021134}
   shakeDuration: 0.2
   shakeMagnitude: 2
+  handleRotateOffset: {x: 0, y: 0, z: -30}
+  handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &1555707254
 BoxCollider:
@@ -29984,6 +30001,11 @@ MeshCollider:
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8585370680004597919, guid: 9309a3e1cd32ff246b256c0825b244c6, type: 3}
   m_PrefabInstance: {fileID: 889028798}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1663186842 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 623762653450191944, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+  m_PrefabInstance: {fileID: 1322534164}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1663672036 stripped
 Transform:
@@ -33246,8 +33268,11 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
+  handleTransform: {fileID: 1663186842}
   shakeDuration: 0.2
   shakeMagnitude: 2
+  handleRotateOffset: {x: 0, y: 0, z: -45}
+  handleAnimationTime: 0.15
   toggle: 0
 --- !u!82 &1953506322
 AudioSource:
@@ -34718,8 +34743,11 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
+  handleTransform: {fileID: 0}
   shakeDuration: 0.2
   shakeMagnitude: 2
+  handleRotateOffset: {x: 0, y: 0, z: -45}
+  handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &2021716040
 BoxCollider:
@@ -36215,8 +36243,11 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
+  handleTransform: {fileID: 0}
   shakeDuration: 0.2
   shakeMagnitude: 0.5
+  handleRotateOffset: {x: 0, y: 0, z: -45}
+  handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &2099872448
 BoxCollider:
@@ -36886,8 +36917,11 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
+  handleTransform: {fileID: 0}
   shakeDuration: 0.2
   shakeMagnitude: 0.5
+  handleRotateOffset: {x: 0, y: 0, z: -45}
+  handleAnimationTime: 0.15
   toggle: 0
 --- !u!65 &2122415254
 BoxCollider:
