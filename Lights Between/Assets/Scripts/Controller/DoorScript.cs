@@ -89,7 +89,7 @@ public class DoorScript : MonoBehaviour, IInteractable
         {
             if (playerInventory != null && playerInventory.HasKey(requiredKeyID))
             {
-                promptMessage = "Hold to Unlock Door";
+                promptMessage = "Unlock Door";
             }
             else
             {

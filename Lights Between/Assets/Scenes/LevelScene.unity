@@ -10114,6 +10114,81 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightZone
   isActive: 1
+--- !u!1 &670471101
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 670471102}
+  - component: {fileID: 670471104}
+  - component: {fileID: 670471103}
+  m_Layer: 5
+  m_Name: RadialFill
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &670471102
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670471101}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1549229543}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 4, y: 4}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &670471103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670471101}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.88235295, b: 0.39215687, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: ce2f7ab8fea12eb4497f5f940634f0bb, type: 3}
+  m_Type: 3
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 2
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &670471104
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670471101}
+  m_CullTransparentMesh: 1
 --- !u!1001 &675650199
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23994,6 +24069,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1163890191618404, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1335896248}
+    - targetCorrespondingSourceObject: {fileID: 1163890191618404, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1335896251}
   m_SourcePrefab: {fileID: 100100000, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
 --- !u!4 &1335896240 stripped
 Transform:
@@ -24126,6 +24204,7 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: Basement_Key
   consumeKeyOnUse: 1
+  holdInteraction: {fileID: 1335896251}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -24172,6 +24251,31 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: -0.44900003, y: 0.975, z: -0.011000001}
   m_TimeToStationary: 0.5
+--- !u!114 &1335896251
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1335896242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9897ffac3ed8fca478fece59856328eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoldInteraction
+  holdDuration: 2.5
+  resetProgressWhenReleased: 1
+  canRepeat: 1
+  holdProgressUI: {fileID: 1549229547}
+  onHoldStarted:
+    m_PersistentCalls:
+      m_Calls: []
+  onHoldCancelled:
+    m_PersistentCalls:
+      m_Calls: []
+  onHoldCompleted:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &1345601931 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3182663180005998003, guid: 9309a3e1cd32ff246b256c0825b244c6, type: 3}
@@ -25217,6 +25321,7 @@ MonoBehaviour:
   isLocked: 0
   requiredKeyID: 
   consumeKeyOnUse: 1
+  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -26395,6 +26500,7 @@ MonoBehaviour:
   isLocked: 0
   requiredKeyID: 
   consumeKeyOnUse: 1
+  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -27792,6 +27898,30 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3398e502685166f42acf820029953f42, type: 3}
+--- !u!1 &1549229542 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2820009953851812387, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
+  m_PrefabInstance: {fileID: 1653264085}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &1549229543 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2319785106332938558, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
+  m_PrefabInstance: {fileID: 1653264085}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1549229547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1549229542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbf22d85e03ea794daf3d2fe00572706, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HoldProgressUI
+  progressRoot: {fileID: 1549229542}
+  progressImage: {fileID: 670471103}
 --- !u!1 &1555707250 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1163890191618404, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
@@ -27918,6 +28048,7 @@ MonoBehaviour:
   isLocked: 0
   requiredKeyID: 
   consumeKeyOnUse: 1
+  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -29558,10 +29689,20 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9213652915475597510, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 711e523ccdd828d449ac0b57e1fd9683, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2319785106332938558, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 670471102}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2820009953851812387, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1549229547}
   m_SourcePrefab: {fileID: 100100000, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
 --- !u!4 &1653264086 stripped
 Transform:
@@ -33039,6 +33180,7 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: 
   consumeKeyOnUse: 1
+  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -34491,6 +34633,7 @@ MonoBehaviour:
   isLocked: 0
   requiredKeyID: 
   consumeKeyOnUse: 1
+  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -35972,6 +36115,7 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: Nope
   consumeKeyOnUse: 1
+  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
@@ -36627,6 +36771,7 @@ MonoBehaviour:
   isLocked: 1
   requiredKeyID: Garage_Key
   consumeKeyOnUse: 1
+  holdInteraction: {fileID: 0}
   asource: {fileID: 0}
   openDoor: {fileID: 8300000, guid: a4c6eefcd4ed8fe43a5e319b21190b2c, type: 3}
   closeDoor: {fileID: 8300000, guid: bf269f38dde70ed4a8d5a2602b9881ff, type: 3}
