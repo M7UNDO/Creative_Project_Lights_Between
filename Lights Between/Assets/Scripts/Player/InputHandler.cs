@@ -12,6 +12,7 @@ public class InputHandler : MonoBehaviour
     public bool interact;
     public bool wheel;
     public bool toggleFlashlight;
+    public bool changeBattery;
     public bool placementModeOn;
     public bool placementModeOff;
     public bool placeObject;
@@ -58,6 +59,9 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Player.Flashlight.performed += ctx => ToggleFlashlightInput(true);
         playerControls.Player.Flashlight.canceled += ctx => ToggleFlashlightInput(false);
+
+        playerControls.Player.ChangeBattery.performed += ctx => ChangeBatteryInput(true);
+        playerControls.Player.ChangeBattery.canceled += ctx => ChangeBatteryInput(false);
 
         playerControls.Player.PlaceObject.performed += ctx => PlaceObjectInput(true);
         playerControls.Player.PlaceObject.canceled += ctx => PlaceObjectInput(false);
@@ -107,6 +111,10 @@ public class InputHandler : MonoBehaviour
     {
         toggleFlashlight = newFlashlightState;
     }
+    public void ChangeBatteryInput(bool newBatteryState)
+    {
+        changeBattery = newBatteryState;
+    }
 
     public void PlacementModeOnInput(bool newPlacementState)
     {
@@ -148,6 +156,7 @@ public class InputHandler : MonoBehaviour
         interact = false;
         wheel = false;
         toggleFlashlight = false;
+        changeBattery = false;
         placementModeOn = false;
         placementModeOff = false;
         placeObject = false;

@@ -183,6 +183,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""ChangeBattery"",
+                    ""type"": ""Button"",
+                    ""id"": ""82e8caae-9f83-4189-97c3-a6a2d064607c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Wheel"",
                     ""type"": ""Button"",
                     ""id"": ""36fc938b-f218-4548-b545-c3ecdbfe1653"",
@@ -543,6 +552,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Flashlight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0ab09d16-7690-4f4c-8dee-10126b7bb938"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardMouse"",
+                    ""action"": ""ChangeBattery"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4f7937d1-74b6-405e-81ac-dde178ef3578"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""ChangeBattery"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1354,6 +1385,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Cancel = m_Player.FindAction("Cancel", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
         m_Player_Flashlight = m_Player.FindAction("Flashlight", throwIfNotFound: true);
+        m_Player_ChangeBattery = m_Player.FindAction("ChangeBattery", throwIfNotFound: true);
         m_Player_Wheel = m_Player.FindAction("Wheel", throwIfNotFound: true);
         m_Player_PlaceObject = m_Player.FindAction("PlaceObject", throwIfNotFound: true);
         m_Player_Start = m_Player.FindAction("Start", throwIfNotFound: true);
@@ -1466,6 +1498,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Cancel;
     private readonly InputAction m_Player_Pause;
     private readonly InputAction m_Player_Flashlight;
+    private readonly InputAction m_Player_ChangeBattery;
     private readonly InputAction m_Player_Wheel;
     private readonly InputAction m_Player_PlaceObject;
     private readonly InputAction m_Player_Start;
@@ -1523,6 +1556,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Flashlight".
         /// </summary>
         public InputAction @Flashlight => m_Wrapper.m_Player_Flashlight;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ChangeBattery".
+        /// </summary>
+        public InputAction @ChangeBattery => m_Wrapper.m_Player_ChangeBattery;
         /// <summary>
         /// Provides access to the underlying input action "Player/Wheel".
         /// </summary>
@@ -1603,6 +1640,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Flashlight.started += instance.OnFlashlight;
             @Flashlight.performed += instance.OnFlashlight;
             @Flashlight.canceled += instance.OnFlashlight;
+            @ChangeBattery.started += instance.OnChangeBattery;
+            @ChangeBattery.performed += instance.OnChangeBattery;
+            @ChangeBattery.canceled += instance.OnChangeBattery;
             @Wheel.started += instance.OnWheel;
             @Wheel.performed += instance.OnWheel;
             @Wheel.canceled += instance.OnWheel;
@@ -1662,6 +1702,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Flashlight.started -= instance.OnFlashlight;
             @Flashlight.performed -= instance.OnFlashlight;
             @Flashlight.canceled -= instance.OnFlashlight;
+            @ChangeBattery.started -= instance.OnChangeBattery;
+            @ChangeBattery.performed -= instance.OnChangeBattery;
+            @ChangeBattery.canceled -= instance.OnChangeBattery;
             @Wheel.started -= instance.OnWheel;
             @Wheel.performed -= instance.OnWheel;
             @Wheel.canceled -= instance.OnWheel;
@@ -2070,6 +2113,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnFlashlight(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ChangeBattery" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnChangeBattery(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Wheel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

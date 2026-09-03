@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,7 +7,6 @@ public class ToolEquipmentManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private Transform toolHoldPoint;
     [SerializeField] private ObjectPlacer objectPlacer;
-    [SerializeField] private ToolUIManager toolUIManager;
 
     [Header("Current Tool")]
     [SerializeField] private ToolClass currentTool;
@@ -31,10 +31,6 @@ public class ToolEquipmentManager : MonoBehaviour
         {
             objectPlacer = GetComponent<ObjectPlacer>();
         }
-        if (toolUIManager == null)
-        {
-            toolUIManager = FindFirstObjectByType<ToolUIManager>();
-        }
 
         if (toolHoldPoint != null)
         {
@@ -57,8 +53,6 @@ public class ToolEquipmentManager : MonoBehaviour
             ToggleCurrentTool();
             input.toggleFlashlight = false;
         }
-
-        UpdateActiveToolUI();
     }
 
     public void EquipTool(ToolClass tool)
@@ -98,6 +92,10 @@ public class ToolEquipmentManager : MonoBehaviour
             currentToolInstance.SetActive(true);
 
             currentFlashlight = currentToolInstance.GetComponentInChildren<FlashlightScript>();
+            if (currentFlashlight != null)
+            {
+                currentFlashlight.SetEquippedState(true);
+            }
         }
         else
         {
@@ -118,6 +116,7 @@ public class ToolEquipmentManager : MonoBehaviour
             if (currentFlashlight != null)
             {
                 currentFlashlight.Initialise(tool);
+                currentFlashlight.SetEquippedState(true);
             }
         }
     }
@@ -127,6 +126,11 @@ public class ToolEquipmentManager : MonoBehaviour
         if (objectPlacer != null)
         {
             objectPlacer.ExitPlacementMode();
+        }
+
+        if (currentFlashlight != null)
+        {
+            currentFlashlight.SetEquippedState(false);
         }
 
         if (currentToolInstance != null)
@@ -143,11 +147,6 @@ public class ToolEquipmentManager : MonoBehaviour
         currentToolInstance = null;
         currentTool = null;
         currentFlashlight = null;
-
-        if (toolUIManager != null)
-        {
-            toolUIManager.UpdateToolUI(null, null, 0);
-        }
     }
 
     private void ToggleCurrentTool()
@@ -160,12 +159,5 @@ public class ToolEquipmentManager : MonoBehaviour
     public bool IsEquipped(ToolClass tool)
     {
         return currentTool == tool;
-    }
-
-    private void UpdateActiveToolUI()
-    {
-        if (toolUIManager == null || currentTool == null) return;
-
-        toolUIManager.UpdateToolUI(currentTool, currentToolInstance, 1);
     }
 }

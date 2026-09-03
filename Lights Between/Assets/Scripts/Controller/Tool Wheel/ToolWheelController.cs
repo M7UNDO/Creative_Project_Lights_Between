@@ -10,7 +10,6 @@ public class ToolWheelController : MonoBehaviour
     [SerializeField] private GameObject hud;
     [SerializeField] private PlayerToolInventory inventory;
     [SerializeField] private ToolEquipmentManager equipmentManager;
-    [SerializeField] private ToolUIManager toolUIManager;
     [SerializeField] private GameObject radialWheelUI;
     [SerializeField] private ToolSlot[] slots;
     [SerializeField] private TextMeshProUGUI centerItemNameText;
@@ -42,7 +41,6 @@ public class ToolWheelController : MonoBehaviour
         if (fpsController == null) fpsController = GetComponent<FPSController>();
         if (inventory == null) inventory = GetComponent<PlayerToolInventory>();
         if (equipmentManager == null) equipmentManager = GetComponent<ToolEquipmentManager>();
-        if (toolUIManager == null) toolUIManager = GetComponent<ToolUIManager>();
 
         if (radialWheelUI != null)
         {

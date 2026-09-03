@@ -14,6 +14,9 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     [SerializeField] private Texture lightCookie;
     [SerializeField] private Renderer glassRenderer;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource batteryChangeSFX;
+
     [Header("Lag & Tracking")]
     [SerializeField] private float positionLagSpeed = 12f;
     [SerializeField] private float rotationLagSpeed = 8f;
@@ -50,14 +53,22 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     [SerializeField] private string playStationTogglePrompt = "Press <sprite name=\"R1\"> to toggle On/Off";
 
     private ToolClass toolData;
-    private float currentPower;
     private float maxPower;
+
+    private int batteryCount = 1;
+    private const int MaxBatteries = 3;
+    private float currentBatteryPower;
+    private float singleBatteryMaxPower;
+
+    private bool requiresBatteryChange;
 
     private Transform flashlightAnchor;
     private Light torchLight;
     private GameObject spawnedLightObject;
     private GameObject spawnedPlayerLightZone;
     public GameObject torchLightZone;
+
+    private FlashlightUIScript flashlightUI;
 
     private bool isOn;
     private bool isEquipped;
@@ -78,16 +89,32 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     private TMP_Text activePromptText;
     private CanvasGroup activePromptCanvasGroup;
 
-    public float CurrentPower => currentPower;
+    public float CurrentPower => (batteryCount > 0 ? currentBatteryPower : 0f) + (Mathf.Max(0, batteryCount - 1) * singleBatteryMaxPower);
     public float MaxPower => maxPower;
     public bool UsesPower => toolData != null && toolData.usesPower;
+
+    private void Awake()
+    {
+        FindFlashlightUI();
+    }
+
+    private void FindFlashlightUI()
+    {
+        if (flashlightUI == null)
+        {
+            flashlightUI = FindFirstObjectByType<FlashlightUIScript>(FindObjectsInactive.Include);
+        }
+    }
 
     public void Initialise(ToolClass tool)
     {
         toolData = tool;
 
         maxPower = tool.maxPower;
-        currentPower = maxPower;
+        singleBatteryMaxPower = maxPower / (float)MaxBatteries;
+        currentBatteryPower = singleBatteryMaxPower;
+        batteryCount = 1;
+        requiresBatteryChange = false;
 
         isEquipped = true;
         isOn = true;
@@ -101,13 +128,10 @@ public class FlashlightScript : MonoBehaviour, IToolPower
             emissionStart = glassRenderer.material.GetColor("_EmissionColor");
         }
 
+        FindFlashlightUI();
         TurnOnLightState();
-
-        if (!hasShownTorchPromptOnce)
-        {
-            hasShownTorchPromptOnce = true;
-            //ShowFirstTimePrompt();
-        }
+        SetBatteryUIVisible(true);
+        UpdateBatteryUI();
     }
 
     private void SetupFlashlightAnchor()
@@ -160,101 +184,92 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         spawnedPlayerLightZone.transform.localPosition = new Vector3(0f, 1f, 0f);
         spawnedPlayerLightZone.transform.localRotation = Quaternion.identity;
     }
-    /*
-    private void ShowFirstTimePrompt()
+
+    public void SetEquippedState(bool equipped)
     {
-        SimpleTutorialPromptManager promptManager = FindFirstObjectByType<SimpleTutorialPromptManager>();
-        if (promptManager != null)
+        isEquipped = equipped;
+        SetBatteryUIVisible(equipped);
+
+        if (!equipped)
         {
-            activePromptText = promptManager.tutorialText;
-            activePromptCanvasGroup = promptManager.tutorialCanvasGroup;
+            TurnOffLightState();
         }
-
-        if (InputDeviceDetector.Instance != null)
+        else if (isOn && currentBatteryPower > 0f && !requiresBatteryChange)
         {
-            currentDevice = InputDeviceDetector.Instance.CurrentDevice;
-            InputDeviceDetector.Instance.OnDeviceChanged += HandleDeviceChanged;
+            TurnOnLightState();
         }
+    }
 
-        if (promptCoroutine != null)
-        {
-            StopCoroutine(promptCoroutine);
-        }
-
-        promptCoroutine = StartCoroutine(DisplayPromptRoutine());
-    }*/
-
-    private IEnumerator DisplayPromptRoutine()
+    private void SetBatteryUIVisible(bool visible)
     {
-        if (activePromptText != null && activePromptCanvasGroup != null)
+        FindFlashlightUI();
+
+        if (flashlightUI != null)
         {
-            activePromptText.text = GetDevicePromptString();
+            flashlightUI.SetUIVisibility(visible);
+        }
 
-            float timer = 0f;
-            float startAlpha = activePromptCanvasGroup.alpha;
+        if (visible)
+        {
+            UpdateBatteryUI();
+        }
+    }
 
-            while (timer < fadeDuration)
+    private void UpdateBatteryUI()
+    {
+        if (flashlightUI != null)
+        {
+            flashlightUI.UpdateBatteryUI(batteryCount, currentBatteryPower <= 0f);
+        }
+    }
+
+    public bool TryAddBattery()
+    {
+        if (batteryCount >= MaxBatteries) return false;
+
+        batteryCount++;
+        UpdateBatteryUI();
+
+        if (requiresBatteryChange)
+        {
+            ChangeBattery();
+        }
+
+        return true;
+    }
+
+    private void ChangeBattery()
+    {
+        if (batteryCount <= 0) return;
+
+        if (currentBatteryPower <= 0f)
+        {
+            batteryCount--;
+        }
+
+        if (batteryCount > 0)
+        {
+            currentBatteryPower = singleBatteryMaxPower;
+            requiresBatteryChange = false;
+
+            if (batteryChangeSFX != null)
             {
-                timer += Time.deltaTime;
-                activePromptCanvasGroup.alpha = Mathf.Lerp(startAlpha, 1f, timer / fadeDuration);
-                yield return null;
+                batteryChangeSFX.Play();
             }
 
-            activePromptCanvasGroup.alpha = 1f;
-
-            yield return new WaitForSeconds(promptDuration);
-
-            timer = 0f;
-            while (timer < fadeDuration)
+            if (isOn)
             {
-                timer += Time.deltaTime;
-                activePromptCanvasGroup.alpha = Mathf.Lerp(1f, 0f, timer / fadeDuration);
-                yield return null;
+                TurnOnLightState();
             }
-
-            activePromptCanvasGroup.alpha = 0f;
-            activePromptText.text = "";
         }
 
-        UnsubscribeDeviceDetector();
-    }
-
-    private void HandleDeviceChanged(InputDeviceType newDevice)
-    {
-        currentDevice = newDevice;
-        if (activePromptText != null)
-        {
-            activePromptText.text = GetDevicePromptString();
-        }
-    }
-
-    private string GetDevicePromptString()
-    {
-        switch (currentDevice)
-        {
-            case InputDeviceType.Xbox:
-                return xboxTogglePrompt;
-
-            case InputDeviceType.PlayStation:
-                return playStationTogglePrompt;
-
-            default:
-                return keyboardTogglePrompt;
-        }
-    }
-
-    private void UnsubscribeDeviceDetector()
-    {
-        if (InputDeviceDetector.Instance != null)
-        {
-            InputDeviceDetector.Instance.OnDeviceChanged -= HandleDeviceChanged;
-        }
+        UpdateBatteryUI();
     }
 
     public void Toggle()
     {
         if (!isEquipped) return;
-        if (currentPower <= 0f) return;
+        if (currentBatteryPower <= 0f && requiresBatteryChange) return;
         if (torchLight == null) return;
 
         isOn = !isOn;
@@ -309,13 +324,13 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     private void CheckFlickerState()
     {
-        if (!isOn || currentPower <= 0f)
+        if (!isOn || currentBatteryPower <= 0f || requiresBatteryChange)
         {
             StopFlicker();
             return;
         }
 
-        float powerPercent = currentPower / maxPower;
+        float powerPercent = currentBatteryPower / singleBatteryMaxPower;
 
         if (powerPercent <= flickerThresholdPercent)
         {
@@ -335,9 +350,9 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     {
         float noiseSeed = Random.Range(0f, 100f);
 
-        while (isOn && currentPower > 0f)
+        while (isOn && currentBatteryPower > 0f && !requiresBatteryChange)
         {
-            float powerPercent = currentPower / maxPower;
+            float powerPercent = currentBatteryPower / singleBatteryMaxPower;
             float normalizedTension = 1f - Mathf.Clamp01(powerPercent / flickerThresholdPercent);
 
             if (Random.value < dropToBlackChance * normalizedTension)
@@ -348,7 +363,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
                 float blackoutDuration = Random.Range(0.04f, Mathf.Lerp(0.08f, 0.35f, normalizedTension));
                 yield return new WaitForSeconds(blackoutDuration);
 
-                if (!isOn || currentPower <= 0f) break;
+                if (!isOn || currentBatteryPower <= 0f || requiresBatteryChange) break;
 
                 SetLightActive(true);
             }
@@ -365,7 +380,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
             while (elapsed < duration)
             {
-                if (!isOn || currentPower <= 0f) yield break;
+                if (!isOn || currentBatteryPower <= 0f || requiresBatteryChange) yield break;
 
                 elapsed += Time.deltaTime;
                 float currentTargetIntensity = Mathf.Lerp(initialIntensity, targetIntensity, elapsed / duration);
@@ -403,10 +418,17 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     private void Update()
     {
         if (!isEquipped) return;
-        if (!isOn) return;
 
-        currentPower -= drainRate * Time.deltaTime;
-        currentPower = Mathf.Clamp(currentPower, 0f, maxPower);
+        if (inputHandler != null && inputHandler.changeBattery)
+        {
+            inputHandler.changeBattery = false;
+            ChangeBattery();
+        }
+
+        if (!isOn || requiresBatteryChange) return;
+
+        currentBatteryPower -= drainRate * Time.deltaTime;
+        currentBatteryPower = Mathf.Clamp(currentBatteryPower, 0f, singleBatteryMaxPower);
 
         if (flickerCoroutine == null)
         {
@@ -415,10 +437,11 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
         CheckFlickerState();
 
-        if (currentPower <= 0f)
+        if (currentBatteryPower <= 0f)
         {
-            isOn = false;
+            requiresBatteryChange = true;
             TurnOffLightState();
+            UpdateBatteryUI();
         }
     }
 
@@ -488,15 +511,20 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     private void OnEnable()
     {
-        if (isOn && currentPower > 0f)
+        if (isEquipped)
         {
-            TurnOnLightState();
+            SetBatteryUIVisible(true);
+            if (isOn && currentBatteryPower > 0f && !requiresBatteryChange)
+            {
+                TurnOnLightState();
+            }
         }
     }
 
     private void OnDisable()
     {
         TurnOffLightState();
+        SetBatteryUIVisible(false);
         UnsubscribeDeviceDetector();
     }
 
@@ -515,11 +543,43 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         }
     }
 
+    private void UnsubscribeDeviceDetector()
+    {
+        if (InputDeviceDetector.Instance != null)
+        {
+            InputDeviceDetector.Instance.OnDeviceChanged -= HandleDeviceChanged;
+        }
+    }
+
+    private void HandleDeviceChanged(InputDeviceType newDevice)
+    {
+        currentDevice = newDevice;
+        if (activePromptText != null)
+        {
+            activePromptText.text = GetDevicePromptString();
+        }
+    }
+
+    private string GetDevicePromptString()
+    {
+        switch (currentDevice)
+        {
+            case InputDeviceType.Xbox:
+                return xboxTogglePrompt;
+
+            case InputDeviceType.PlayStation:
+                return playStationTogglePrompt;
+
+            default:
+                return keyboardTogglePrompt;
+        }
+    }
+
     private void UpdateEmission()
     {
         if (glassRenderer == null) return;
 
-        float intensity = currentPower / maxPower;
+        float intensity = currentBatteryPower / singleBatteryMaxPower;
         glassRenderer.material.SetColor("_EmissionColor", emissionStart * intensity);
     }
 
@@ -532,11 +592,14 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     public void AddPower(float amount)
     {
-        currentPower = Mathf.Clamp(currentPower + amount, 0f, maxPower);
+        currentBatteryPower = Mathf.Clamp(currentBatteryPower + amount, 0f, singleBatteryMaxPower);
 
-        if (currentPower > 0f && isOn)
+        if (currentBatteryPower > 0f && isOn)
         {
+            requiresBatteryChange = false;
             TurnOnLightState();
         }
+
+        UpdateBatteryUI();
     }
 }

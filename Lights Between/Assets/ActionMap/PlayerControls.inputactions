@@ -97,6 +97,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "ChangeBattery",
+                    "type": "Button",
+                    "id": "82e8caae-9f83-4189-97c3-a6a2d064607c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Wheel",
                     "type": "Button",
                     "id": "36fc938b-f218-4548-b545-c3ecdbfe1653",
@@ -457,6 +466,28 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Flashlight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0ab09d16-7690-4f4c-8dee-10126b7bb938",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";KeyboardMouse",
+                    "action": "ChangeBattery",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4f7937d1-74b6-405e-81ac-dde178ef3578",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "ChangeBattery",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
