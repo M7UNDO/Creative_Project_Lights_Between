@@ -190,7 +190,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7373635304290310889}
   - component: {fileID: 4893577471216974830}
-  m_Layer: 11
+  - component: {fileID: 4356276467134253671}
+  m_Layer: 10
   m_Name: LightZoneTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -233,6 +234,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4356276467134253671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712620419860849201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61f2062db18daaa40ba74cbbda1b909a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightZone
+  isActive: 1
 --- !u!1 &2186938373482734009
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,8 +618,8 @@ GameObject:
   - component: {fileID: 7440283004386863946}
   - component: {fileID: 8450007125881766927}
   - component: {fileID: 1230578845441379619}
-  - component: {fileID: 8393741376565728088}
-  m_Layer: 6
+  - component: {fileID: 5029283673156748921}
+  m_Layer: 7
   m_Name: KeroseneLamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -683,7 +697,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &8393741376565728088
+--- !u!114 &5029283673156748921
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -692,12 +706,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5929244462405602257}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c1b4c4587376a04388ab4c7483b0d74, type: 3}
+  m_Script: {fileID: 11500000, guid: ccba30728343cc348921c26aa9cd3cb3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PreviewObjectValidChecker
-  invalidLayers:
-    serializedVersion: 2
-    m_Bits: 1
+  m_EditorClassIdentifier: Assembly-CSharp::KeroseneLampScript
+  lampLightObject: {fileID: 8076049926508893487}
+  lampLightZone: {fileID: 1712620419860849201}
+  drainRate: 2
+  defaultMaxPower: 100
 --- !u!1 &8076049926508893487
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: KeroseneLamp
   m_EditorClassIdentifier: Assembly-CSharp::ToolClass
   toolName: Kerosene Lamp
-  toolType: 0
-  toolPrefab: {fileID: 0}
+  toolType: 1
+  toolPrefab: {fileID: 5929244462405602257, guid: f368cfaa48256034384d7508ccf6cafa, type: 3}
   sprite: {fileID: 21300000, guid: 2270e33f3658f5b45b479a6c6e84e435, type: 3}
   holdPointPositionOffset: {x: 0, y: 0, z: 0}
   holdPointRotationOffset: {x: 0, y: 0, z: 0}
-  usesPower: 0
-  maxPower: 0
-  fixedRadialSlotIndex: 0
+  usesPower: 1
+  maxPower: 100
+  fixedRadialSlotIndex: 1
