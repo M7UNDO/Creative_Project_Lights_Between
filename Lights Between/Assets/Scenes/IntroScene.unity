@@ -2259,6 +2259,26 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1889350554816494301, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1889350554816494301, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1889350554816494301, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1889350554816494301, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1889350554816494301, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4301610236740839361, guid: 1b0cc29c08063dd42892b1e556ef4289, type: 3}
       propertyPath: m_Name
       value: World UI Obj
@@ -3334,8 +3354,11 @@ MonoBehaviour:
   lockedDoorSound: {fileID: 8300000, guid: 0e36f26a5e0552d479c422ebb8c3105c, type: 3}
   unlockDoorSound: {fileID: 8300000, guid: 2d26507662934bb4aa5cea2345add755, type: 3}
   doorMeshTransform: {fileID: 0}
+  handleTransform: {fileID: 0}
   shakeDuration: 0.2
   shakeMagnitude: 2
+  handleRotateOffset: {x: 0, y: 0, z: -45}
+  handleAnimationTime: 0.15
   toggle: 0
 --- !u!82 &1953506322
 AudioSource:
@@ -5320,11 +5343,11 @@ MonoBehaviour:
   move: {x: 0, y: 0}
   look: {x: 0, y: 0}
   wheelNavigate: {x: 0, y: 0}
-  jump: 0
   sprint: 0
   interact: 0
   wheel: 0
   toggleFlashlight: 0
+  changeBattery: 0
   placementModeOn: 0
   placementModeOff: 0
   placeObject: 0
@@ -5364,6 +5387,21 @@ MonoBehaviour:
   CinemachineCameraTarget: {fileID: 7487355409635496875}
   TopClamp: 75
   BottomClamp: -75
+  playingFootsteps: 0
+  walkFootstepSpeed: 0.5
+  sprintFootstepSpeed: 0.3
+  currentFootstepSpeed: 0
+  woodWalkFootstepClips: []
+  tileWalkFootstepClips: []
+  carpetWalkFootstepClips: []
+  defaultWalkFootstepClips: []
+  woodRunFootstepClips: []
+  tileRunFootstepClips: []
+  carpetRunFootstepClips: []
+  defaultRunFootstepClips: []
+  stepSFX: {fileID: 0}
+  groundRayDistance: 1.5
+  hudCanvas: {fileID: 0}
   interactionRange: 3
   interactionLayer:
     serializedVersion: 2
@@ -5372,9 +5410,10 @@ MonoBehaviour:
   interactableCrosshair: {fileID: 1958015998}
   isInteractable: 0
   isInteracting: 0
+  occlusionLayer:
+    serializedVersion: 2
+    m_Bits: 0
   FlashlightAnchor: {fileID: 1305949026}
-  isInspecting: 0
-  isInMiniGame: 0
 --- !u!114 &2962934413498362623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5412,7 +5451,6 @@ MonoBehaviour:
   hud: {fileID: 1698838898}
   inventory: {fileID: 2962934413498362625}
   equipmentManager: {fileID: 2962934413498362626}
-  toolUIManager: {fileID: 920762144}
   radialWheelUI: {fileID: 84906324}
   slots:
   - {fileID: 296229582}
@@ -5430,6 +5468,11 @@ MonoBehaviour:
   mouseDeadZone: 80
   unequipSlotIndex: 4
   unequipIcon: {fileID: 10917, guid: 0000000000000000f000000000000000, type: 0}
+  toolWheelSource: {fileID: 0}
+  SlotHover: {fileID: 0}
+  SlotRelease: {fileID: 0}
+  wheelOpen: {fileID: 0}
+  wheelClose: {fileID: 0}
 --- !u!114 &2962934413498362625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5457,7 +5500,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ToolEquipmentManager
   toolHoldPoint: {fileID: 502674876}
   objectPlacer: {fileID: 1906908479}
-  toolUIManager: {fileID: 920762144}
   currentTool: {fileID: 0}
 --- !u!4 &3015072781344332702
 Transform:
