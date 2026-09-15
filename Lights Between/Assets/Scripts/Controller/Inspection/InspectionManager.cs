@@ -9,16 +9,16 @@ public class InspectionManager : MonoBehaviour
 
     [Header("Input Setup")]
     [SerializeField] private InputActionReference advanceDialogueAction;
-    [SerializeField] private InputActionReference exitInspectionAction;
-
-    [Header("Hold Settings")]
-    [SerializeField] private HoldInteraction exitHoldInteraction;
 
     [Header("UI References")]
     [SerializeField] private CanvasGroup inspectionCanvasGroup;
     [SerializeField] private TMP_Text dialogueText;
     [SerializeField] private TMP_Text ellipsisText;
-    [SerializeField] private GameObject exitPromptObject;
+    [SerializeField] private CanvasGroup advancePromptCanvasGroup;
+
+    [Header("Prompt Opacity Settings")]
+    [SerializeField] private float typingPromptAlpha = 0.3f;
+    [SerializeField] private float idlePromptAlpha = 1.0f;
 
     [Header("Typing & Audio")]
     [SerializeField] private float typeSpeed = 0.035f;
@@ -55,6 +55,8 @@ public class InspectionManager : MonoBehaviour
 
         typeSpeedWait = new WaitForSeconds(typeSpeed);
         if (inspectionCanvasGroup != null) inspectionCanvasGroup.alpha = 0f;
+
+        ClearDialogueUI();
     }
 
     private void OnEnable()
@@ -63,18 +65,6 @@ public class InspectionManager : MonoBehaviour
         {
             advanceDialogueAction.action.Enable();
             advanceDialogueAction.action.performed += OnAdvancePerformed;
-        }
-
-        if (exitInspectionAction != null)
-        {
-            exitInspectionAction.action.Enable();
-            exitInspectionAction.action.started += OnExitStarted;
-            exitInspectionAction.action.canceled += OnExitCanceled;
-        }
-
-        if (exitHoldInteraction != null)
-        {
-            exitHoldInteraction.onHoldCompleted.AddListener(EndInspection);
         }
     }
 
@@ -85,18 +75,6 @@ public class InspectionManager : MonoBehaviour
             advanceDialogueAction.action.performed -= OnAdvancePerformed;
             advanceDialogueAction.action.Disable();
         }
-
-        if (exitInspectionAction != null)
-        {
-            exitInspectionAction.action.started -= OnExitStarted;
-            exitInspectionAction.action.canceled -= OnExitCanceled;
-            exitInspectionAction.action.Disable();
-        }
-
-        if (exitHoldInteraction != null)
-        {
-            exitHoldInteraction.onHoldCompleted.RemoveListener(EndInspection);
-        }
     }
 
     public void StartInspection(InspectableObject inspectable)
@@ -104,6 +82,7 @@ public class InspectionManager : MonoBehaviour
         if (isInspecting || isTransitioningCamera) return;
 
         currentObject = inspectable;
+        ClearDialogueUI();
 
         if (currentObject != null && currentObject.WorldUI != null)
         {
@@ -122,11 +101,6 @@ public class InspectionManager : MonoBehaviour
 
         currentThoughtIndex = 0;
         isInspecting = true;
-
-        if (exitHoldInteraction != null)
-        {
-            exitHoldInteraction.ResetHold();
-        }
 
         StartCoroutine(EnterInspectionRoutine());
     }
@@ -151,7 +125,7 @@ public class InspectionManager : MonoBehaviour
         mainCameraTransform.rotation = targetRot;
         isTransitioningCamera = false;
 
-        yield return StartCoroutine(FadeCanvasGroup(0f, 1f, 0.3f));
+        yield return StartCoroutine(FadeCanvasGroup(inspectionCanvasGroup, 0f, 1f, 0.3f));
         ShowNextThought();
     }
 
@@ -171,29 +145,10 @@ public class InspectionManager : MonoBehaviour
         }
     }
 
-    private void OnExitStarted(InputAction.CallbackContext context)
-    {
-        if (!isInspecting || isTransitioningCamera) return;
-
-        if (exitHoldInteraction != null)
-        {
-            exitHoldInteraction.BeginHold();
-        }
-    }
-
-    private void OnExitCanceled(InputAction.CallbackContext context)
-    {
-        if (exitHoldInteraction != null)
-        {
-            exitHoldInteraction.CancelHold();
-        }
-    }
-
     private void ShowNextThought()
     {
         if (currentThoughtIndex >= currentObject.InternalThoughts.Length)
         {
-            dialogueText.text = string.Empty;
             EndInspection();
             return;
         }
@@ -208,9 +163,8 @@ public class InspectionManager : MonoBehaviour
         isTyping = true;
         canAdvance = false;
 
-        if (ellipsisCoroutine != null) StopCoroutine(ellipsisCoroutine);
-        if (ellipsisText != null) ellipsisText.gameObject.SetActive(false);
-        if (exitPromptObject != null) exitPromptObject.SetActive(false);
+        HideEllipsis();
+        SetAdvancePromptAlpha(typingPromptAlpha);
 
         dialogueText.text = thought;
         dialogueText.maxVisibleCharacters = 0;
@@ -237,18 +191,19 @@ public class InspectionManager : MonoBehaviour
         isTyping = false;
         canAdvance = true;
 
+        SetAdvancePromptAlpha(idlePromptAlpha);
+
         if (ellipsisText != null)
         {
-            ellipsisText.gameObject.SetActive(true);
+            if (ellipsisCoroutine != null) StopCoroutine(ellipsisCoroutine);
             ellipsisCoroutine = StartCoroutine(FlashEllipsisRoutine());
         }
-
-        if (exitPromptObject != null) exitPromptObject.SetActive(true);
     }
 
     private void SkipTyping()
     {
         isTyping = false;
+        SetAdvancePromptAlpha(idlePromptAlpha);
     }
 
     private void EndInspection()
@@ -262,16 +217,11 @@ public class InspectionManager : MonoBehaviour
         isTransitioningCamera = true;
         canAdvance = false;
 
-        if (exitHoldInteraction != null)
-        {
-            exitHoldInteraction.ResetHold();
-        }
+        HideEllipsis();
 
-        if (ellipsisCoroutine != null) StopCoroutine(ellipsisCoroutine);
-        if (ellipsisText != null) ellipsisText.gameObject.SetActive(false);
-        if (exitPromptObject != null) exitPromptObject.SetActive(false);
+        yield return StartCoroutine(FadeCanvasGroup(inspectionCanvasGroup, 1f, 0f, 0.25f));
 
-        yield return StartCoroutine(FadeCanvasGroup(1f, 0f, 0.25f));
+        ClearDialogueUI();
 
         float elapsedTime = 0f;
         Vector3 startPos = mainCameraTransform.position;
@@ -302,29 +252,60 @@ public class InspectionManager : MonoBehaviour
         }
     }
 
+    private void ClearDialogueUI()
+    {
+        if (dialogueText != null)
+        {
+            dialogueText.text = string.Empty;
+            dialogueText.maxVisibleCharacters = 0;
+        }
+        HideEllipsis();
+        SetAdvancePromptAlpha(0f);
+    }
+
+    private void HideEllipsis()
+    {
+        if (ellipsisCoroutine != null) StopCoroutine(ellipsisCoroutine);
+        if (ellipsisText != null)
+        {
+            ellipsisText.maxVisibleCharacters = 0;
+        }
+    }
+
+    private void SetAdvancePromptAlpha(float alpha)
+    {
+        if (advancePromptCanvasGroup != null)
+        {
+            advancePromptCanvasGroup.alpha = alpha;
+        }
+    }
+
     private IEnumerator FlashEllipsisRoutine()
     {
         var wait = new WaitForSeconds(ellipsisFlashSpeed);
+        bool visible = true;
+
         while (true)
         {
-            ellipsisText.enabled = !ellipsisText.enabled;
+            ellipsisText.maxVisibleCharacters = visible ? ellipsisText.textInfo.characterCount : 0;
+            visible = !visible;
             yield return wait;
         }
     }
 
-    private IEnumerator FadeCanvasGroup(float startAlpha, float endAlpha, float duration)
+    private IEnumerator FadeCanvasGroup(CanvasGroup group, float startAlpha, float endAlpha, float duration)
     {
-        if (inspectionCanvasGroup == null) yield break;
+        if (group == null) yield break;
 
         float timer = 0f;
         while (timer < duration)
         {
             timer += Time.deltaTime;
-            inspectionCanvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, timer / duration);
+            group.alpha = Mathf.Lerp(startAlpha, endAlpha, timer / duration);
             yield return null;
         }
 
-        inspectionCanvasGroup.alpha = endAlpha;
+        group.alpha = endAlpha;
     }
 
     private void PlayTypeSound()
