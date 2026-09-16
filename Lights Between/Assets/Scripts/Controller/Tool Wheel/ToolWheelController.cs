@@ -90,10 +90,10 @@ public class ToolWheelController : MonoBehaviour
 
         RefreshWheel();
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+       /* Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;/
 
-        input.cursorInputForLook = false;
+        input.cursorInputForLook = false;*/
         input.blockLookInput = true;
         input.ClearLookInput();
 
@@ -144,10 +144,10 @@ public class ToolWheelController : MonoBehaviour
             }
         }
 
-        Cursor.lockState = CursorLockMode.Locked;
+        /*Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        input.cursorInputForLook = true;
+        input.cursorInputForLook = true;*/
         input.blockLookInput = false;
         input.ClearLookInput();
 

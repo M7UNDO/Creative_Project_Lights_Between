@@ -116,7 +116,11 @@ public class PauseManager : MonoBehaviour
             PauseCanvas.SetActive(true);
         }
 
-        VolumeBlurController.Instance.SetMenuBlurState(true);
+        if(VolumeBlurController.Instance != null)
+        {
+            VolumeBlurController.Instance.SetMenuBlurState(true);
+        }
+        
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;

@@ -57,6 +57,14 @@ public class ManageUI : MonoBehaviour
         {
             musicManager = FindFirstObjectByType<BackgroundMusicManager>();
         }
+
+        if (pausePanel != null && pausePanel.activeSelf)
+        {
+            if (pauseScript != null)
+            {
+                pauseScript.Resume();
+            }
+        }
     }
 
     public void Back()

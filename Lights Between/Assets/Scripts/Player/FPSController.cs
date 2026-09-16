@@ -193,11 +193,8 @@ public class FPSController : MonoBehaviour
         {
             _keyInventory = GetComponentInChildren<IKeyInventory>();
         }
-#if ENABLE_INPUT_SYSTEM
+
         _playerInput = GetComponent<PlayerInput>();
-#else
-			Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
-#endif
 
 
         _jumpTimeoutDelta = JumpTimeout;
@@ -206,7 +203,7 @@ public class FPSController : MonoBehaviour
 
     private void Update()
     {
-        if(isInMiniGame || isInspecting || isJumpscareActive) return;
+        if(isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused) return;
         ApplyGravity();
         GroundedCheck();
         Move();
@@ -218,7 +215,7 @@ public class FPSController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isInMiniGame || isInspecting || isJumpscareActive) return;
+        if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused) return;
         CameraRotation();
     }
 
@@ -230,13 +227,10 @@ public class FPSController : MonoBehaviour
 
     private void CameraRotation()
     {
-        // if there is an input
         if (_input.look.sqrMagnitude >= _threshold)
         {
-            //Don't multiply mouse input by Time.deltaTime
             float rotationSpeed = IsCurrentDeviceMouse? MouseSensitvity : ControllerSensitivity;
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-            //Debug.Log(rotationSpeed);
             
 
             _cinemachineTargetPitch += _input.look.y * rotationSpeed * deltaTimeMultiplier;
@@ -624,7 +618,7 @@ public class FPSController : MonoBehaviour
             _input.sprint = false;
             _input.ClearLookInput();
 
-            _input.cursorInputForLook = !inspecting;
+            //_input.cursorInputForLook = !inspecting;
             _input.blockLookInput = inspecting;
         }
 
@@ -671,7 +665,7 @@ public class FPSController : MonoBehaviour
             _input.interact = false;
             _input.wheel = false;
             _input.ClearLookInput();
-
+            
             _input.cursorInputForLook = !active;
             _input.blockLookInput = active;
         }

@@ -4,6 +4,9 @@ using UnityEngine.Events;
 [RequireComponent(typeof(AudioSource))]
 public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
 {
+    [Header("Event Channel")]
+    [SerializeField] private StringGameEventSO interactionChannel;
+
     [Header("Generator State")]
     [SerializeField] private bool hasFuel;
     [SerializeField] private bool isPoweredOn;
@@ -231,6 +234,11 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
             StopCoroutine(audioTransitionCoroutine);
         }
         audioTransitionCoroutine = StartCoroutine(PlayStartupSequence());
+
+        if (interactionChannel != null)
+        {
+            interactionChannel.Raise(InteractionIDs.Generator);
+        }
 
         onGeneratorStarted?.Invoke();
     }
