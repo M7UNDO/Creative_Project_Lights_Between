@@ -50,6 +50,11 @@ public class FPSController : MonoBehaviour
     [Tooltip("How far in degrees can you move the camera down")]
     public float BottomClamp = -90.0f;
 
+    [Tooltip("How restricted the up/down look angle is when holding a heavy object")]
+    public float HeldObjectTopClamp = 30.0f;
+    [Tooltip("How restricted the up/down look angle is when holding a heavy object")]
+    public float HeldObjectBottomClamp = -30.0f;
+
     [Header("Movement SFX")]
     [Space(5)]
 
@@ -88,6 +93,11 @@ public class FPSController : MonoBehaviour
     private IInteractable currentInteractable;
     private IKeyInventory _keyInventory;
     private IInteractable _lastInteractable;
+
+    [Header("Grab Settings")]
+    [SerializeField] private Transform objectGrabPointTransform;
+    [SerializeField] private string heldItemLayerName = "HeldItem";
+    private ObjectGrabbable _currentGrabbable;
 
     [Header("Proximity & Occlusion Settings")]
     [SerializeField] private LayerMask occlusionLayer;
@@ -138,22 +148,18 @@ public class FPSController : MonoBehaviour
     }
 
     private float _footstepTimer;
-    // cinemachine
     private float _cinemachineTargetPitch;
 
-    // player
     private float _speed;
     private float _rotationVelocity;
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
 
-    // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
     public InputHandler InputHandler => _input;
     public CharacterController Controller => _controller;
-
 
 #if ENABLE_INPUT_SYSTEM
     private PlayerInput _playerInput;
@@ -171,7 +177,7 @@ public class FPSController : MonoBehaviour
 #if ENABLE_INPUT_SYSTEM
             return _playerInput.currentControlScheme == "KeyboardMouse";
 #else
-				return false;
+            return false;
 #endif
         }
     }
@@ -196,14 +202,13 @@ public class FPSController : MonoBehaviour
 
         _playerInput = GetComponent<PlayerInput>();
 
-
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
     }
 
     private void Update()
     {
-        if(isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused) return;
+        if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused) return;
         ApplyGravity();
         GroundedCheck();
         Move();
@@ -227,16 +232,45 @@ public class FPSController : MonoBehaviour
 
     private void CameraRotation()
     {
+        bool isGrabInputHeld = false;
+#if ENABLE_INPUT_SYSTEM
+        if (_playerInput != null)
+        {
+            var grabAction = _playerInput.actions.FindAction("Grab");
+            if (grabAction != null)
+            {
+                isGrabInputHeld = grabAction.IsPressed();
+            }
+        }
+#else
+        isGrabInputHeld = Input.GetKey(KeyCode.Mouse1);
+#endif
+
+        if (_currentGrabbable != null && isGrabInputHeld)
+        {
+            if (_input.look.sqrMagnitude >= _threshold)
+            {
+                float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
+                float pivotSensitivity = IsCurrentDeviceMouse ? 0.5f : 50f;
+                float rotationSpeed = IsCurrentDeviceMouse ? MouseSensitvity : ControllerSensitivity;
+
+                objectGrabPointTransform.Rotate(Vector3.up * _input.look.x * rotationSpeed * pivotSensitivity * deltaTimeMultiplier);
+            }
+            return;
+        }
+
         if (_input.look.sqrMagnitude >= _threshold)
         {
-            float rotationSpeed = IsCurrentDeviceMouse? MouseSensitvity : ControllerSensitivity;
+            float rotationSpeed = IsCurrentDeviceMouse ? MouseSensitvity : ControllerSensitivity;
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-            
 
             _cinemachineTargetPitch += _input.look.y * rotationSpeed * deltaTimeMultiplier;
             _rotationVelocity = _input.look.x * rotationSpeed * deltaTimeMultiplier;
 
-            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, BottomClamp, TopClamp);
+            float minPitch = _currentGrabbable != null ? HeldObjectBottomClamp : BottomClamp;
+            float maxPitch = _currentGrabbable != null ? HeldObjectTopClamp : TopClamp;
+
+            _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, minPitch, maxPitch);
             CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
 
             transform.Rotate(Vector3.up * _rotationVelocity);
@@ -293,11 +327,9 @@ public class FPSController : MonoBehaviour
 
         if (_input.move != Vector2.zero)
         {
-            // move
             inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
         }
 
-        // move the player
         _controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
     }
 
@@ -405,6 +437,13 @@ public class FPSController : MonoBehaviour
     public void DetectInteractable()
     {
         WorldSpaceInteractableUI targetedWorldUI = null;
+
+        if (_currentGrabbable != null)
+        {
+            isInteractable = true;
+            return;
+        }
+
         currentInteractable = null;
         isInteractable = false;
 
@@ -415,11 +454,18 @@ public class FPSController : MonoBehaviour
             bool hasInteractable = hit.collider.TryGetComponent<IInteractable>(out var interactable);
             bool hasPower = hit.collider.TryGetComponent<IToolPower>(out var powerItem);
 
-            if (hasInteractable || hasPower)
+            ObjectGrabbable grabbable = hit.collider.GetComponentInParent<ObjectGrabbable>();
+            bool hasGrabbable = grabbable != null;
+
+            if (hasInteractable || hasPower || hasGrabbable)
             {
                 if (hasInteractable)
                 {
                     currentInteractable = interactable;
+                    isInteractable = true;
+                }
+                else if (hasGrabbable)
+                {
                     isInteractable = true;
                 }
 
@@ -450,6 +496,11 @@ public class FPSController : MonoBehaviour
                 else if (hit.collider.TryGetComponent<BaseOpenable>(out BaseOpenable openable))
                 {
                     basePrompt = openable.promptMessage;
+                    canCurrentlyInteract = true;
+                }
+                else if (hasGrabbable)
+                {
+                    basePrompt = "Grab";
                     canCurrentlyInteract = true;
                 }
                 else if (hasInteractable)
@@ -526,9 +577,17 @@ public class FPSController : MonoBehaviour
 
     public void Interact()
     {
-        if (currentInteractable != null)
+        if (_input.interact)
         {
-            if (_input.interact)
+            if (_currentGrabbable != null)
+            {
+                _currentGrabbable.Drop();
+                _currentGrabbable = null;
+                _input.interact = false;
+                return;
+            }
+
+            if (currentInteractable != null)
             {
                 if (currentInteractable is DoorScript door)
                 {
@@ -551,16 +610,39 @@ public class FPSController : MonoBehaviour
             }
             else
             {
-                if (currentInteractable is DoorScript door)
+                Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
+                if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))
                 {
-                    door.CancelInteract();
+                    ObjectGrabbable grabbable = hit.collider.GetComponentInParent<ObjectGrabbable>();
+                    if (grabbable != null)
+                    {
+                        int heldLayer = LayerMask.NameToLayer(heldItemLayerName);
+                        if (heldLayer == -1) heldLayer = gameObject.layer;
+
+                        _currentGrabbable = grabbable;
+                        _currentGrabbable.Grab(objectGrabPointTransform, heldLayer, () => _currentGrabbable = null);
+                        _input.interact = false;
+                    }
                 }
+            }
+        }
+        else
+        {
+            if (currentInteractable is DoorScript door)
+            {
+                door.CancelInteract();
             }
         }
     }
 
     public void ClearInteractionState()
     {
+        if (_currentGrabbable != null)
+        {
+            _currentGrabbable.Drop();
+            _currentGrabbable = null;
+        }
+
         currentInteractable = null;
         isInteractable = false;
 
@@ -592,8 +674,7 @@ public class FPSController : MonoBehaviour
     {
         if (hudCanvas == null) return;
 
-        bool shouldShowHUD = //!SimpleTutorialPromptManager.IsTutorialActive
-                           !isInspecting
+        bool shouldShowHUD = !isInspecting
                            && !isInMiniGame
                            && !isJumpscareActive
                            && !LevelManager.IsGameOver;
@@ -618,7 +699,6 @@ public class FPSController : MonoBehaviour
             _input.sprint = false;
             _input.ClearLookInput();
 
-            //_input.cursorInputForLook = !inspecting;
             _input.blockLookInput = inspecting;
         }
 
@@ -665,7 +745,7 @@ public class FPSController : MonoBehaviour
             _input.interact = false;
             _input.wheel = false;
             _input.ClearLookInput();
-            
+
             _input.cursorInputForLook = !active;
             _input.blockLookInput = active;
         }
@@ -673,8 +753,34 @@ public class FPSController : MonoBehaviour
         if (active)
         {
             StopFootsteps();
-            //ClearInteractionState();
         }
+    }
+
+    public void Teleport(Vector3 position, Quaternion rotation)
+    {
+        if (_currentGrabbable != null)
+        {
+            _currentGrabbable.Drop();
+            _currentGrabbable = null;
+        }
+
+        if (_controller != null) _controller.enabled = false;
+
+        transform.position = position;
+
+        float targetYRotation = rotation.eulerAngles.y;
+        transform.rotation = Quaternion.Euler(0.0f, targetYRotation, 0.0f);
+
+        _verticalVelocity = 0.0f;
+        _speed = 0.0f;
+
+        _cinemachineTargetPitch = 0.0f;
+        if (CinemachineCameraTarget != null)
+        {
+            CinemachineCameraTarget.transform.localRotation = Quaternion.identity;
+        }
+
+        if (_controller != null) _controller.enabled = true;
     }
 
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
@@ -692,9 +798,6 @@ public class FPSController : MonoBehaviour
         if (Grounded) Gizmos.color = transparentGreen;
         else Gizmos.color = transparentRed;
 
-        // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
         Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
     }
-
-
 }
