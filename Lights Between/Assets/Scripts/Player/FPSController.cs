@@ -95,8 +95,8 @@ public class FPSController : MonoBehaviour
     private IInteractable _lastInteractable;
 
     [Header("Grab Settings")]
+    [SerializeField] private LayerMask heldLayer;
     [SerializeField] private Transform objectGrabPointTransform;
-    [SerializeField] private string heldItemLayerName = "HeldItem";
     private ObjectGrabbable _currentGrabbable;
 
     [Header("Proximity & Occlusion Settings")]
@@ -148,18 +148,22 @@ public class FPSController : MonoBehaviour
     }
 
     private float _footstepTimer;
+    // cinemachine
     private float _cinemachineTargetPitch;
 
+    // player
     private float _speed;
     private float _rotationVelocity;
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
 
+    // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
     public InputHandler InputHandler => _input;
     public CharacterController Controller => _controller;
+
 
 #if ENABLE_INPUT_SYSTEM
     private PlayerInput _playerInput;
@@ -201,6 +205,7 @@ public class FPSController : MonoBehaviour
         }
 
         _playerInput = GetComponent<PlayerInput>();
+
 
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
@@ -616,11 +621,8 @@ public class FPSController : MonoBehaviour
                     ObjectGrabbable grabbable = hit.collider.GetComponentInParent<ObjectGrabbable>();
                     if (grabbable != null)
                     {
-                        int heldLayer = LayerMask.NameToLayer(heldItemLayerName);
-                        if (heldLayer == -1) heldLayer = gameObject.layer;
-
                         _currentGrabbable = grabbable;
-                        _currentGrabbable.Grab(objectGrabPointTransform, heldLayer, () => _currentGrabbable = null);
+                        _currentGrabbable.Grab(objectGrabPointTransform);
                         _input.interact = false;
                     }
                 }
@@ -781,6 +783,20 @@ public class FPSController : MonoBehaviour
         }
 
         if (_controller != null) _controller.enabled = true;
+    }
+
+    private int GetLayerFromMask(LayerMask mask)
+    {
+        int bitmask = mask.value;
+        if (bitmask == 0) return gameObject.layer;
+
+        int layerIndex = 0;
+        while (bitmask > 1)
+        {
+            bitmask >>= 1;
+            layerIndex++;
+        }
+        return layerIndex;
     }
 
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
