@@ -148,22 +148,18 @@ public class FPSController : MonoBehaviour
     }
 
     private float _footstepTimer;
-    // cinemachine
     private float _cinemachineTargetPitch;
 
-    // player
     private float _speed;
     private float _rotationVelocity;
     private float _verticalVelocity;
     private float _terminalVelocity = 53.0f;
 
-    // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
     public InputHandler InputHandler => _input;
     public CharacterController Controller => _controller;
-
 
 #if ENABLE_INPUT_SYSTEM
     private PlayerInput _playerInput;
@@ -205,7 +201,6 @@ public class FPSController : MonoBehaviour
         }
 
         _playerInput = GetComponent<PlayerInput>();
-
 
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
@@ -443,12 +438,6 @@ public class FPSController : MonoBehaviour
     {
         WorldSpaceInteractableUI targetedWorldUI = null;
 
-        if (_currentGrabbable != null)
-        {
-            isInteractable = true;
-            return;
-        }
-
         currentInteractable = null;
         isInteractable = false;
 
@@ -456,11 +445,16 @@ public class FPSController : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))
         {
+            ObjectGrabbable grabbable = hit.collider.GetComponentInParent<ObjectGrabbable>();
+
+            if (_currentGrabbable != null && grabbable == _currentGrabbable)
+            {
+                return;
+            }
+
             bool hasInteractable = hit.collider.TryGetComponent<IInteractable>(out var interactable);
             bool hasPower = hit.collider.TryGetComponent<IToolPower>(out var powerItem);
-
-            ObjectGrabbable grabbable = hit.collider.GetComponentInParent<ObjectGrabbable>();
-            bool hasGrabbable = grabbable != null;
+            bool hasGrabbable = grabbable != null && _currentGrabbable == null;
 
             if (hasInteractable || hasPower || hasGrabbable)
             {
@@ -582,16 +576,19 @@ public class FPSController : MonoBehaviour
 
     public void Interact()
     {
-        if (_input.interact)
+        if (_input.drop)
         {
             if (_currentGrabbable != null)
             {
                 _currentGrabbable.Drop();
                 _currentGrabbable = null;
-                _input.interact = false;
-                return;
             }
 
+            _input.drop = false;
+        }
+
+        if (_input.interact)
+        {
             if (currentInteractable != null)
             {
                 if (currentInteractable is DoorScript door)
@@ -613,7 +610,7 @@ public class FPSController : MonoBehaviour
                     }
                 }
             }
-            else
+            else if (_currentGrabbable == null)
             {
                 Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
                 if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))

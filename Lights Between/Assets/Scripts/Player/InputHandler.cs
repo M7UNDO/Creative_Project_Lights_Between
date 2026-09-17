@@ -10,6 +10,7 @@ public class InputHandler : MonoBehaviour
 
     public bool sprint;
     public bool interact;
+    public bool drop;
     public bool wheel;
     public bool toggleFlashlight;
     public bool changeBattery;
@@ -50,6 +51,9 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Player.Interact.performed += ctx => InteractInput(true);
         playerControls.Player.Interact.canceled += ctx => InteractInput(false);
+
+        playerControls.Player.Drop.performed += ctx => DropInput(true);
+        playerControls.Player.Drop.canceled += ctx => DropInput(false);
 
         playerControls.Player.TimedAction.performed += ctx => TimedActionInput(true);
         playerControls.Player.TimedAction.canceled += ctx => TimedActionInput(false);
@@ -100,6 +104,11 @@ public class InputHandler : MonoBehaviour
     public void InteractInput(bool newInteractState)
     {
         interact = newInteractState;
+    }
+
+    public void DropInput(bool newDropState)
+    {
+        drop = newDropState;
     }
 
     public void WheelInput(bool newWheelState)
@@ -154,6 +163,7 @@ public class InputHandler : MonoBehaviour
 
         sprint = false;
         interact = false;
+        drop = false;
         wheel = false;
         toggleFlashlight = false;
         changeBattery = false;

@@ -22575,7 +22575,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!1 &4314425291687706684
 GameObject:
   m_ObjectHideFlags: 0
@@ -24160,7 +24160,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &5439606004573673150
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31710,6 +31710,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9de964e625bf43946930812d539035e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectGrabbable
+  useCustomGrabOffset: 1
+  grabPositionOffset: {x: 0, y: -0.4583333, z: 2.375}
+  grabRotationOffset: {x: 0, y: 49.84, z: 0}
 --- !u!54 &8070409392670998047
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -34110,7 +34113,7 @@ MonoBehaviour:
   - {fileID: 3237075741952675992}
   occlusionLayer:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 129
   checkInterval: 0.05
 --- !u!222 &9134018607032141576
 CanvasRenderer:
