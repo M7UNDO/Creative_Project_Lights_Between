@@ -208,7 +208,7 @@ public class FPSController : MonoBehaviour
 
     private void Update()
     {
-        if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused) return;
+        if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
         ApplyGravity();
         GroundedCheck();
         Move();
@@ -220,7 +220,7 @@ public class FPSController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused) return;
+        if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
         CameraRotation();
     }
 
@@ -686,7 +686,8 @@ public class FPSController : MonoBehaviour
         bool shouldShowHUD = !isInspecting
                            && !isInMiniGame
                            && !isJumpscareActive
-                           && !LevelManager.IsGameOver;
+                           && !LevelManager.IsGameOver
+                           && !NoteUIController.isNoteOpen;
 
         if (hudCanvas.gameObject.activeSelf != shouldShowHUD)
         {
