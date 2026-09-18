@@ -81,7 +81,7 @@ public class FPSController : MonoBehaviour
     [Header("Interaction Settings")]
     [Space(5)]
     public Canvas hudCanvas;
-
+    [SerializeField] private GameObject dropUI;
     [SerializeField] public float interactionRange = 5f;
     [SerializeField] private LayerMask interactionLayer;
 
@@ -582,6 +582,11 @@ public class FPSController : MonoBehaviour
             {
                 _currentGrabbable.Drop();
                 _currentGrabbable = null;
+
+                if (dropUI != null)
+                {
+                    dropUI.SetActive(false);
+                }
             }
 
             _input.drop = false;
@@ -621,6 +626,11 @@ public class FPSController : MonoBehaviour
                         _currentGrabbable = grabbable;
                         _currentGrabbable.Grab(objectGrabPointTransform);
                         _input.interact = false;
+
+                        if(dropUI != null)
+                        {
+                            dropUI.SetActive(true);
+                        }
                     }
                 }
             }
