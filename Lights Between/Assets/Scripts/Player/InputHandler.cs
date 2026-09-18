@@ -18,6 +18,7 @@ public class InputHandler : MonoBehaviour
     public bool placementModeOff;
     public bool placeObject;
     public bool cancel;
+    public bool close;
     public bool timedAction;
 
     [Header("Movement Settings")]
@@ -72,6 +73,9 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Player.Cancel.performed += ctx => CancelInput(true);
         playerControls.Player.Cancel.canceled += ctx => CancelInput(false);
+
+        playerControls.Player.Close.performed += ctx => CloseInput(true);
+        playerControls.Player.Close.canceled += ctx => CloseInput(false);
 
         playerControls.Enable();
     }
@@ -145,6 +149,11 @@ public class InputHandler : MonoBehaviour
         cancel = newCancelState;
     }
 
+    public void CloseInput(bool newCloseState)
+    {
+        close = newCloseState;
+    }
+
     public void TimedActionInput(bool newTimedActionState)
     {
         timedAction = newTimedActionState;
@@ -171,6 +180,7 @@ public class InputHandler : MonoBehaviour
         placementModeOff = false;
         placeObject = false;
         cancel = false;
+        close = false;
         timedAction = false;
     }
 

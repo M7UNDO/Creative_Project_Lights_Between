@@ -9,6 +9,7 @@ public class PauseManager : MonoBehaviour
     [Space(5)]
     [SerializeField] private ManageUI manageUI;
     [SerializeField] private TabController tabController;
+    [SerializeField] private FPSController playerController;
 
     [Header("UI Components")]
     [Space(5)]
@@ -30,6 +31,11 @@ public class PauseManager : MonoBehaviour
         if (manageUI == null)
         {
             manageUI = FindFirstObjectByType<ManageUI>();
+        }
+
+        if (playerController == null)
+        {
+            playerController = FindFirstObjectByType<FPSController>();
         }
 
         if (tabController == null)
@@ -75,7 +81,7 @@ public class PauseManager : MonoBehaviour
         if (playerControls != null)
         {
             playerControls.Player.Pause.performed -= pauseAction;
-            playerControls.UI.Cancel.performed -= cancelAction;
+            playerControls.UI.Back.performed -= cancelAction;
 
             playerControls.Player.Disable();
             playerControls.UI.Disable();
@@ -116,11 +122,15 @@ public class PauseManager : MonoBehaviour
             PauseCanvas.SetActive(true);
         }
 
-        if(VolumeBlurController.Instance != null)
+        if (VolumeBlurController.Instance != null)
         {
             VolumeBlurController.Instance.SetMenuBlurState(true);
         }
-        
+
+        if (playerController != null)
+        {
+            playerController.EvaluateHUDState();
+        }
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
@@ -139,7 +149,15 @@ public class PauseManager : MonoBehaviour
             PauseCanvas.SetActive(false);
         }
 
-        VolumeBlurController.Instance.SetMenuBlurState(false);
+        if (VolumeBlurController.Instance != null)
+        {
+            VolumeBlurController.Instance.SetMenuBlurState(false);
+        }
+
+        if (playerController != null)
+        {
+            playerController.EvaluateHUDState();
+        }
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;

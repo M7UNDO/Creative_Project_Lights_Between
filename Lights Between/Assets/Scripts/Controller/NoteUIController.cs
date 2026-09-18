@@ -4,7 +4,9 @@ using TMPro;
 public class NoteUIController : MonoBehaviour
 {
     public static NoteUIController Instance { get; private set; }
+
     [SerializeField] private InputHandler _input;
+    [SerializeField] private FPSController playerController;
 
     [Header("UI References")]
     [SerializeField] private GameObject notePanelUI;
@@ -35,12 +37,20 @@ public class NoteUIController : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        if (playerController == null)
+        {
+            playerController = FindFirstObjectByType<FPSController>();
+        }
+    }
+
     private void Update()
     {
-        if (isNoteOpen && _input.cancel)
+        if (isNoteOpen && _input != null && _input.close)
         {
             CloseNote();
-            _input.cancel = false;
+            _input.close = false;
         }
     }
 
@@ -51,6 +61,11 @@ public class NoteUIController : MonoBehaviour
         noteText.text = data.NoteContent;
         notePanelUI.SetActive(true);
         isNoteOpen = true;
+
+        if (playerController != null)
+        {
+            playerController.EvaluateHUDState();
+        }
 
         if (audioSource != null && openNoteSound != null)
         {
@@ -73,6 +88,11 @@ public class NoteUIController : MonoBehaviour
         }
 
         isNoteOpen = false;
+
+        if (playerController != null)
+        {
+            playerController.EvaluateHUDState();
+        }
 
         if (audioSource != null && closeNoteSound != null)
         {

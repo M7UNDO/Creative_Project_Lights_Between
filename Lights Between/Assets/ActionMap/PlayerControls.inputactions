@@ -88,6 +88,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Close",
+                    "type": "Button",
+                    "id": "e1fa89dc-8fdd-48ff-b1de-3215e04d1f7c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Pause",
                     "type": "Button",
                     "id": "75ba8929-800c-4359-8df7-af0284d3ae65",
@@ -453,6 +462,28 @@
                     "processors": "",
                     "groups": ";KeyboardMouse",
                     "action": "Cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "705fba05-9fae-49fc-9497-f8785e9c97ab",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Close",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ac7ce7ab-d760-4322-a5d0-e6834bb61789",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";KeyboardMouse",
+                    "action": "Close",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -1266,7 +1297,7 @@
                 {
                     "name": "",
                     "id": "7d3b483c-f778-4e42-96ee-1f6411fa9958",
-                    "path": "<Gamepad>/buttonWest",
+                    "path": "<Gamepad>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",

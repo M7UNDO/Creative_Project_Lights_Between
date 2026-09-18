@@ -127,9 +127,9 @@ public class GeneratorFuelMiniGame : MonoBehaviour
             confirmWasPressed = false;
         }
 
-        if (input.cancel)
+        if (input.close)
         {
-            input.cancel = false;
+            input.close = false;
             CancelMiniGame();
         }
     }
@@ -200,8 +200,8 @@ public class GeneratorFuelMiniGame : MonoBehaviour
 
         if (input != null)
         {
-            input.timedAction = false;
-            input.cancel = false;
+            input.timedAction = false;  
+            input.close = false;
         }
 
         if (playerController != null)
@@ -225,7 +225,7 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         if (input != null)
         {
             input.timedAction = false;
-            input.cancel = false;
+            input.close = false;
         }
 
         if (playerController != null)

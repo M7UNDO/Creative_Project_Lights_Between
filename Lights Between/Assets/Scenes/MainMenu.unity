@@ -420,8 +420,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 956ab1739eda9cc4890b1bdc900d3b36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BackgroundMusicManager
-  audioSource: {fileID: 0}
-  backgroundTracks: []
+  audioSource: {fileID: 223127633}
+  backgroundTracks:
+  - {fileID: 8300000, guid: a06fcf45ac91fe240a7d30e70aad0c28, type: 3}
   playRandomly: 0
   loopAll: 1
   levelScene: 0
