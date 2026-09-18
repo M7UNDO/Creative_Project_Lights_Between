@@ -24,6 +24,15 @@ public class ObjectiveManager : MonoBehaviour
         }
         return null;
     }
+
+    public ObjectiveStatus GetObjectiveStatus(string objectiveID)
+    {
+        if (runtimeStates.TryGetValue(objectiveID, out ObjectiveStatus status))
+        {
+            return status;
+        }
+        return ObjectiveStatus.Inactive;
+    }
     private void Awake()
     {
         if (Instance != null && Instance != this)
