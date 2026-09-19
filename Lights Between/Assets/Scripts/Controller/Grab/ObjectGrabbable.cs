@@ -15,6 +15,10 @@ public class ObjectGrabbable : MonoBehaviour
     private Vector3 defaultHoldPointPosition;
     private Quaternion defaultHoldPointRotation;
 
+    [Header("SFX")]
+
+    [SerializeField] private AudioClip pickUpSFX;
+
     private void Awake()
     {
         objectRigidbody = GetComponent<Rigidbody>();
@@ -24,6 +28,11 @@ public class ObjectGrabbable : MonoBehaviour
     public void Grab(Transform objectGrabPointTransform)
     {
         this.objectGrabPointTransform = objectGrabPointTransform;
+
+        if(pickUpSFX != null)
+        {
+            AudioSource.PlayClipAtPoint(pickUpSFX, transform.position);
+        }
 
         if (this.objectGrabPointTransform != null)
         {
