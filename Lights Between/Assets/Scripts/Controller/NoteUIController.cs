@@ -12,6 +12,9 @@ public class NoteUIController : MonoBehaviour
     [SerializeField] private GameObject notePanelUI;
     [SerializeField] private TextMeshProUGUI noteText;
 
+    [Header("Objective Activation (Scenario A)")]
+    [SerializeField] private ObjectiveSO objectiveToActivate;
+
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip openNoteSound;
@@ -20,6 +23,8 @@ public class NoteUIController : MonoBehaviour
     public static bool isNoteOpen { get; private set; }
 
     public bool IsNoteOpen => isNoteOpen;
+
+    private bool hasTriggeredObjective;
 
     private void Awake()
     {
@@ -102,6 +107,19 @@ public class NoteUIController : MonoBehaviour
         if (VolumeBlurController.Instance != null)
         {
             VolumeBlurController.Instance.SetMenuBlurState(false);
+        }
+
+        OnCloseNoteUI();
+    }
+
+    private void OnCloseNoteUI()
+    {
+        if (hasTriggeredObjective) return;
+
+        if (ObjectiveManager.Instance != null && objectiveToActivate != null)
+        {
+            ObjectiveManager.Instance.ActivateObjective(objectiveToActivate);
+            hasTriggeredObjective = true;
         }
     }
 }

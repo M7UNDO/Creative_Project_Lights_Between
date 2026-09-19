@@ -9,7 +9,7 @@ public class StoryBeatSO : ScriptableObject
     [Header("Objectives to Activate")]
     [SerializeField] private List<ObjectiveSO> activeObjectives = new List<ObjectiveSO>();
 
-    [Header("On Completion (The Horror Director)")]
+    [Header("On Completion")]
     [SerializeField] private GameEventSO completionStoryEvent;
     [SerializeField] private StoryBeatSO nextBeat;
 

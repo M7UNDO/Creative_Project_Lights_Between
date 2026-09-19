@@ -11764,6 +11764,7 @@ MonoBehaviour:
   playerController: {fileID: 2962934413498362622}
   notePanelUI: {fileID: 1917339713}
   noteText: {fileID: 1554897373}
+  objectiveToActivate: {fileID: 11400000, guid: cade134e976b4d848a968c4e532c55ff, type: 2}
   audioSource: {fileID: 1539274768}
   openNoteSound: {fileID: 8300000, guid: 97f3f6791f497e44da0666a0e0b6e047, type: 3}
   closeNoteSound: {fileID: 8300000, guid: fe5e7bd859d00b64380b66f589d22007, type: 3}
@@ -12341,6 +12342,66 @@ Transform:
   - {fileID: 828687726}
   m_Father: {fileID: 1810376485}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1576472773
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1576472774}
+  - component: {fileID: 1576472776}
+  - component: {fileID: 1576472775}
+  m_Layer: 0
+  m_Name: StoryManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1576472774
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576472773}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6181527346713148763}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1576472775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576472773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7c7baad3d63b4546a7b0a4c9e145bc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StoryEventDialogueBridge
+  storyEventChannel: {fileID: 11400000, guid: 89932dd89cb81544098c304821743345, type: 2}
+  dialogueToStart: {fileID: 11400000, guid: 92e144a8a56b1524f982548fdb5d2b27, type: 2}
+--- !u!114 &1576472776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576472773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2a18342e42bb354cb80d28b73ce746d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StoryManager
+  initialStoryBeat: {fileID: 11400000, guid: 7c427d7edb02c23418c3392c419ff250, type: 2}
 --- !u!1 &1584304561
 GameObject:
   m_ObjectHideFlags: 0
@@ -32526,6 +32587,7 @@ Transform:
   - {fileID: 8369497124159425117}
   - {fileID: 9204291935857880910}
   - {fileID: 1539274766}
+  - {fileID: 1576472774}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6194411517192597947
