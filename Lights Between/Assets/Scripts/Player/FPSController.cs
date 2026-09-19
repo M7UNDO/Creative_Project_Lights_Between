@@ -704,6 +704,19 @@ public class FPSController : MonoBehaviour
         }
     }
 
+    public void ForceEquipGrabbable(ObjectGrabbable grabbable)
+{
+    if (grabbable == null) return;
+
+    _currentGrabbable = grabbable;
+    _currentGrabbable.Grab(objectGrabPointTransform, GetLayerFromMask(heldLayer));
+
+    if (dropUI != null)
+    {
+        dropUI.SetActive(true);
+    }
+}
+
     public void ClearCurrentGrabbableForSnap(Transform snapTarget, bool destroyOnSnap)
     {
         if (_currentGrabbable != null)
