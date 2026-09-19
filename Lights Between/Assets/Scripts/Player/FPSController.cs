@@ -147,6 +147,13 @@ public class FPSController : MonoBehaviour
         }
     }
 
+    public bool isInDialogue { get; private set; }
+
+    [Header("Dialogue Sensitivity Settings")]
+    [SerializeField] private float dialogueSensitivityMultiplier = 0.5f;
+    [SerializeField] private float sensitivityTransitionSpeed = 5.0f;
+    private float _currentSensitivityMultiplier = 1.0f;
+
     private float _footstepTimer;
     private float _cinemachineTargetPitch;
 
@@ -206,22 +213,75 @@ public class FPSController : MonoBehaviour
         _fallTimeoutDelta = FallTimeout;
     }
 
+    private void OnEnable()
+    {
+        if (DialogueManager.Instance != null)
+        {
+            DialogueManager.Instance.OnDialogueStarted += HandleDialogueStarted;
+            DialogueManager.Instance.OnDialogueEnded += HandleDialogueEnded;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (DialogueManager.Instance != null)
+        {
+            DialogueManager.Instance.OnDialogueStarted -= HandleDialogueStarted;
+            DialogueManager.Instance.OnDialogueEnded -= HandleDialogueEnded;
+        }
+    }
+
+    private void HandleDialogueStarted()
+    {
+        isInDialogue = true;
+        if (_input != null)
+        {
+            _input.move = Vector2.zero;
+            _input.sprint = false;
+        }
+        StopFootsteps();
+        ClearInteractionState();
+    }
+
+    private void HandleDialogueEnded()
+    {
+        isInDialogue = false;
+    }
+
     private void Update()
     {
+        UpdateSensitivityMultiplier();
+
         if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
+
         ApplyGravity();
         GroundedCheck();
-        Move();
-        HandleFootsteps();
-        DetectInteractable();
-        UpdateCrosshair();
-        Interact();
+
+        if (!isInDialogue)
+        {
+            Move();
+            HandleFootsteps();
+            DetectInteractable();
+            UpdateCrosshair();
+            Interact();
+        }
+        else
+        {
+            _speed = 0f;
+            _controller.Move(new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+        }
     }
 
     private void LateUpdate()
     {
         if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
         CameraRotation();
+    }
+
+    private void UpdateSensitivityMultiplier()
+    {
+        float targetMultiplier = isInDialogue ? dialogueSensitivityMultiplier : 1.0f;
+        _currentSensitivityMultiplier = Mathf.Lerp(_currentSensitivityMultiplier, targetMultiplier, Time.deltaTime * sensitivityTransitionSpeed);
     }
 
     private void GroundedCheck()
@@ -252,7 +312,7 @@ public class FPSController : MonoBehaviour
             {
                 float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
                 float pivotSensitivity = IsCurrentDeviceMouse ? 0.5f : 50f;
-                float rotationSpeed = IsCurrentDeviceMouse ? MouseSensitvity : ControllerSensitivity;
+                float rotationSpeed = (IsCurrentDeviceMouse ? MouseSensitvity : ControllerSensitivity) * _currentSensitivityMultiplier;
 
                 objectGrabPointTransform.Rotate(Vector3.up * _input.look.x * rotationSpeed * pivotSensitivity * deltaTimeMultiplier);
             }
@@ -261,7 +321,7 @@ public class FPSController : MonoBehaviour
 
         if (_input.look.sqrMagnitude >= _threshold)
         {
-            float rotationSpeed = IsCurrentDeviceMouse ? MouseSensitvity : ControllerSensitivity;
+            float rotationSpeed = (IsCurrentDeviceMouse ? MouseSensitvity : ControllerSensitivity) * _currentSensitivityMultiplier;
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
             _cinemachineTargetPitch += _input.look.y * rotationSpeed * deltaTimeMultiplier;
@@ -627,7 +687,7 @@ public class FPSController : MonoBehaviour
                         _currentGrabbable.Grab(objectGrabPointTransform);
                         _input.interact = false;
 
-                        if(dropUI != null)
+                        if (dropUI != null)
                         {
                             dropUI.SetActive(true);
                         }
