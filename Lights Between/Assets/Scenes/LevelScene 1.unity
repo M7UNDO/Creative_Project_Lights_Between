@@ -93,7 +93,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 0}
+  m_LightingDataAsset: {fileID: 112000000, guid: b46758a8ce62d16408fe69b4abf631e2, type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 69b54573e2def814ab0dfada8d8e3688, type: 2}
 --- !u!196 &4
 NavMeshSettings:
@@ -782,6 +782,131 @@ Transform:
   - {fileID: 581930350}
   m_Father: {fileID: 59593848}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &103322061
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2636493190940263288}
+    m_Modifications:
+    - target: {fileID: 123058, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_Name
+      value: Placed Bag
+      objectReference: {fileID: 0}
+    - target: {fileID: 123058, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 123058, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 123058, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_TagString
+      value: PlayerBag
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2.5000002
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2.5000002
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -9
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 7.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 28.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9238798
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.38268274
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 64741486585372714, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      propertyPath: m_Convex
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 64741486585372714, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+    - {fileID: 64312033761192730, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 123058, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 103322064}
+  m_SourcePrefab: {fileID: 100100000, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+--- !u!1 &103322062 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 123058, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+  m_PrefabInstance: {fileID: 103322061}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &103322063 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 476934, guid: eac51b5a26d00c1459b323fe6f118ce1, type: 3}
+  m_PrefabInstance: {fileID: 103322061}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &103322064
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 103322062}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.21, y: 0.4497494, z: 0.2814695}
+  m_Center: {x: -0.01613802, y: 0.2248747, z: -0.000000029802322}
 --- !u!1 &109976183
 GameObject:
   m_ObjectHideFlags: 0
@@ -1205,7 +1330,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -7006,7 +7131,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -7316,8 +7441,8 @@ GameObject:
   - component: {fileID: 897441155}
   - component: {fileID: 897441157}
   - component: {fileID: 897441156}
-  - component: {fileID: 897441158}
-  m_Layer: 0
+  - component: {fileID: 897441159}
+  m_Layer: 7
   m_Name: BagDropZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7358,8 +7483,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1.293997, z: 1}
-  m_Center: {x: 0, y: 0.14699855, z: 0}
+  m_Size: {x: 1, y: 5.2937956, z: 1}
+  m_Center: {x: 0, y: -1.8529017, z: 0}
 --- !u!33 &897441157
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -7368,7 +7493,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 897441154}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &897441158
+--- !u!114 &897441159
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -7377,12 +7502,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 897441154}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afbe8f19b6094474aa52ec751949bfdf, type: 3}
+  m_Script: {fileID: 11500000, guid: 5233d4a7fed986143a2fbed841375112, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BagDropZoneTracker
+  m_EditorClassIdentifier: Assembly-CSharp::SnapZone
+  requiredItemID: Bag
+  requiredItemCount: 1
+  promptText: Place Bag
+  snapPoints: []
+  destroyObjectOnSnap: 1
+  enableVisualOnSnap: {fileID: 103322062}
   interactionChannel: {fileID: 11400000, guid: cb19ddd6cccc2bb4491ea76187c72150, type: 2}
-  bagTag: PlayerBag
-  totalBagsRequired: 1
+  interactionEventID: PackBags
+  snapSFX: {fileID: 0}
 --- !u!1 &903895032
 GameObject:
   m_ObjectHideFlags: 0
@@ -8276,7 +8407,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -9663,7 +9794,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -10542,7 +10673,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -10716,7 +10847,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -10756,7 +10887,7 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
-  m_ShadowRadius: 0
+  m_ShadowRadius: 1
   m_ShadowAngle: 0
   m_LightUnit: 1
   m_LuxAtDistance: 1
@@ -14276,7 +14407,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -14435,7 +14566,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -15931,7 +16062,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -16058,7 +16189,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -16281,7 +16412,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -16321,7 +16452,7 @@ Light:
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
-  m_ShadowRadius: 0
+  m_ShadowRadius: 1
   m_ShadowAngle: 0
   m_LightUnit: 1
   m_LuxAtDistance: 1
@@ -16525,7 +16656,7 @@ Light:
     m_Type: 2
     m_Resolution: -1
     m_CustomResolution: -1
-    m_Strength: 1
+    m_Strength: 0.303
     m_Bias: 0.05
     m_NormalBias: 0.4
     m_NearPlane: 0.2
@@ -23290,6 +23421,7 @@ Transform:
   - {fileID: 1948697572}
   - {fileID: 786608747}
   - {fileID: 1726023993}
+  - {fileID: 103322063}
   - {fileID: 345973125}
   - {fileID: 1094927661}
   - {fileID: 1251786076}
@@ -33456,6 +33588,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9de964e625bf43946930812d539035e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectGrabbable
+  itemID: Bag
   useCustomGrabOffset: 1
   grabPositionOffset: {x: 0, y: 0.1, z: 1.42}
   grabRotationOffset: {x: 50, y: 0, z: 0}
@@ -37461,6 +37594,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9de964e625bf43946930812d539035e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ObjectGrabbable
+  itemID: Bag
   useCustomGrabOffset: 1
   grabPositionOffset: {x: 0, y: -0.4583333, z: 2.375}
   grabRotationOffset: {x: 0, y: 49.84, z: 0}

@@ -2,6 +2,10 @@ using UnityEngine;
 
 public class ObjectGrabbable : MonoBehaviour
 {
+    [Header("Item Identification")]
+    [SerializeField] private string itemID = "Bag";
+    public string ItemID => itemID;
+
     [Header("Grab Offset")]
     [SerializeField] private bool useCustomGrabOffset = false;
     [SerializeField] private Vector3 grabPositionOffset;
@@ -15,21 +19,30 @@ public class ObjectGrabbable : MonoBehaviour
     private Vector3 defaultHoldPointPosition;
     private Quaternion defaultHoldPointRotation;
 
-    [Header("SFX")]
+    private int originalLayer;
+    private Collider[] objectColliders;
 
+    private Vector3 lastPosition;
+    private Vector3 currentVelocity;
+
+    [Header("SFX")]
     [SerializeField] private AudioClip pickUpSFX;
 
     private void Awake()
     {
         objectRigidbody = GetComponent<Rigidbody>();
         originalConstraints = objectRigidbody.constraints;
+        originalLayer = gameObject.layer;
+        objectColliders = GetComponentsInChildren<Collider>();
     }
 
-    public void Grab(Transform objectGrabPointTransform)
+    public void Grab(Transform objectGrabPointTransform, int targetLayer)
     {
         this.objectGrabPointTransform = objectGrabPointTransform;
 
-        if(pickUpSFX != null)
+        SetLayerRecursively(gameObject, targetLayer);
+
+        if (pickUpSFX != null)
         {
             AudioSource.PlayClipAtPoint(pickUpSFX, transform.position);
         }
@@ -46,12 +59,30 @@ public class ObjectGrabbable : MonoBehaviour
             }
         }
 
+        objectRigidbody.isKinematic = true;
         objectRigidbody.useGravity = false;
-        objectRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+
+        foreach (Collider col in objectColliders)
+        {
+            if (col != null)
+            {
+                col.enabled = false;
+            }
+        }
+
+        transform.SetParent(this.objectGrabPointTransform);
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
+
+        lastPosition = transform.position;
     }
 
-    public void Drop()
+    public void SnapToTarget(Transform snapTransform, bool destroyOnSnap = false)
     {
+        transform.SetParent(null);
+
+        SetLayerRecursively(gameObject, originalLayer);
+
         if (objectGrabPointTransform != null)
         {
             objectGrabPointTransform.localPosition = defaultHoldPointPosition;
@@ -60,27 +91,77 @@ public class ObjectGrabbable : MonoBehaviour
 
         objectGrabPointTransform = null;
 
-        objectRigidbody.useGravity = true;
-        objectRigidbody.constraints = originalConstraints;
+        if (destroyOnSnap)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        transform.position = snapTransform.position;
+        transform.rotation = snapTransform.rotation;
+
+        objectRigidbody.isKinematic = true;
+        objectRigidbody.useGravity = false;
+
+        foreach (Collider col in objectColliders)
+        {
+            if (col != null)
+            {
+                col.enabled = true;
+            }
+        }
     }
 
-    private void FixedUpdate()
+    public void Drop()
+    {
+        transform.SetParent(null);
+
+        SetLayerRecursively(gameObject, originalLayer);
+
+        if (objectGrabPointTransform != null)
+        {
+            objectGrabPointTransform.localPosition = defaultHoldPointPosition;
+            objectGrabPointTransform.localRotation = defaultHoldPointRotation;
+        }
+
+        objectGrabPointTransform = null;
+
+        foreach (Collider col in objectColliders)
+        {
+            if (col != null)
+            {
+                col.enabled = true;
+            }
+        }
+
+        objectRigidbody.isKinematic = false;
+        objectRigidbody.useGravity = true;
+        objectRigidbody.constraints = originalConstraints;
+
+        objectRigidbody.linearVelocity = currentVelocity;
+    }
+
+    private void Update()
     {
         if (objectGrabPointTransform != null)
         {
-            float lerpSpeed = 10f;
+            if (Time.deltaTime > 0f)
+            {
+                currentVelocity = (transform.position - lastPosition) / Time.deltaTime;
+                lastPosition = transform.position;
+            }
+        }
+    }
 
-            Vector3 targetPosition = objectGrabPointTransform.position;
-            Quaternion targetRotation = objectGrabPointTransform.rotation;
+    private void SetLayerRecursively(GameObject targetObject, int newLayer)
+    {
+        if (targetObject == null) return;
 
-            Vector3 newPosition = Vector3.Lerp(
-                objectRigidbody.position,
-                targetPosition,
-                Time.fixedDeltaTime * lerpSpeed
-            );
+        targetObject.layer = newLayer;
 
-            objectRigidbody.MovePosition(newPosition);
-            objectRigidbody.MoveRotation(targetRotation);
+        foreach (Transform child in targetObject.transform)
+        {
+            SetLayerRecursively(child.gameObject, newLayer);
         }
     }
 }

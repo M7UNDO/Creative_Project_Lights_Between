@@ -98,6 +98,7 @@ public class FPSController : MonoBehaviour
     [SerializeField] private LayerMask heldLayer;
     [SerializeField] private Transform objectGrabPointTransform;
     private ObjectGrabbable _currentGrabbable;
+    public ObjectGrabbable CurrentGrabbable => _currentGrabbable;
 
     [Header("Proximity & Occlusion Settings")]
     [SerializeField] private LayerMask occlusionLayer;
@@ -531,7 +532,13 @@ public class FPSController : MonoBehaviour
                 string basePrompt = "";
                 bool canCurrentlyInteract = true;
 
-                if (hit.collider.TryGetComponent<DoorScript>(out DoorScript doorScript))
+                if (hit.collider.TryGetComponent<SnapZone>(out SnapZone snapZone))
+                {
+                    basePrompt = snapZone.GetPromptMessage(_currentGrabbable);
+                    canCurrentlyInteract = snapZone.CanSnap(_currentGrabbable);
+                    isInteractable = canCurrentlyInteract;
+                }
+                else if (hit.collider.TryGetComponent<DoorScript>(out DoorScript doorScript))
                 {
                     doorScript.UpdatePromptMessage(_keyInventory);
                     basePrompt = doorScript.promptMessage;
@@ -656,7 +663,12 @@ public class FPSController : MonoBehaviour
         {
             if (currentInteractable != null)
             {
-                if (currentInteractable is DoorScript door)
+                if (currentInteractable is SnapZone snapZone)
+                {
+                    snapZone.Interact();
+                    _input.interact = false;
+                }
+                else if (currentInteractable is DoorScript door)
                 {
                     door.Interact(_keyInventory);
 
@@ -684,7 +696,7 @@ public class FPSController : MonoBehaviour
                     if (grabbable != null)
                     {
                         _currentGrabbable = grabbable;
-                        _currentGrabbable.Grab(objectGrabPointTransform);
+                        _currentGrabbable.Grab(objectGrabPointTransform, GetLayerFromMask(heldLayer));
                         _input.interact = false;
 
                         if (dropUI != null)
@@ -700,6 +712,20 @@ public class FPSController : MonoBehaviour
             if (currentInteractable is DoorScript door)
             {
                 door.CancelInteract();
+            }
+        }
+    }
+
+    public void ClearCurrentGrabbableForSnap(Transform snapTarget, bool destroyOnSnap)
+    {
+        if (_currentGrabbable != null)
+        {
+            _currentGrabbable.SnapToTarget(snapTarget, destroyOnSnap);
+            _currentGrabbable = null;
+
+            if (dropUI != null)
+            {
+                dropUI.SetActive(false);
             }
         }
     }
