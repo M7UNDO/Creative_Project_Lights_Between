@@ -120,6 +120,20 @@ public class FPSController : MonoBehaviour
         }
     }
 
+    private bool _isDialogueActive;
+    public bool isDialogueActive
+    {
+        get => _isDialogueActive;
+        set
+        {
+            if (_isDialogueActive != value)
+            {
+                _isDialogueActive = value;
+                EvaluateHUDState();
+            }
+        }
+    }
+
     private bool _isInMiniGame;
     public bool isInMiniGame
     {
@@ -214,24 +228,6 @@ public class FPSController : MonoBehaviour
         _fallTimeoutDelta = FallTimeout;
     }
 
-    private void OnEnable()
-    {
-        if (DialogueManager.Instance != null)
-        {
-            DialogueManager.Instance.OnDialogueStarted += HandleDialogueStarted;
-            DialogueManager.Instance.OnDialogueEnded += HandleDialogueEnded;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (DialogueManager.Instance != null)
-        {
-            DialogueManager.Instance.OnDialogueStarted -= HandleDialogueStarted;
-            DialogueManager.Instance.OnDialogueEnded -= HandleDialogueEnded;
-        }
-    }
-
     private void HandleDialogueStarted()
     {
         isInDialogue = true;
@@ -253,24 +249,16 @@ public class FPSController : MonoBehaviour
     {
         UpdateSensitivityMultiplier();
 
-        if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
+        if (isInMiniGame || isInspecting || isJumpscareActive || isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
 
         ApplyGravity();
         GroundedCheck();
 
-        if (!isInDialogue)
-        {
-            Move();
-            HandleFootsteps();
-            DetectInteractable();
-            UpdateCrosshair();
-            Interact();
-        }
-        else
-        {
-            _speed = 0f;
-            _controller.Move(new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
-        }
+        Move();
+        HandleFootsteps();
+        DetectInteractable();
+        UpdateCrosshair();
+        Interact();
     }
 
     private void LateUpdate()
@@ -281,7 +269,7 @@ public class FPSController : MonoBehaviour
 
     private void UpdateSensitivityMultiplier()
     {
-        float targetMultiplier = isInDialogue ? dialogueSensitivityMultiplier : 1.0f;
+        float targetMultiplier = isDialogueActive ? dialogueSensitivityMultiplier : 1.0f;
         _currentSensitivityMultiplier = Mathf.Lerp(_currentSensitivityMultiplier, targetMultiplier, Time.deltaTime * sensitivityTransitionSpeed);
     }
 
@@ -799,6 +787,26 @@ public class FPSController : MonoBehaviour
         }
 
         if (inspecting)
+        {
+            StopFootsteps();
+        }
+    }
+
+    public void SetDialogueMode(bool dialogue)
+    {
+        isDialogueActive = dialogue;
+
+        ClearInteractionState();
+        UpdateCrosshair();
+
+        if (_input != null)
+        {
+            _input.move = Vector2.zero;
+            _input.look = Vector2.zero;
+            _input.sprint = false;
+        }
+
+        if (dialogue)
         {
             StopFootsteps();
         }

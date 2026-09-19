@@ -18,6 +18,9 @@ public class SnapZone : MonoBehaviour, IInteractable
     [SerializeField] private string interactionEventID = InteractionIDs.PackBags;
     [SerializeField] private AudioClip snapSFX;
 
+    [Header("Dialogue Trigger")]
+    [SerializeField] private DialogueSO postSnapDialogue;
+
     private int currentSnappedCount = 0;
 
     public void Interact()
@@ -50,6 +53,11 @@ public class SnapZone : MonoBehaviour, IInteractable
                 if (interactionChannel != null)
                 {
                     interactionChannel.Raise(interactionEventID);
+                }
+
+                if (DialogueManager.Instance != null && postSnapDialogue != null)
+                {
+                    DialogueManager.Instance.StartDialogue(postSnapDialogue);
                 }
             }
         }

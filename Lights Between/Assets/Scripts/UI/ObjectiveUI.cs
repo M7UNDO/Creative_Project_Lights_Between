@@ -1,12 +1,8 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectiveUI : MonoBehaviour
 {
-    [SerializeField] private GameObject objectivePrefab;
-    [SerializeField] private Transform containerTransform;
-
-    private readonly Dictionary<string, ObjectiveUIItem> spawnedItems = new Dictionary<string, ObjectiveUIItem>();
+    [SerializeField] private ObjectiveUIItem objectiveItem;
 
     private void Start()
     {
@@ -36,6 +32,7 @@ public class ObjectiveUI : MonoBehaviour
         foreach (var kvp in ObjectiveManager.Instance.RuntimeStates)
         {
             ObjectiveSO def = ObjectiveManager.Instance.GetObjectiveDefinition(kvp.Key);
+
             if (def != null)
             {
                 HandleObjectiveStateChanged(def, kvp.Value);
@@ -45,38 +42,15 @@ public class ObjectiveUI : MonoBehaviour
 
     private void HandleObjectiveStateChanged(ObjectiveSO objectiveDef, ObjectiveStatus status)
     {
-        if (objectiveDef == null) return;
+        if (objectiveDef == null || objectiveItem == null) return;
 
         if (status == ObjectiveStatus.Active)
         {
-            if (!spawnedItems.ContainsKey(objectiveDef.ID))
-            {
-                if (objectivePrefab == null || containerTransform == null)
-                {
-                    Debug.LogError("[ObjectiveUI] Missing objectivePrefab or containerTransform reference on " + gameObject.name);
-                    return;
-                }
-
-                GameObject objInstance = Instantiate(objectivePrefab, containerTransform);
-                ObjectiveUIItem item = objInstance.GetComponent<ObjectiveUIItem>();
-
-                if (item != null)
-                {
-                    item.Setup(objectiveDef);
-                    spawnedItems.Add(objectiveDef.ID, item);
-                }
-                else
-                {
-                    Debug.LogError("[ObjectiveUI] The assigned objectivePrefab is missing the ObjectiveUIItem component!");
-                }
-            }
+            objectiveItem.Setup(objectiveDef);
         }
         else if (status == ObjectiveStatus.Completed)
         {
-            if (spawnedItems.TryGetValue(objectiveDef.ID, out ObjectiveUIItem item))
-            {
-                item.SetCompleted(true);
-            }
+            objectiveItem.SetCompleted(true);
         }
     }
 }

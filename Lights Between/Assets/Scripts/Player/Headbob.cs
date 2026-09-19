@@ -36,7 +36,7 @@ public class Headbob : MonoBehaviour
 
     private void Update()
     {
-        if (!_enable || _cameraTarget == null || _controller == null) return;
+        if (!_enable || _cameraTarget == null || _controller == null || _fpsController.isDialogueActive) return;
 
         float horizontalSpeed = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z).magnitude;
         bool isGrounded = _fpsController != null ? _fpsController.Grounded : _controller.isGrounded;

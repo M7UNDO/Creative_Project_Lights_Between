@@ -8,6 +8,8 @@ public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
 
+    [SerializeField] FPSController playerController;
+
     [Header("Input Setup")]
     [SerializeField] private InputActionReference advanceDialogueAction;
 
@@ -74,6 +76,17 @@ public class DialogueManager : MonoBehaviour
     public void StartDialogue(DialogueSO dialogue)
     {
         if (isDialogueActive || dialogue == null || dialogue.Lines == null || dialogue.Lines.Length == 0) return;
+
+        if(playerController == null)
+        {
+            playerController = FindFirstObjectByType<FPSController>();
+        }
+        
+        if (playerController != null)
+        {
+            playerController.SetDialogueMode(true);
+        }
+
 
         currentDialogue = dialogue;
         currentLineIndex = 0;
@@ -184,6 +197,16 @@ public class DialogueManager : MonoBehaviour
         DialogueSO finishedDialogue = currentDialogue;
         currentDialogue = null;
         isDialogueActive = false;
+
+        if (playerController == null)
+        {
+            playerController = FindFirstObjectByType<FPSController>();
+        }
+
+        if (playerController != null)
+        {
+            playerController.SetDialogueMode(false);
+        }
 
         OnDialogueEnded?.Invoke();
 

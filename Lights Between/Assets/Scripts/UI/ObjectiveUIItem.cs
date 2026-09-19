@@ -24,39 +24,60 @@ public class ObjectiveUIItem : MonoBehaviour
     private void Awake()
     {
         canvasGroup = GetComponent<CanvasGroup>();
+
         if (titleText != null)
         {
             originalColor = titleText.color;
         }
+
+        canvasGroup.alpha = 0f;
     }
 
     public void Setup(ObjectiveSO objectiveDef)
     {
+        if (objectiveDef == null) return;
+
+        if (currentSequence != null)
+        {
+            StopCoroutine(currentSequence);
+        }
+
         if (titleText != null)
         {
             titleText.text = objectiveDef.Title;
             titleText.color = originalColor;
         }
 
-        PlaySFX();
+        ResetAnimation();
 
-        if (currentSequence != null)
-        {
-            StopCoroutine(currentSequence);
-        }
         currentSequence = StartCoroutine(IntroduceRoutine());
     }
 
     public void SetCompleted(bool isCompleted)
     {
-        if (isCompleted)
+        if (!isCompleted) return;
+
+        if (currentSequence != null)
         {
-            if (currentSequence != null)
-            {
-                StopCoroutine(currentSequence);
-            }
-            currentSequence = StartCoroutine(CompleteRoutine());
+            StopCoroutine(currentSequence);
         }
+
+        ResetAnimation();
+
+        currentSequence = StartCoroutine(CompleteRoutine());
+    }
+
+    private void ResetAnimation()
+    {
+        canvasGroup.alpha = 0f;
+
+        if (animator == null) return;
+
+        animator.ResetTrigger(ShowTrigger);
+        animator.ResetTrigger(HideTrigger);
+
+        // Return to the normal visible position before playing the entrance.
+        animator.Play("Idle", 0, 0f);
     }
 
     private void PlaySFX()
@@ -69,17 +90,32 @@ public class ObjectiveUIItem : MonoBehaviour
         }
         else
         {
-            AudioSource.PlayClipAtPoint(objectiveSFX, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
+            AudioSource.PlayClipAtPoint(
+                objectiveSFX,
+                Camera.main != null ? Camera.main.transform.position : Vector3.zero
+            );
         }
     }
 
     private IEnumerator IntroduceRoutine()
     {
         TriggerAnimator(ShowTrigger);
-        yield return StartCoroutine(FadeCanvasGroup(0f, 1f, animateInDuration));
+        PlaySFX();
+
+        yield return StartCoroutine(
+            FadeCanvasGroup(0f, 1f, animateInDuration)
+        );
+
         yield return new WaitForSeconds(displayDuration);
 
-        yield return StartCoroutine(FadeCanvasGroup(1f, 0f, animateOutDuration));
+        // Play the slide-out animation.
+        TriggerAnimator(HideTrigger);
+
+        yield return StartCoroutine(
+            FadeCanvasGroup(1f, 0f, animateOutDuration)
+        );
+
+        currentSequence = null;
     }
 
     private IEnumerator CompleteRoutine()
@@ -91,24 +127,49 @@ public class ObjectiveUIItem : MonoBehaviour
 
         PlaySFX();
 
-        yield return StartCoroutine(FadeCanvasGroup(0f, 1f, animateInDuration));
+        TriggerAnimator(ShowTrigger);
+
+        yield return StartCoroutine(
+            FadeCanvasGroup(0f, 1f, animateInDuration)
+        );
+
         yield return new WaitForSeconds(displayDuration);
 
         TriggerAnimator(HideTrigger);
-        yield return StartCoroutine(FadeCanvasGroup(1f, 0f, animateOutDuration));
-        Destroy(gameObject);
+
+        yield return StartCoroutine(
+            FadeCanvasGroup(1f, 0f, animateOutDuration)
+        );
+
+        if (titleText != null)
+        {
+            titleText.color = originalColor;
+        }
+
+        currentSequence = null;
     }
 
-    private IEnumerator FadeCanvasGroup(float startAlpha, float targetAlpha, float duration)
+    private IEnumerator FadeCanvasGroup(
+        float startAlpha,
+        float targetAlpha,
+        float duration)
     {
         float elapsedTime = 0f;
+
         canvasGroup.alpha = startAlpha;
 
         while (elapsedTime < duration)
         {
             elapsedTime += Time.deltaTime;
+
             float t = Mathf.Clamp01(elapsedTime / duration);
-            canvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, t);
+
+            canvasGroup.alpha = Mathf.Lerp(
+                startAlpha,
+                targetAlpha,
+                t
+            );
+
             yield return null;
         }
 
