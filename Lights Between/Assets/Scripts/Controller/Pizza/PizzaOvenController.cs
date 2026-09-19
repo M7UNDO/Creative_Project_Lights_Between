@@ -5,7 +5,8 @@ public class PizzaOvenController : MonoBehaviour, IInteractable
 {
     [Header("Cooking Settings")]
     [SerializeField] private float cookDuration = 10f;
-    [SerializeField] private string uncookedItemID = "Pizza";
+    [SerializeField] private float maxEquipDistance = 3.0f;
+    [SerializeField] private string uncookedItemID = "UncookedPizza";
     [SerializeField] private string promptText = "Warm up Pizza";
 
     [Header("Cooked Output")]
@@ -36,9 +37,7 @@ public class PizzaOvenController : MonoBehaviour, IInteractable
 
         if (heldItem != null && heldItem.ItemID == uncookedItemID)
         {
-            // Destroy the raw item from the player's hand
             player.ClearCurrentGrabbableForSnap(transform, true);
-
             StartCoroutine(CookPizzaRoutine(player));
         }
     }
@@ -70,7 +69,11 @@ public class PizzaOvenController : MonoBehaviour, IInteractable
 
         if (ovenRealtimeLight != null) ovenRealtimeLight.enabled = false;
 
-        // Instantiate the cooked pizza and place it directly into the player's hand
+        while (player != null && Vector3.Distance(player.transform.position, transform.position) > maxEquipDistance)
+        {
+            yield return null;
+        }
+
         if (cookedPizzaPrefab != null && player != null)
         {
             GameObject newCookedPizza = Instantiate(cookedPizzaPrefab);
@@ -78,7 +81,6 @@ public class PizzaOvenController : MonoBehaviour, IInteractable
 
             if (grabbable != null)
             {
-                // Force-grab the cooked pizza directly into the player's hold point
                 player.ForceEquipGrabbable(grabbable);
             }
         }
