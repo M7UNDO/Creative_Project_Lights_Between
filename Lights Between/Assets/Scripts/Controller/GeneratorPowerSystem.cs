@@ -9,8 +9,8 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
     [SerializeField] private StringGameEventSO interactionChannel;
 
     [Header("Generator State")]
-    [SerializeField] private bool hasFuel;
-    [SerializeField] private bool isPoweredOn;
+    [SerializeField] private bool hasFuel = true;
+    [SerializeField] private bool isPoweredOn = true;
 
     [Header("Power Settings")]
     [SerializeField] private float maxFuel = 100f;
@@ -51,6 +51,12 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
     public bool UsesPower => isPoweredOn;
     public bool IsPowerOn => isPoweredOn;
 
+    private void Awake()
+    {
+        // Initialize fuel early so connected breakers read the correct fuel level immediately
+        currentFuel = hasFuel ? maxFuel : 0f;
+    }
+
     private void Start()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -77,6 +83,13 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
         if (generatorAudioSource == null)
         {
             generatorAudioSource = GetComponent<AudioSource>();
+        }
+
+        if (isPoweredOn && generatorAudioSource != null && generatorRunningSFX != null)
+        {
+            generatorAudioSource.clip = generatorRunningSFX;
+            generatorAudioSource.loop = true;
+            generatorAudioSource.Play();
         }
     }
 

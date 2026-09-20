@@ -8098,10 +8098,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1189fe79916f4694293412dc2dcd1cfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TVController
+  connectedBreaker: {fileID: 0}
   tvScreenRenderer: {fileID: 1886024553}
   screenMaterialIndex: 1
   tvOffMaterial: {fileID: 2100000, guid: 64612c592b441b440a6e7fb0cafc90a6, type: 2}
   tvOnMaterial: {fileID: 2100000, guid: 5f8df0b6b964b2343bcc74558d82e312, type: 2}
+  tvLightRenderer: {fileID: 1886024553}
+  emissionOnColor: {r: 1, g: 1, b: 1, a: 1}
+  emissionOffColor: {r: 0, g: 0, b: 0, a: 1}
   tvAudioSource: {fileID: 1886024555}
   tvOnSFX: {fileID: 8300000, guid: 7b1d57d13e532a241b2a6abedc8ef971, type: 3}
   tvOffSFX: {fileID: 8300000, guid: 7b1d57d13e532a241b2a6abedc8ef971, type: 3}
@@ -10042,53 +10046,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.00434837, y: 0.00021522967, z: 0.0071052313}
   m_Center: {x: 0.0021741863, y: -0.000107629414, z: 0.0000000018626451}
---- !u!1 &1043631702
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1043631703}
-  - component: {fileID: 1043631704}
-  m_Layer: 0
-  m_Name: ObjectiveDebug
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1043631703
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1043631702}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6181527346713148763}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1043631704
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1043631702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31b39ffbe0eb51a4bb6834a649c4540a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ObjectiveDebugManager
-  overrideOnStart: 1
-  startObjectiveOverride: {fileID: 11400000, guid: ff00254873a9c0b4baa115740cf14a67, type: 2}
-  completeObjectiveAction: {fileID: 4039726303831387972, guid: b28cb1f9c25d5ed4c8f044a0ec6e47a1, type: 3}
 --- !u!1 &1051837598
 GameObject:
   m_ObjectHideFlags: 0
@@ -11767,6 +11724,11 @@ Transform:
 --- !u!4 &1241930149 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8851785811058219144, guid: dc340aca236faab4a863f86438944f85, type: 3}
+  m_PrefabInstance: {fileID: 1241930147}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1241930150 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6631027862186263589, guid: dc340aca236faab4a863f86438944f85, type: 3}
   m_PrefabInstance: {fileID: 1241930147}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1242899532 stripped
@@ -15455,6 +15417,11 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!23 &1642699479 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2857622294799512400, guid: 60129f8b5863b9549938bdc745a802b6, type: 3}
+  m_PrefabInstance: {fileID: 1142089336}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1646357249
 GameObject:
   m_ObjectHideFlags: 0
@@ -17654,6 +17621,11 @@ Light:
   m_LightUnit: 1
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
+--- !u!23 &1876848609 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2857622294799512400, guid: 60129f8b5863b9549938bdc745a802b6, type: 3}
+  m_PrefabInstance: {fileID: 629290517}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1877856230 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8606844849557099220, guid: 2fde6759919c0bf40b443517ad953ef7, type: 3}
@@ -27809,16 +27781,62 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElectricBoxBreaker
   connectedGenerator: {fileID: 8378328527651922333}
-  isLeverUp: 0
+  isLeverUp: 1
   smoothSpeed: 1.5
   leverHandleTransform: {fileID: 3192552861696916481}
   leverOffRotationEuler: {x: -90, y: 0, z: 0}
   leverOnRotationEuler: {x: -225, y: 0, z: 0}
-  connectedLights: []
-  connectedLightObjects: []
-  lightRenderers: []
-  lightOffMaterial: {fileID: 0}
-  lightOnMaterial: {fileID: 0}
+  connectedLights:
+  - {fileID: 2081864363}
+  - {fileID: 1411326489}
+  - {fileID: 1662443525}
+  - {fileID: 478769775}
+  - {fileID: 1244487093}
+  - {fileID: 1867866723}
+  - {fileID: 2086920242}
+  - {fileID: 1780940679}
+  - {fileID: 1247162435}
+  - {fileID: 165083197}
+  - {fileID: 1076406709}
+  - {fileID: 2056430409}
+  - {fileID: 166136338}
+  - {fileID: 2120993471}
+  - {fileID: 1860613651}
+  - {fileID: 2061538514}
+  connectedLightObjects:
+  - {fileID: 681854496}
+  - {fileID: 164074325}
+  - {fileID: 669380240}
+  - {fileID: 1094009586}
+  - {fileID: 1651246891}
+  - {fileID: 1794379481}
+  - {fileID: 514200908}
+  - {fileID: 1632997686}
+  - {fileID: 1092948381}
+  - {fileID: 582481684}
+  - {fileID: 179217492}
+  - {fileID: 861036631}
+  - {fileID: 409957324}
+  - {fileID: 2125124470}
+  swappableLightRenderers:
+  - {fileID: 7975478967227562484}
+  - {fileID: 1241930150}
+  lightOffMaterial: {fileID: 2100000, guid: 0cb4b4dfd34ab674c9096ca856ba6d45, type: 2}
+  lightOnMaterial: {fileID: 2100000, guid: 72229350afb86794c983b899f6d9e92b, type: 2}
+  emissiveLightRenderers:
+  - {fileID: 1711813855297881293}
+  - {fileID: 1711813854517418597}
+  - {fileID: 1876848609}
+  - {fileID: 1711813855304228112}
+  - {fileID: 1711813854413426703}
+  - {fileID: 1711813855424958200}
+  - {fileID: 1711813855437848396}
+  - {fileID: 1642699479}
+  - {fileID: 1879223510}
+  - {fileID: 717342913}
+  - {fileID: 1922136875}
+  emissionOnColor: {r: 1, g: 1, b: 1, a: 1}
+  emissionOffColor: {r: 0, g: 0, b: 0, a: 1}
   darkLightmapDir:
   - {fileID: 2800000, guid: b97d568203f6b18439a547032ba33157, type: 3}
   - {fileID: 2800000, guid: 2050c1abd242ea04b9bb2d1de325870e, type: 3}
@@ -27870,21 +27888,10 @@ MonoBehaviour:
   audioSource: {fileID: 4035614700487301930}
   switchOnSFX: {fileID: 8300000, guid: c76d5ea0160eb61438d07e36174d05a2, type: 3}
   switchOffSFX: {fileID: 8300000, guid: c76d5ea0160eb61438d07e36174d05a2, type: 3}
+  powerOutageSFX: {fileID: 8300000, guid: 2360eb2cbeae3614c98eeb459dcac37b, type: 3}
   onPowerRestored:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1919780355818783681}
-        m_TargetAssemblyTypeName: TensionManager, Assembly-CSharp
-        m_MethodName: ActivateTensionSystem
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   onPowerSevered:
     m_PersistentCalls:
       m_Calls: []
@@ -34835,7 +34842,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -34971,7 +34978,7 @@ Transform:
   m_GameObject: {fileID: 3264200463996576517}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.25, y: 9.3125, z: 10.18}
+  m_LocalPosition: {x: -0.25, y: 2.8125, z: 10.18}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -35658,7 +35665,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 120365700828333423, guid: 6f6135c4db20f5843b520270b5999bf1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 7.25
+      value: 0.75
       objectReference: {fileID: 0}
     - target: {fileID: 120365700828333423, guid: 6f6135c4db20f5843b520270b5999bf1, type: 3}
       propertyPath: m_LocalPosition.z
@@ -38600,7 +38607,6 @@ Transform:
   - {fileID: 9204291935857880910}
   - {fileID: 1539274766}
   - {fileID: 1576472774}
-  - {fileID: 1043631703}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6194411517192597947
@@ -43814,6 +43820,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8851785811058219144, guid: dc340aca236faab4a863f86438944f85, type: 3}
   m_PrefabInstance: {fileID: 4645548676609680663}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &7975478967227562484 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6631027862186263589, guid: dc340aca236faab4a863f86438944f85, type: 3}
+  m_PrefabInstance: {fileID: 4645548676609680663}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7992905524604694632
 Transform:
   m_ObjectHideFlags: 0
@@ -44883,10 +44894,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GeneratorPowerSystem
   interactionChannel: {fileID: 11400000, guid: cb19ddd6cccc2bb4491ea76187c72150, type: 2}
-  hasFuel: 0
-  isPoweredOn: 0
+  hasFuel: 1
+  isPoweredOn: 1
   maxFuel: 100
-  fuelDrainRate: 0.14
+  fuelDrainRate: 0.1
   holdInteraction: {fileID: 2898609083016923158}
   fuelMiniGame: {fileID: 500252909189684605}
   noFuelPrompt: Fuel Empty

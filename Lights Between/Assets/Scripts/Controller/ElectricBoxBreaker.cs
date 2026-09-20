@@ -11,7 +11,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     [SerializeField] private GeneratorPowerSystem connectedGenerator;
 
     [Header("Breaker State")]
-    [SerializeField] private bool isLeverUp = false;
+    [SerializeField] private bool isLeverUp = true;
     [SerializeField] private float smoothSpeed = 1.5f;
 
     [Header("Lever Handle Animation")]
@@ -23,10 +23,15 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     [SerializeField] private Light[] connectedLights;
     [SerializeField] private GameObject[] connectedLightObjects;
 
-    [Header("Light Materials")]
-    [SerializeField] private Renderer[] lightRenderers;
+    [Header("Material Swapping Renderers")]
+    [SerializeField] private Renderer[] swappableLightRenderers;
     [SerializeField] private Material lightOffMaterial;
     [SerializeField] private Material lightOnMaterial;
+
+    [Header("Emission Toggling Renderers")]
+    [SerializeField] private Renderer[] emissiveLightRenderers;
+    [SerializeField] private Color emissionOnColor = Color.white;
+    [SerializeField] private Color emissionOffColor = Color.black;
 
     [Header("Baked Lightmaps")]
     [SerializeField] private Texture2D[] darkLightmapDir;
@@ -38,6 +43,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip switchOnSFX;
     [SerializeField] private AudioClip switchOffSFX;
+    [SerializeField] private AudioClip powerOutageSFX;
 
     [Header("Events")]
     public UnityEvent onPowerRestored;
@@ -54,6 +60,11 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     private LightmapData[] darkLightmaps;
     private LightmapData[] brightLightmaps;
 
+    private MaterialPropertyBlock emissionPropertyBlock;
+    private static readonly int EmissionColorID = Shader.PropertyToID("_EmissionColor");
+
+    private bool previousGridState;
+
     public bool IsGridActive => isLeverUp && connectedGenerator != null && connectedGenerator.CurrentPower > 0f;
 
     private void Awake()
@@ -67,6 +78,8 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
             leverHandleTransform.localRotation = isLeverUp ? onRotation : offRotation;
         }
 
+        emissionPropertyBlock = new MaterialPropertyBlock();
+
         BuildLightmapDataCache();
         UpdatePromptMessage();
     }
@@ -79,6 +92,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
             connectedGenerator.onGeneratorStopped.AddListener(RefreshPowerGrid);
         }
 
+        previousGridState = IsGridActive;
         RefreshPowerGrid();
     }
 
@@ -98,8 +112,8 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
         if (audioSource != null)
         {
-            audioSource.clip = isLeverUp ? switchOnSFX : switchOffSFX;
-            audioSource.Play();
+            AudioClip primarySFX = isLeverUp ? switchOnSFX : switchOffSFX;
+            if (primarySFX != null) audioSource.PlayOneShot(primarySFX);
         }
 
         if (rotationCoroutine != null)
@@ -120,8 +134,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
         if (audioSource != null && switchOffSFX != null)
         {
-            audioSource.clip = switchOffSFX;
-            audioSource.Play();
+            audioSource.PlayOneShot(switchOffSFX);
         }
 
         if (rotationCoroutine != null)
@@ -141,7 +154,8 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
         SwitchLightmaps(targetState);
         UpdateLightsState(targetState);
-        UpdateLightMaterials(targetState);
+        UpdateSwappedMaterials(targetState);
+        UpdateEmissiveMaterials(targetState);
 
         if (targetState)
         {
@@ -149,12 +163,19 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         }
         else
         {
+            if (previousGridState && audioSource != null && powerOutageSFX != null)
+            {
+                audioSource.PlayOneShot(powerOutageSFX);
+            }
+
             onPowerSevered?.Invoke();
         }
+
+        previousGridState = targetState;
     }
 
     private void BuildLightmapDataCache()
-    {        
+    {
         if (darkLightmapColour != null)
         {
             int darkCount = darkLightmapColour.Length;
@@ -213,13 +234,13 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         }
     }
 
-    private void UpdateLightMaterials(bool lightsAreOn)
+    private void UpdateSwappedMaterials(bool lightsAreOn)
     {
-        if (lightRenderers == null || lightOffMaterial == null || lightOnMaterial == null) return;
+        if (swappableLightRenderers == null || lightOffMaterial == null || lightOnMaterial == null) return;
 
-        for (int i = 0; i < lightRenderers.Length; i++)
+        for (int i = 0; i < swappableLightRenderers.Length; i++)
         {
-            Renderer lightRenderer = lightRenderers[i];
+            Renderer lightRenderer = swappableLightRenderers[i];
             if (lightRenderer == null) continue;
 
             Material[] sharedMats = lightRenderer.sharedMaterials;
@@ -245,6 +266,36 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
             if (materialModified)
             {
                 lightRenderer.sharedMaterials = sharedMats;
+            }
+        }
+    }
+
+    private void UpdateEmissiveMaterials(bool lightsAreOn)
+    {
+        if (emissiveLightRenderers == null) return;
+
+        for (int i = 0; i < emissiveLightRenderers.Length; i++)
+        {
+            Renderer lightRenderer = emissiveLightRenderers[i];
+            if (lightRenderer == null) continue;
+
+            lightRenderer.GetPropertyBlock(emissionPropertyBlock);
+            emissionPropertyBlock.SetColor(EmissionColorID, lightsAreOn ? emissionOnColor : emissionOffColor);
+            lightRenderer.SetPropertyBlock(emissionPropertyBlock);
+
+            Material[] sharedMats = lightRenderer.sharedMaterials;
+            for (int j = 0; j < sharedMats.Length; j++)
+            {
+                if (sharedMats[j] == null) continue;
+
+                if (lightsAreOn)
+                {
+                    sharedMats[j].EnableKeyword("_EMISSION");
+                }
+                else
+                {
+                    sharedMats[j].DisableKeyword("_EMISSION");
+                }
             }
         }
     }

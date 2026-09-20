@@ -2,11 +2,19 @@ using UnityEngine;
 
 public class TVController : MonoBehaviour, IInteractable
 {
+    [Header("Power Connection")]
+    [SerializeField] private ElectricBoxBreaker connectedBreaker;
+
     [Header("Screen References")]
     [SerializeField] private MeshRenderer tvScreenRenderer;
     [SerializeField] private int screenMaterialIndex = 0;
     [SerializeField] private Material tvOffMaterial;
     [SerializeField] private Material tvOnMaterial;
+
+    [Header("Indicator Light / Emission Settings")]
+    [SerializeField] private Renderer tvLightRenderer;
+    [SerializeField] private Color emissionOnColor = Color.red;
+    [SerializeField] private Color emissionOffColor = Color.black;
 
     [Header("Audio Settings")]
     [SerializeField] private AudioSource tvAudioSource;
@@ -20,13 +28,42 @@ public class TVController : MonoBehaviour, IInteractable
 
     public bool IsTVOn { get; private set; }
 
+    private MaterialPropertyBlock emissionPropertyBlock;
+    private static readonly int EmissionColorID = Shader.PropertyToID("_EmissionColor");
+
     private void Awake()
     {
-        //SetTVState(false);
+        emissionPropertyBlock = new MaterialPropertyBlock();
+
+        if (connectedBreaker == null)
+        {
+            connectedBreaker = Object.FindFirstObjectByType<ElectricBoxBreaker>();
+        }
+    }
+
+    private void OnEnable()
+    {
+        if (connectedBreaker != null)
+        {
+            connectedBreaker.OnPowerGridStateChanged += HandlePowerGridStateChanged;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (connectedBreaker != null)
+        {
+            connectedBreaker.OnPowerGridStateChanged -= HandlePowerGridStateChanged;
+        }
     }
 
     public void Interact()
     {
+        if (connectedBreaker != null && !connectedBreaker.IsGridActive)
+        {
+            return;
+        }
+
         SetTVState(!IsTVOn);
     }
 
@@ -45,7 +82,10 @@ public class TVController : MonoBehaviour, IInteractable
             }
         }
 
-        // 2. Manage Audio
+        // 2. Update Emission (Red Light)
+        UpdateEmissionState(IsTVOn);
+
+        // 3. Manage Audio
         if (tvAudioSource != null)
         {
             tvAudioSource.Stop();
@@ -62,6 +102,38 @@ public class TVController : MonoBehaviour, IInteractable
                 tvAudioSource.loop = true;
                 tvAudioSource.Play();
             }
+        }
+    }
+
+    private void UpdateEmissionState(bool isEmissiveOn)
+    {
+        if (tvLightRenderer == null) return;
+
+        tvLightRenderer.GetPropertyBlock(emissionPropertyBlock);
+        emissionPropertyBlock.SetColor(EmissionColorID, isEmissiveOn ? emissionOnColor : emissionOffColor);
+        tvLightRenderer.SetPropertyBlock(emissionPropertyBlock);
+
+        Material[] sharedMats = tvLightRenderer.sharedMaterials;
+        for (int i = 0; i < sharedMats.Length; i++)
+        {
+            if (sharedMats[i] == null) continue;
+
+            if (isEmissiveOn)
+            {
+                sharedMats[i].EnableKeyword("_EMISSION");
+            }
+            else
+            {
+                sharedMats[i].DisableKeyword("_EMISSION");
+            }
+        }
+    }
+
+    private void HandlePowerGridStateChanged(bool isPowerActive)
+    {
+        if (!isPowerActive && IsTVOn)
+        {
+            SetTVState(false);
         }
     }
 
