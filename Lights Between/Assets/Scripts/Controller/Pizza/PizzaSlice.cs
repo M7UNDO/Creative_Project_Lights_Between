@@ -3,13 +3,24 @@ using UnityEngine;
 public class PizzaSlice : MonoBehaviour, IInteractable
 {
     [SerializeField] private string promptMessage = "Eat Slice";
-    [SerializeField] private DialogueSO mustSitDialogue;
+
+    [Header("Monologue References")]
+    [SerializeField] private DialogueSO mustSitDialogue;      // "I should sit down to eat..."
+    [SerializeField] private DialogueSO turnOnTVDialogue;     // "I wanted to watch some TV while eating..."
+
+    [Header("TV Reference")]
+    [SerializeField] private TVController tvController;
 
     private PizzaEatingPlate parentPlate;
 
     private void Awake()
     {
         parentPlate = GetComponentInParent<PizzaEatingPlate>();
+
+        if (tvController == null)
+        {
+            tvController = FindFirstObjectByType<TVController>();
+        }
     }
 
     public void Interact()
@@ -18,7 +29,6 @@ public class PizzaSlice : MonoBehaviour, IInteractable
 
         if (player != null && !player.isSeated)
         {
-            // Play Miguel's internal monologue if he tries to eat standing up
             if (DialogueManager.Instance != null && mustSitDialogue != null)
             {
                 DialogueManager.Instance.StartDialogue(mustSitDialogue);
@@ -26,6 +36,16 @@ public class PizzaSlice : MonoBehaviour, IInteractable
             return;
         }
 
+        if (tvController != null && !tvController.IsTVOn)
+        {
+            if (DialogueManager.Instance != null && turnOnTVDialogue != null)
+            {
+                DialogueManager.Instance.StartDialogue(turnOnTVDialogue);
+            }
+            return;
+        }
+
+        // Both conditions met -> Eat slice
         if (parentPlate != null && CanInteract())
         {
             parentPlate.EatSlice(this);
@@ -41,7 +61,8 @@ public class PizzaSlice : MonoBehaviour, IInteractable
     {
         FPSController player = FindFirstObjectByType<FPSController>();
         bool playerIsSeated = player != null && player.isSeated;
+        bool isTvOn = tvController != null && tvController.IsTVOn;
 
-        return playerIsSeated && parentPlate != null && parentPlate.CanEatSlice();
+        return playerIsSeated && isTvOn && parentPlate != null && parentPlate.CanEatSlice();
     }
 }

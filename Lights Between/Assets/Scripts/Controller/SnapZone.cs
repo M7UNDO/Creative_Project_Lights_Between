@@ -18,6 +18,10 @@ public class SnapZone : MonoBehaviour, IInteractable
     [SerializeField] private string interactionEventID = InteractionIDs.PackBags;
     [SerializeField] private AudioClip snapSFX;
 
+    [Header("Invalid Item Dialogue")]
+    [SerializeField] private string invalidItemID = "UncookedPizza";
+    [SerializeField] private DialogueSO invalidItemDialogue;
+
     [Header("Dialogue Trigger")]
     [SerializeField] private DialogueSO postSnapDialogue;
 
@@ -29,6 +33,15 @@ public class SnapZone : MonoBehaviour, IInteractable
         if (player == null) return;
 
         ObjectGrabbable heldItem = player.CurrentGrabbable;
+
+        if (heldItem != null && heldItem.ItemID == invalidItemID)
+        {
+            if (DialogueManager.Instance != null && invalidItemDialogue != null)
+            {
+                DialogueManager.Instance.StartDialogue(invalidItemDialogue);
+            }
+            return;
+        }
 
         if (heldItem != null && heldItem.ItemID == requiredItemID)
         {
@@ -65,15 +78,23 @@ public class SnapZone : MonoBehaviour, IInteractable
 
     public bool CanSnap(ObjectGrabbable heldItem)
     {
+        if (heldItem != null && heldItem.ItemID == invalidItemID) return true;
+
         return heldItem != null && heldItem.ItemID == requiredItemID && currentSnappedCount < requiredItemCount;
     }
 
     public string GetPromptMessage(ObjectGrabbable heldItem)
     {
+        if (heldItem != null && heldItem.ItemID == invalidItemID)
+        {
+            return "Place Pizza";
+        }
+
         if (CanSnap(heldItem))
         {
             return $"{promptText} ({currentSnappedCount}/{requiredItemCount})";
         }
+
         return string.Empty;
     }
 }

@@ -737,17 +737,18 @@ public class FPSController : MonoBehaviour
     }
 
     public void ForceEquipGrabbable(ObjectGrabbable grabbable)
-{
-    if (grabbable == null) return;
-
-    _currentGrabbable = grabbable;
-    _currentGrabbable.Grab(objectGrabPointTransform, GetLayerFromMask(heldLayer));
-
-    if (dropUI != null)
     {
-        dropUI.SetActive(true);
+        if (grabbable == null) return;
+
+        _currentGrabbable = grabbable;
+        _currentGrabbable.Grab(objectGrabPointTransform, GetLayerFromMask(heldLayer));
+
+        if (dropUI != null)
+        {
+            dropUI.SetActive(true);
+        }
+
     }
-}
 
     public void ClearCurrentGrabbableForSnap(Transform snapTarget, bool destroyOnSnap)
     {
@@ -841,7 +842,25 @@ public class FPSController : MonoBehaviour
     {
         isDialogueActive = dialogue;
 
-        ClearInteractionState();
+        currentInteractable = null;
+        isInteractable = false;
+
+        if(CurrentGrabbable != null)
+        {
+            if (dropUI != null)
+            {
+                dropUI.SetActive(!dialogue);
+            }
+        }
+
+        
+
+        if (_currentWorldUI != null)
+        {
+            _currentWorldUI.HidePrompt();
+            _currentWorldUI = null;
+        }
+
         UpdateCrosshair();
 
         if (_input != null)
