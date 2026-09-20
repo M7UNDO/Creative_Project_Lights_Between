@@ -50,13 +50,8 @@ public class StoryManager : MonoBehaviour
         CurrentBeat = beat;
         OnStoryBeatStarted?.Invoke(CurrentBeat);
 
-        if (ObjectiveManager.Instance != null)
-        {
-            foreach (ObjectiveSO obj in CurrentBeat.ActiveObjectives)
-            {
-                ObjectiveManager.Instance.ActivateObjective(obj);
-            }
-        }
+        // REMOVED: Automatic ActivateObjective() foreach loop.
+        // Objectives are now activated organically by scene triggers, notes, and dialogues!
     }
 
     private void HandleObjectiveStateChanged(ObjectiveSO objectiveDef, ObjectiveStatus status)

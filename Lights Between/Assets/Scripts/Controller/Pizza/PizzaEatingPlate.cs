@@ -10,9 +10,11 @@ public class PizzaEatingPlate : MonoBehaviour
 
     [Header("Events & Audio")]
     [SerializeField] private StringGameEventSO interactionChannel;
-    [SerializeField] private string interactionEventID = "DinnerEaten";
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip chewingSFX;
+
+    [Header("Dialogue")]
+    [SerializeField] private DialogueSO dialogueSO;
 
     private int slicesEatenCount = 0;
     private int totalSlices = 0;
@@ -67,8 +69,17 @@ public class PizzaEatingPlate : MonoBehaviour
 
             if (interactionChannel != null)
             {
-                interactionChannel.Raise(interactionEventID);
+                interactionChannel.Raise(InteractionIDs.EatDinner);
+            }
+
+            yield return new WaitForSeconds(2f);
+            
+            if(DialogueManager.Instance != null)
+            {
+                DialogueManager.Instance.StartDialogue(dialogueSO);
             }
         }
     }
+
+
 }

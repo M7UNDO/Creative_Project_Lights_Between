@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f16982f202bdd4e4582f8e023d881e6e, type: 3}
-  m_Name: Beat_01_SettlingIn
+  m_Name: Beat_02_EatDinner
   m_EditorClassIdentifier: Assembly-CSharp::StoryBeatSO
-  beatID: beat_01_settling_in
-  activeObjectives: []
+  beatID: Beat02_Dinner
+  activeObjectives:
+  - {fileID: 11400000, guid: cade134e976b4d848a968c4e532c55ff, type: 2}
   completionStoryEvent: {fileID: 11400000, guid: 89932dd89cb81544098c304821743345, type: 2}
-  nextBeat: {fileID: 0}
+  nextBeat: {fileID: 11400000, guid: 649fb6187fce1674e83fb48955b9d25f, type: 2}

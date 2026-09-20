@@ -243,12 +243,13 @@ public class FPSController : MonoBehaviour
         {
             if (_input != null && (_input.standUp || _input.cancel))
             {
+                _input.standUp = false;
+                _input.cancel = false;
+
                 if (CurrentPoseAnchor != null)
                 {
                     CurrentPoseAnchor.RequestStandUp();
                 }
-                _input.standUp = false;
-                _input.cancel = false;
             }
         }
 

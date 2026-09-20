@@ -9,10 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f16982f202bdd4e4582f8e023d881e6e, type: 3}
-  m_Name: Beat_02_Phone Call
-  m_EditorClassIdentifier: Assembly-CSharp::StoryBeatSO
-  beatID: 
-  activeObjectives: []
-  completionStoryEvent: {fileID: 0}
-  nextBeat: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 4b56bb05faf1e004fb5e83968f9b3b7b, type: 3}
+  m_Name: Obj_GoToSleep
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectiveSO
+  id: go_to_sleep
+  title: Go to sleep
+  description: 
+  targetInteractionID: GoToSleep

@@ -229,6 +229,8 @@ GameObject:
   - component: {fileID: 13509926}
   - component: {fileID: 13509928}
   - component: {fileID: 13509927}
+  - component: {fileID: 13509929}
+  - component: {fileID: 13509930}
   m_Layer: 5
   m_Name: StandTxt
   m_TagString: Untagged
@@ -275,7 +277,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Press [Space] to stand up
+  m_text: Press {0} to stand up
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5c0410307b56a964598b6b92142e6d80, type: 2}
   m_sharedMaterial: {fileID: -5722132103952675201, guid: 5c0410307b56a964598b6b92142e6d80, type: 2}
@@ -294,7 +296,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
+  m_spriteAsset: {fileID: 11400000, guid: 1f1a624077f0263479550cc34d1a06b6, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -355,6 +357,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 13509925}
   m_CullTransparentMesh: 1
+--- !u!114 &13509929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13509925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef54f2e002b07b9438161237b6ad261f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InputTextPrompt
+  textComponent: {fileID: 13509927}
+  formatTemplate: Press {0} to stand up
+  keyboardInputText: '[Space]'
+  xboxSpriteName: Y
+  playstationSpriteName: Triangle
+--- !u!225 &13509930
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13509925}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1001 &19708158
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3440,8 +3471,8 @@ MonoBehaviour:
   snapPoints: []
   destroyObjectOnSnap: 1
   enableVisualOnSnap: {fileID: 3707524035243498680}
-  interactionChannel: {fileID: 11400000, guid: cb19ddd6cccc2bb4491ea76187c72150, type: 2}
-  interactionEventID: PackBags
+  interactionChannel: {fileID: 0}
+  interactionEventID: 
   snapSFX: {fileID: 0}
   invalidItemID: UncookedPizza
   invalidItemDialogue: {fileID: 11400000, guid: 82e94e05b6963e941ac78c6ed4dfe599, type: 2}
@@ -8499,9 +8530,9 @@ MonoBehaviour:
   - {fileID: 486797454}
   eatDelayDuration: 3
   interactionChannel: {fileID: 11400000, guid: cb19ddd6cccc2bb4491ea76187c72150, type: 2}
-  interactionEventID: DinnerEaten
   audioSource: {fileID: 890122464}
   chewingSFX: {fileID: 8300000, guid: 1652744533a933a40a58282dfab4b278, type: 3}
+  dialogueSO: {fileID: 11400000, guid: 38638c1bc20a97b41af55cdd2105233a, type: 2}
 --- !u!82 &890122464
 AudioSource:
   m_ObjectHideFlags: 0
@@ -8696,7 +8727,7 @@ GameObject:
   m_Component:
   - component: {fileID: 897692187}
   m_Layer: 7
-  m_Name: SitPosition (1)
+  m_Name: StandPosition
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8711,7 +8742,7 @@ Transform:
   m_GameObject: {fileID: 897692186}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0000081327225, y: 97.22223, z: 97.22223}
+  m_LocalPosition: {x: -0.0000081327225, y: 32.777805, z: 97.22223}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13595,6 +13626,7 @@ GameObject:
   - component: {fileID: 1528216396}
   - component: {fileID: 1528216398}
   - component: {fileID: 1528216397}
+  - component: {fileID: 1528216399}
   m_Layer: 5
   m_Name: DropItemTxt
   m_TagString: Untagged
@@ -13660,7 +13692,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
+  m_spriteAsset: {fileID: 11400000, guid: 1f1a624077f0263479550cc34d1a06b6, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -13721,6 +13753,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1528216395}
   m_CullTransparentMesh: 1
+--- !u!114 &1528216399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1528216395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef54f2e002b07b9438161237b6ad261f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InputTextPrompt
+  textComponent: {fileID: 1528216397}
+  formatTemplate: Press {0} to drop
+  keyboardInputText: '[G]'
+  xboxSpriteName: Y
+  playstationSpriteName: Triangle
 --- !u!114 &1532045301 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2636037918575261767, guid: 11f9b4168ae09c94f90dd8f9ca288e46, type: 3}
@@ -46176,6 +46225,8 @@ MonoBehaviour:
   sitPrompt: Sit Down
   standPrompt: Stand Up
   fadeDuration: 0.4
+  uiDisplayDuration: 5
+  uiFadeSpeed: 2
   interactionChannel: {fileID: 0}
   interactionEventID: 
 --- !u!1 &9110196109548346534

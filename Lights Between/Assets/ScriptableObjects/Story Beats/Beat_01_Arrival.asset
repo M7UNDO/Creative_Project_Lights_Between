@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f16982f202bdd4e4582f8e023d881e6e, type: 3}
+  m_Name: Beat_01_Arrival
+  m_EditorClassIdentifier: Assembly-CSharp::StoryBeatSO
+  beatID: Beat01_Arrival
+  activeObjectives:
+  - {fileID: 11400000, guid: e751466cbc1287541846e399a61775e0, type: 2}
+  completionStoryEvent: {fileID: 11400000, guid: 89932dd89cb81544098c304821743345, type: 2}
+  nextBeat: {fileID: 11400000, guid: cd6c9014c51f21344b995b2d30f7af70, type: 2}
