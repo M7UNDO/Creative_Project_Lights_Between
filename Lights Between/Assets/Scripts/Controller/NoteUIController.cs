@@ -15,7 +15,8 @@ public class NoteUIController : MonoBehaviour
     [Header("Objective Activation (Scenario A)")]
     [SerializeField] private ObjectiveSO objectiveToActivate;
 
-    [SerializeField] private RotatingOpenable fridgeDoor;
+    [Header("Fridge / Door Lock Reference")]
+    [SerializeField] private BaseOpenable fridgeToUnlock;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -118,15 +119,15 @@ public class NoteUIController : MonoBehaviour
     {
         if (hasTriggeredObjective) return;
 
+        if (fridgeToUnlock != null)
+        {
+            fridgeToUnlock.SetLockedState(false);
+        }
+
         if (ObjectiveManager.Instance != null && objectiveToActivate != null)
         {
             ObjectiveManager.Instance.ActivateObjective(objectiveToActivate);
             hasTriggeredObjective = true;
-        }
-
-        if(fridgeDoor != null)
-        {
-            fridgeDoor.enabled = true;
         }
         
 

@@ -13613,7 +13613,7 @@ MonoBehaviour:
   notePanelUI: {fileID: 1917339713}
   noteText: {fileID: 1554897373}
   objectiveToActivate: {fileID: 11400000, guid: cade134e976b4d848a968c4e532c55ff, type: 2}
-  fridgeDoor: {fileID: 1997575600331624964}
+  fridgeToUnlock: {fileID: 1997575600331624964}
   audioSource: {fileID: 1539274768}
   openNoteSound: {fileID: 8300000, guid: 97f3f6791f497e44da0666a0e0b6e047, type: 3}
   closeNoteSound: {fileID: 8300000, guid: fe5e7bd859d00b64380b66f589d22007, type: 3}
@@ -25753,16 +25753,19 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 501009902}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3fc10d8edfb20c6428452ec974cbfce0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RotatingOpenable
+  isLocked: 1
+  lockedPrompt: Locked
   isOpen: 0
   smoothSpeed: 0.5
   customObjectName: Object
   openSFX: {fileID: 8300000, guid: dddf0dcca59db1f42abe91c16ec950be, type: 3}
   closeSFX: {fileID: 8300000, guid: 292beff69c1964e448e665bf25a45885, type: 3}
+  lockedSFX: {fileID: 0}
   closedLocalRotationEuler: {x: -90, y: 0, z: -180}
   openLocalRotationEuler: {x: -90, y: 0, z: -300}
 --- !u!1001 &2009180295529102453
@@ -27175,11 +27178,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fc10d8edfb20c6428452ec974cbfce0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RotatingOpenable
+  isLocked: 0
+  lockedPrompt: Locked
   isOpen: 0
   smoothSpeed: 1
   customObjectName: Electric Box
   openSFX: {fileID: 8300000, guid: c5dbd1791fbbe5c41a3a30cde917ce83, type: 3}
   closeSFX: {fileID: 8300000, guid: 4ff3df4487461534db3e4c4408162833, type: 3}
+  lockedSFX: {fileID: 0}
   closedLocalRotationEuler: {x: -90, y: 0, z: 0}
   openLocalRotationEuler: {x: 30, y: 90, z: -90}
 --- !u!1 &2625817753851148523

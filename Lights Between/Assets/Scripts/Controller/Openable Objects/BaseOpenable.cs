@@ -4,6 +4,10 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public abstract class BaseOpenable : MonoBehaviour, IInteractable
 {
+    [Header("Lock Settings")]
+    [SerializeField] protected bool isLocked = false;
+    [SerializeField] protected string lockedPrompt = "Locked";
+
     [Header("State Settings")]
     public bool isOpen = false;
     [SerializeField] protected float smoothSpeed = 1.0f;
@@ -12,11 +16,12 @@ public abstract class BaseOpenable : MonoBehaviour, IInteractable
     [Header("Audio Settings")]
     [SerializeField] private AudioClip openSFX;
     [SerializeField] private AudioClip closeSFX;
+    [SerializeField] private AudioClip lockedSFX;
 
     protected AudioSource audioSource;
     protected Coroutine animationCoroutine;
 
-    public string promptMessage { get; private set; }
+    public string promptMessage { get; protected set; }
 
     protected virtual void Awake()
     {
@@ -24,8 +29,27 @@ public abstract class BaseOpenable : MonoBehaviour, IInteractable
         UpdatePromptMessage();
     }
 
+    public virtual bool CanInteract()
+    {
+        return !isLocked && !NoteUIController.isNoteOpen;
+    }
+
+    public void SetLockedState(bool locked)
+    {
+        isLocked = locked;
+        UpdatePromptMessage();
+    }
+
     public virtual void Interact()
     {
+        if (isLocked)
+        {
+            PlayLockedSFX();
+            return;
+        }
+
+        if (!CanInteract()) return;
+
         isOpen = !isOpen;
         UpdatePromptMessage();
         PlayInteractionSFX();
@@ -37,9 +61,21 @@ public abstract class BaseOpenable : MonoBehaviour, IInteractable
         animationCoroutine = StartCoroutine(AnimateTransition());
     }
 
-    private void UpdatePromptMessage()
+    public void UpdatePromptMessage()
     {
-        promptMessage = isOpen ? "Close":"Open";
+        if (isLocked)
+        {
+            promptMessage = lockedPrompt;
+            return;
+        }
+
+        if (NoteUIController.isNoteOpen)
+        {
+            promptMessage = string.Empty;
+            return;
+        }
+
+        promptMessage = isOpen ? "Close" : "Open";
     }
 
     private void PlayInteractionSFX()
@@ -52,6 +88,14 @@ public abstract class BaseOpenable : MonoBehaviour, IInteractable
                 audioSource.clip = clipToPlay;
                 audioSource.Play();
             }
+        }
+    }
+
+    private void PlayLockedSFX()
+    {
+        if (audioSource != null && lockedSFX != null)
+        {
+            audioSource.PlayOneShot(lockedSFX);
         }
     }
 
