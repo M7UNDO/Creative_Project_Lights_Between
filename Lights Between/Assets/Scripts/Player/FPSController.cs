@@ -100,6 +100,9 @@ public class FPSController : MonoBehaviour
     private ObjectGrabbable _currentGrabbable;
     public ObjectGrabbable CurrentGrabbable => _currentGrabbable;
 
+    [Header("Sitting & Sleeping State")]
+    public bool isSeated { get; private set; }
+
     [Header("Proximity & Occlusion Settings")]
     [SerializeField] private LayerMask occlusionLayer;
     private WorldSpaceInteractableUI _currentWorldUI;
@@ -161,6 +164,8 @@ public class FPSController : MonoBehaviour
             }
         }
     }
+
+
 
     public bool isInDialogue { get; private set; }
 
@@ -254,8 +259,12 @@ public class FPSController : MonoBehaviour
         ApplyGravity();
         GroundedCheck();
 
-        Move();
-        HandleFootsteps();
+        if (!isSeated)
+        {
+            Move();
+            HandleFootsteps();
+        }
+
         DetectInteractable();
         UpdateCrosshair();
         Interact();
@@ -271,6 +280,29 @@ public class FPSController : MonoBehaviour
     {
         float targetMultiplier = isDialogueActive ? dialogueSensitivityMultiplier : 1.0f;
         _currentSensitivityMultiplier = Mathf.Lerp(_currentSensitivityMultiplier, targetMultiplier, Time.deltaTime * sensitivityTransitionSpeed);
+    }
+
+    public void SetSeatedState(bool seated, Transform seatPoint = null, Transform lookAtTarget = null)
+    {
+        isSeated = seated;
+
+        if (seated && seatPoint != null)
+        {
+            Teleport(seatPoint.position, seatPoint.rotation);
+
+            if (lookAtTarget != null)
+            {
+                ForceLookAt(lookAtTarget.position);
+            }
+        }
+
+        if (_input != null)
+        {
+            _input.move = Vector2.zero;
+            _input.sprint = false;
+        }
+
+        StopFootsteps();
     }
 
     private void GroundedCheck()
