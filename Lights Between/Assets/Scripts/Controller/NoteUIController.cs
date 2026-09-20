@@ -15,6 +15,8 @@ public class NoteUIController : MonoBehaviour
     [Header("Objective Activation (Scenario A)")]
     [SerializeField] private ObjectiveSO objectiveToActivate;
 
+    [SerializeField] private RotatingOpenable fridgeDoor;
+
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip openNoteSound;
@@ -121,5 +123,13 @@ public class NoteUIController : MonoBehaviour
             ObjectiveManager.Instance.ActivateObjective(objectiveToActivate);
             hasTriggeredObjective = true;
         }
+
+        if(fridgeDoor != null)
+        {
+            fridgeDoor.enabled = true;
+        }
+        
+
+
     }
 }
