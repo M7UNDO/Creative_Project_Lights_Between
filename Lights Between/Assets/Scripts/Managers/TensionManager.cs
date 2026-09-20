@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class TensionManager : MonoBehaviour
 {
-    [Header("References")]
+    /*[Header("References")]
     [SerializeField] private PlayerLightStatus playerLightStatus;
     [SerializeField] private CreatureAI creatureAI;
     [SerializeField] private Image tensionFillBar;
@@ -102,5 +102,5 @@ public class TensionManager : MonoBehaviour
         currentTension = 0f;
         hasTriggeredKill = false;
         UpdateUI();
-    }
+    }*/
 }

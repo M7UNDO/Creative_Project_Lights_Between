@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 using UnityEngine.AI;
 
 public interface ICreatureState
@@ -252,7 +252,6 @@ public class CreatureDynamicState : ICreatureState
     private bool isSabotaging;
 
     private SabotageTargetType currentTargetType;
-    private LightSwitch targetLightSwitch;
     private ElectricBoxBreaker targetBreaker;
     private GeneratorPowerSystem targetGenerator;
 
@@ -458,4 +457,4 @@ public class CreatureDynamicState : ICreatureState
     }
 
     public void Exit() { }
-}
+}*/

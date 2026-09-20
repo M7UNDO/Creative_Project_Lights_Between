@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -334,4 +334,4 @@ public class CreatureAI : MonoBehaviour
 
         animator.SetFloat(speedParameter, animationSpeed);
     }
-}
+}*/

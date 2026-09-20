@@ -28,6 +28,12 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     [SerializeField] private Material lightOffMaterial;
     [SerializeField] private Material lightOnMaterial;
 
+    [Header("Baked Lightmaps")]
+    [SerializeField] private Texture2D[] darkLightmapDir;
+    [SerializeField] private Texture2D[] darkLightmapColour;
+    [SerializeField] private Texture2D[] brightLightmapDir;
+    [SerializeField] private Texture2D[] brightLightmapColour;
+
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip switchOnSFX;
@@ -45,6 +51,9 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     private Quaternion onRotation;
     private Coroutine rotationCoroutine;
 
+    private LightmapData[] darkLightmaps;
+    private LightmapData[] brightLightmaps;
+
     public bool IsGridActive => isLeverUp && connectedGenerator != null && connectedGenerator.CurrentPower > 0f;
 
     private void Awake()
@@ -58,6 +67,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
             leverHandleTransform.localRotation = isLeverUp ? onRotation : offRotation;
         }
 
+        BuildLightmapDataCache();
         UpdatePromptMessage();
     }
 
@@ -129,22 +139,8 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
         OnPowerGridStateChanged?.Invoke(targetState);
 
-        if (connectedLights != null)
-        {
-            foreach (Light light in connectedLights)
-            {
-                if (light != null) light.enabled = targetState;
-            }
-        }
-
-        if (connectedLightObjects != null)
-        {
-            foreach (GameObject lightObj in connectedLightObjects)
-            {
-                if (lightObj != null) lightObj.SetActive(targetState);
-            }
-        }
-
+        SwitchLightmaps(targetState);
+        UpdateLightsState(targetState);
         UpdateLightMaterials(targetState);
 
         if (targetState)
@@ -157,31 +153,99 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         }
     }
 
+    private void BuildLightmapDataCache()
+    {        
+        if (darkLightmapColour != null)
+        {
+            int darkCount = darkLightmapColour.Length;
+            darkLightmaps = new LightmapData[darkCount];
+            for (int i = 0; i < darkCount; i++)
+            {
+                darkLightmaps[i] = new LightmapData
+                {
+                    lightmapColor = darkLightmapColour[i],
+                    lightmapDir = (darkLightmapDir != null && i < darkLightmapDir.Length) ? darkLightmapDir[i] : null
+                };
+            }
+        }
+
+        if (brightLightmapColour != null)
+        {
+            int brightCount = brightLightmapColour.Length;
+            brightLightmaps = new LightmapData[brightCount];
+            for (int i = 0; i < brightCount; i++)
+            {
+                brightLightmaps[i] = new LightmapData
+                {
+                    lightmapColor = brightLightmapColour[i],
+                    lightmapDir = (brightLightmapDir != null && i < brightLightmapDir.Length) ? brightLightmapDir[i] : null
+                };
+            }
+        }
+    }
+
+    private void SwitchLightmaps(bool isPowered)
+    {
+        LightmapData[] targetLightmaps = isPowered ? brightLightmaps : darkLightmaps;
+
+        if (targetLightmaps != null && targetLightmaps.Length > 0)
+        {
+            LightmapSettings.lightmaps = targetLightmaps;
+        }
+    }
+
+    private void UpdateLightsState(bool targetState)
+    {
+        if (connectedLights != null)
+        {
+            for (int i = 0; i < connectedLights.Length; i++)
+            {
+                if (connectedLights[i] != null) connectedLights[i].enabled = targetState;
+            }
+        }
+
+        if (connectedLightObjects != null)
+        {
+            for (int i = 0; i < connectedLightObjects.Length; i++)
+            {
+                if (connectedLightObjects[i] != null) connectedLightObjects[i].SetActive(targetState);
+            }
+        }
+    }
+
     private void UpdateLightMaterials(bool lightsAreOn)
     {
         if (lightRenderers == null || lightOffMaterial == null || lightOnMaterial == null) return;
 
-        foreach (Renderer lightRenderer in lightRenderers)
+        for (int i = 0; i < lightRenderers.Length; i++)
         {
+            Renderer lightRenderer = lightRenderers[i];
             if (lightRenderer == null) continue;
 
-            Material[] mats = lightRenderer.materials;
-            if (mats == null || mats.Length == 0) continue;
+            Material[] sharedMats = lightRenderer.sharedMaterials;
+            if (sharedMats == null || sharedMats.Length == 0) continue;
 
-            for (int i = 0; i < mats.Length; i++)
+            bool materialModified = false;
+            for (int j = 0; j < sharedMats.Length; j++)
             {
-                string matName = mats[i].name.Replace(" (Instance)", "");
-                if (lightsAreOn && matName == lightOffMaterial.name)
+                if (sharedMats[j] == null) continue;
+
+                if (lightsAreOn && sharedMats[j] == lightOffMaterial)
                 {
-                    mats[i] = lightOnMaterial;
+                    sharedMats[j] = lightOnMaterial;
+                    materialModified = true;
                 }
-                else if (!lightsAreOn && matName == lightOnMaterial.name)
+                else if (!lightsAreOn && sharedMats[j] == lightOnMaterial)
                 {
-                    mats[i] = lightOffMaterial;
+                    sharedMats[j] = lightOffMaterial;
+                    materialModified = true;
                 }
             }
 
-            lightRenderer.materials = mats;
+            if (materialModified)
+            {
+                lightRenderer.sharedMaterials = sharedMats;
+            }
         }
     }
 
