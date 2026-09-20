@@ -19,6 +19,12 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     [SerializeField] private Vector3 leverOffRotationEuler;
     [SerializeField] private Vector3 leverOnRotationEuler;
 
+    [Header("Breaker Status Indicator Lights")]
+    [SerializeField] private Renderer redStatusRenderer;
+    [SerializeField] private Renderer greenStatusRenderer;
+    [SerializeField] private Color redIndicatorColor = Color.red;
+    [SerializeField] private Color greenIndicatorColor = Color.green;
+
     [Header("Connected Power Grid Outputs")]
     [SerializeField] private Light[] connectedLights;
     [SerializeField] private GameObject[] connectedLightObjects;
@@ -156,6 +162,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         UpdateLightsState(targetState);
         UpdateSwappedMaterials(targetState);
         UpdateEmissiveMaterials(targetState);
+        UpdateStatusIndicators();
 
         if (targetState)
         {
@@ -172,6 +179,43 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         }
 
         previousGridState = targetState;
+    }
+
+    private void UpdateStatusIndicators()
+    {
+        bool hasGeneratorPower = connectedGenerator != null && connectedGenerator.CurrentPower > 0f;
+
+        // Green Indicator: ON when generator has power, OFF when no power
+        SetRendererEmission(greenStatusRenderer, hasGeneratorPower, greenIndicatorColor);
+
+        // Red Indicator: ON when generator has NO power, OFF when power is supplied
+        SetRendererEmission(redStatusRenderer, !hasGeneratorPower, redIndicatorColor);
+    }
+
+    private void SetRendererEmission(Renderer rendererTarget, bool isEmissiveOn, Color emissiveColor)
+    {
+        if (rendererTarget == null) return;
+
+        rendererTarget.GetPropertyBlock(emissionPropertyBlock);
+        emissionPropertyBlock.SetColor(EmissionColorID, isEmissiveOn ? emissiveColor : Color.black);
+        rendererTarget.SetPropertyBlock(emissionPropertyBlock);
+
+        Material[] sharedMats = rendererTarget.sharedMaterials;
+        if (sharedMats == null) return;
+
+        for (int i = 0; i < sharedMats.Length; i++)
+        {
+            if (sharedMats[i] == null) continue;
+
+            if (isEmissiveOn)
+            {
+                sharedMats[i].EnableKeyword("_EMISSION");
+            }
+            else
+            {
+                sharedMats[i].DisableKeyword("_EMISSION");
+            }
+        }
     }
 
     private void BuildLightmapDataCache()
@@ -276,27 +320,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
         for (int i = 0; i < emissiveLightRenderers.Length; i++)
         {
-            Renderer lightRenderer = emissiveLightRenderers[i];
-            if (lightRenderer == null) continue;
-
-            lightRenderer.GetPropertyBlock(emissionPropertyBlock);
-            emissionPropertyBlock.SetColor(EmissionColorID, lightsAreOn ? emissionOnColor : emissionOffColor);
-            lightRenderer.SetPropertyBlock(emissionPropertyBlock);
-
-            Material[] sharedMats = lightRenderer.sharedMaterials;
-            for (int j = 0; j < sharedMats.Length; j++)
-            {
-                if (sharedMats[j] == null) continue;
-
-                if (lightsAreOn)
-                {
-                    sharedMats[j].EnableKeyword("_EMISSION");
-                }
-                else
-                {
-                    sharedMats[j].DisableKeyword("_EMISSION");
-                }
-            }
+            SetRendererEmission(emissiveLightRenderers[i], lightsAreOn, emissionOnColor);
         }
     }
 
