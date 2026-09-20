@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,8 +14,7 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
 
     [Header("Power Settings")]
     [SerializeField] private float maxFuel = 100f;
-    [SerializeField] private float baseFuelDrainRate = 0.14f;
-    [SerializeField] private ElectricBoxBreaker connectedBreaker;
+    [SerializeField] private float fuelDrainRate = 0.14f;
     private float currentFuel;
 
     [Header("Hold Interaction")]
@@ -51,12 +51,6 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
     public bool UsesPower => isPoweredOn;
     public bool IsPowerOn => isPoweredOn;
 
-    public float CurrentTotalDrainRate
-    {
-        get;
-        private set;
-    }
-
     private void Start()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -64,11 +58,6 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
         {
             playerEquipmentManager = player.GetComponent<ToolEquipmentManager>();
             playerInventory = player.GetComponent<PlayerToolInventory>();
-        }
-
-        if (connectedBreaker == null)
-        {
-            connectedBreaker = Object.FindFirstObjectByType<ElectricBoxBreaker>();
         }
 
         currentFuel = hasFuel ? maxFuel : 0f;
@@ -108,10 +97,7 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
     {
         if (isPoweredOn)
         {
-            float additionalDrain = (connectedBreaker != null) ? connectedBreaker.GetTotalActiveLightDrain() : 0f;
-            CurrentTotalDrainRate = baseFuelDrainRate + additionalDrain;
-
-            currentFuel -= CurrentTotalDrainRate * Time.deltaTime;
+            currentFuel -= fuelDrainRate * Time.deltaTime;
             currentFuel = Mathf.Clamp(currentFuel, 0f, maxFuel);
 
             if (currentFuel <= 0f)
@@ -274,7 +260,7 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
         onGeneratorStopped?.Invoke();
     }
 
-    private System.Collections.IEnumerator PlayStartupSequence()
+    private IEnumerator PlayStartupSequence()
     {
         if (generatorAudioSource != null)
         {

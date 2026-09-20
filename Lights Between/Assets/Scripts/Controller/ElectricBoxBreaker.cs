@@ -19,6 +19,15 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     [SerializeField] private Vector3 leverOffRotationEuler;
     [SerializeField] private Vector3 leverOnRotationEuler;
 
+    [Header("Connected Power Grid Outputs")]
+    [SerializeField] private Light[] connectedLights;
+    [SerializeField] private GameObject[] connectedLightObjects;
+
+    [Header("Light Materials")]
+    [SerializeField] private Renderer[] lightRenderers;
+    [SerializeField] private Material lightOffMaterial;
+    [SerializeField] private Material lightOnMaterial;
+
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip switchOnSFX;
@@ -35,8 +44,6 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     private Quaternion offRotation;
     private Quaternion onRotation;
     private Coroutine rotationCoroutine;
-
-    private readonly List<LightSwitch> registeredSwitches = new List<LightSwitch>();
 
     public bool IsGridActive => isLeverUp && connectedGenerator != null && connectedGenerator.CurrentPower > 0f;
 
@@ -72,38 +79,6 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
             connectedGenerator.onGeneratorStarted.RemoveListener(RefreshPowerGrid);
             connectedGenerator.onGeneratorStopped.RemoveListener(RefreshPowerGrid);
         }
-    }
-
-    public void RegisterLightSwitch(LightSwitch lightSwitch)
-    {
-        if (lightSwitch != null && !registeredSwitches.Contains(lightSwitch))
-        {
-            registeredSwitches.Add(lightSwitch);
-        }
-    }
-
-    public void UnregisterLightSwitch(LightSwitch lightSwitch)
-    {
-        if (lightSwitch != null && registeredSwitches.Contains(lightSwitch))
-        {
-            registeredSwitches.Remove(lightSwitch);
-        }
-    }
-
-    public float GetTotalActiveLightDrain()
-    {
-        if (!IsGridActive) return 0f;
-
-        float totalDrain = 0f;
-        foreach (LightSwitch lightSwitch in registeredSwitches)
-        {
-            if (lightSwitch != null)
-            {
-                totalDrain += lightSwitch.CurrentPowerDrain;
-            }
-        }
-
-        return totalDrain;
     }
 
     public void Interact()
@@ -154,6 +129,24 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
         OnPowerGridStateChanged?.Invoke(targetState);
 
+        if (connectedLights != null)
+        {
+            foreach (Light light in connectedLights)
+            {
+                if (light != null) light.enabled = targetState;
+            }
+        }
+
+        if (connectedLightObjects != null)
+        {
+            foreach (GameObject lightObj in connectedLightObjects)
+            {
+                if (lightObj != null) lightObj.SetActive(targetState);
+            }
+        }
+
+        UpdateLightMaterials(targetState);
+
         if (targetState)
         {
             onPowerRestored?.Invoke();
@@ -161,6 +154,34 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         else
         {
             onPowerSevered?.Invoke();
+        }
+    }
+
+    private void UpdateLightMaterials(bool lightsAreOn)
+    {
+        if (lightRenderers == null || lightOffMaterial == null || lightOnMaterial == null) return;
+
+        foreach (Renderer lightRenderer in lightRenderers)
+        {
+            if (lightRenderer == null) continue;
+
+            Material[] mats = lightRenderer.materials;
+            if (mats == null || mats.Length == 0) continue;
+
+            for (int i = 0; i < mats.Length; i++)
+            {
+                string matName = mats[i].name.Replace(" (Instance)", "");
+                if (lightsAreOn && matName == lightOffMaterial.name)
+                {
+                    mats[i] = lightOnMaterial;
+                }
+                else if (!lightsAreOn && matName == lightOnMaterial.name)
+                {
+                    mats[i] = lightOffMaterial;
+                }
+            }
+
+            lightRenderer.materials = mats;
         }
     }
 
