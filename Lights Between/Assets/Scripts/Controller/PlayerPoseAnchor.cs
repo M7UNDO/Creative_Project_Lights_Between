@@ -33,6 +33,8 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
     private CanvasGroup poseCanvasGroup;
     private Coroutine uiFadeCoroutine;
 
+    public event System.Action OnPoseEntered;
+
     private void Start()
     {
         if (playerController == null)
@@ -125,6 +127,8 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
                 isTransitioning = false;
 
                 ShowPromptTimed();
+
+                OnPoseEntered?.Invoke();
 
                 if (interactionChannel != null && !string.IsNullOrEmpty(interactionEventID))
                 {

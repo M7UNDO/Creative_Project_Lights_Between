@@ -13,6 +13,7 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
     [SerializeField] private bool isPoweredOn = true;
 
     [Header("Power Settings")]
+    [SerializeField] private bool enableFuelDrain = false; 
     [SerializeField] private float maxFuel = 100f;
     [SerializeField] private float fuelDrainRate = 0.14f;
     private float currentFuel;
@@ -110,13 +111,16 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
     {
         if (isPoweredOn)
         {
-            currentFuel -= fuelDrainRate * Time.deltaTime;
-            currentFuel = Mathf.Clamp(currentFuel, 0f, maxFuel);
-
-            if (currentFuel <= 0f)
+            if (enableFuelDrain)
             {
-                hasFuel = false;
-                TurnGeneratorOff();
+                currentFuel -= fuelDrainRate * Time.deltaTime;
+                currentFuel = Mathf.Clamp(currentFuel, 0f, maxFuel);
+
+                if (currentFuel <= 0f)
+                {
+                    hasFuel = false;
+                    TurnGeneratorOff();
+                }
             }
         }
 
@@ -133,6 +137,13 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
         {
             holdInteraction.CancelHold();
         }
+    }
+
+    public void ForceOutageNoFuel()
+    {
+        currentFuel = 0f;
+        hasFuel = false;
+        TurnGeneratorOff();
     }
 
     public bool CanInteract()

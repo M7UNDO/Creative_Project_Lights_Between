@@ -82,12 +82,9 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     private static bool hasShownTorchPromptOnce = false;
 
-    private Coroutine promptCoroutine;
     private Coroutine flickerCoroutine;
 
     private InputDeviceType currentDevice = InputDeviceType.KeyboardMouse;
-    private TMP_Text activePromptText;
-    private CanvasGroup activePromptCanvasGroup;
 
     public float CurrentPower => (batteryCount > 0 ? currentBatteryPower : 0f) + (Mathf.Max(0, batteryCount - 1) * singleBatteryMaxPower);
     public float MaxPower => maxPower;
@@ -132,6 +129,12 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         TurnOnLightState();
         SetBatteryUIVisible(true);
         UpdateBatteryUI();
+
+        if (!hasShownTorchPromptOnce)
+        {
+            hasShownTorchPromptOnce = true;
+            ShowFirstTimePrompt();
+        }
     }
 
     private void SetupFlashlightAnchor()
@@ -183,6 +186,22 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         spawnedPlayerLightZone = Instantiate(playerLightZonePrefab, playerTransform);
         spawnedPlayerLightZone.transform.localPosition = new Vector3(0f, 1f, 0f);
         spawnedPlayerLightZone.transform.localRotation = Quaternion.identity;
+    }
+
+    private void ShowFirstTimePrompt()
+    {
+        FindFlashlightUI();
+
+        if (InputDeviceDetector.Instance != null)
+        {
+            currentDevice = InputDeviceDetector.Instance.CurrentDevice;
+            InputDeviceDetector.Instance.OnDeviceChanged += HandleDeviceChanged;
+        }
+
+        if (flashlightUI != null)
+        {
+            flashlightUI.ShowTutorialPrompt(GetDevicePromptString(), promptDuration, fadeDuration);
+        }
     }
 
     public void SetEquippedState(bool equipped)
@@ -554,9 +573,9 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     private void HandleDeviceChanged(InputDeviceType newDevice)
     {
         currentDevice = newDevice;
-        if (activePromptText != null)
+        if (flashlightUI != null)
         {
-            activePromptText.text = GetDevicePromptString();
+            flashlightUI.UpdatePromptText(GetDevicePromptString());
         }
     }
 

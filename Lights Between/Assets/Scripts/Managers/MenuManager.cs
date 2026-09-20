@@ -55,7 +55,7 @@ public class MainManager : MonoBehaviour
 
     [Header("Managers")]
     [Space(5)]
-    [SerializeField] private BackgroundMusicManager musicManager;
+    [SerializeField] private MenuMusicManager musicManager;
 
     [Header("SFX")]
     [Space(5)]
@@ -85,11 +85,6 @@ public class MainManager : MonoBehaviour
         if (tabController == null)
         {
             tabController = GetComponentInChildren<TabController>(true);
-        }
-
-        if (tabController != null && selectInput != null)
-        {
-            //tabController.InitializeTabNavigation(selectInput);
         }
 
         if (hasSeenIntro)
@@ -417,6 +412,11 @@ public class MainManager : MonoBehaviour
 
     public void LoadLevel(int levelIndex)
     {
+        if (musicManager != null)
+        {
+            musicManager.FadeOutAndStop(1f);
+        }
+
         SceneManager.LoadScene(levelIndex);
     }
 
