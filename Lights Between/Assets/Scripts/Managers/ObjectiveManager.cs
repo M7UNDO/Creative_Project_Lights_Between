@@ -75,7 +75,7 @@ public class ObjectiveManager : MonoBehaviour
         OnObjectiveStateChanged?.Invoke(objectiveDef, ObjectiveStatus.Active);
     }
 
-    private void CompleteObjective(string objectiveID)
+    public void CompleteObjective(string objectiveID)
     {
         if (!objectiveDatabase.TryGetValue(objectiveID, out ObjectiveSO def)) return;
 

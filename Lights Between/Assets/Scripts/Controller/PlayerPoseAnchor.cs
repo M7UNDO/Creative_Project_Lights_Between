@@ -18,6 +18,12 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
     [SerializeField] private float uiDisplayDuration = 5.0f;
     [SerializeField] private float uiFadeSpeed = 2.0f;
 
+    [Header("Narrative/Objective Lock")]
+    [Tooltip("If assigned, the player can only interact when this objective is active.")]
+    [SerializeField] private ObjectiveSO requiredObjective;
+    [Tooltip("Optional dialogue to play if player tries to use this before it's unlocked.")]
+    [SerializeField] private DialogueSO lockedDialogue;
+
     [Header("Optional Objectives/Events")]
     [SerializeField] private StringGameEventSO interactionChannel;
     [SerializeField] private string interactionEventID;
@@ -52,12 +58,36 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         }
     }
 
+    public bool IsAnchorUnlocked()
+    {
+        // If no required objective is set, it's always accessible (like normal chairs)
+        if (requiredObjective == null) return true;
+
+        // Otherwise check if the required objective is active in the ObjectiveManager
+        if (ObjectiveManager.Instance != null)
+        {
+            return ObjectiveManager.Instance.GetObjectiveStatus(requiredObjective.ID) == ObjectiveStatus.Active;
+        }
+
+        return false;
+    }
+
     public void Interact()
     {
         if (isTransitioning) return;
 
         if (playerController != null && playerController.CurrentGrabbable != null)
         {
+            return;
+        }
+
+        // Check if locked narratively
+        if (!IsAnchorUnlocked())
+        {
+            if (lockedDialogue != null && DialogueManager.Instance != null)
+            {
+                DialogueManager.Instance.StartDialogue(lockedDialogue);
+            }
             return;
         }
 
@@ -73,7 +103,7 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     public void SitDown()
     {
-        if (isTransitioning || isOccupied) return;
+        if (isTransitioning || isOccupied || !IsAnchorUnlocked()) return;
 
         if (playerController == null)
         {
@@ -81,7 +111,6 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
             if (playerController == null) return;
         }
 
-        // Double-check grabbable state before proceeding
         if (playerController.CurrentGrabbable != null) return;
 
         CacheCanvasGroup();
@@ -203,6 +232,11 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
     public string GetPromptMessage()
     {
         if (!isOccupied && playerController != null && playerController.CurrentGrabbable != null)
+        {
+            return "";
+        }
+
+        if (!IsAnchorUnlocked())
         {
             return "";
         }

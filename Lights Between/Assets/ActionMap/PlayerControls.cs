@@ -271,6 +271,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DebugAction"",
+                    ""type"": ""Button"",
+                    ""id"": ""477cc221-d10d-4122-a4bb-5e942559641b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -799,6 +808,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""StandUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""88f0ff6d-da46-4198-bc4c-11ef01862ee6"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardMouse"",
+                    ""action"": ""DebugAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1499,6 +1519,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_ContinueDialogue = m_Player.FindAction("ContinueDialogue", throwIfNotFound: true);
         m_Player_ExitDialogue = m_Player.FindAction("ExitDialogue", throwIfNotFound: true);
         m_Player_StandUp = m_Player.FindAction("StandUp", throwIfNotFound: true);
+        m_Player_DebugAction = m_Player.FindAction("DebugAction", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1615,6 +1636,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ContinueDialogue;
     private readonly InputAction m_Player_ExitDialogue;
     private readonly InputAction m_Player_StandUp;
+    private readonly InputAction m_Player_DebugAction;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1707,6 +1729,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @StandUp => m_Wrapper.m_Player_StandUp;
         /// <summary>
+        /// Provides access to the underlying input action "Player/DebugAction".
+        /// </summary>
+        public InputAction @DebugAction => m_Wrapper.m_Player_DebugAction;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1792,6 +1818,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @StandUp.started += instance.OnStandUp;
             @StandUp.performed += instance.OnStandUp;
             @StandUp.canceled += instance.OnStandUp;
+            @DebugAction.started += instance.OnDebugAction;
+            @DebugAction.performed += instance.OnDebugAction;
+            @DebugAction.canceled += instance.OnDebugAction;
         }
 
         /// <summary>
@@ -1863,6 +1892,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @StandUp.started -= instance.OnStandUp;
             @StandUp.performed -= instance.OnStandUp;
             @StandUp.canceled -= instance.OnStandUp;
+            @DebugAction.started -= instance.OnDebugAction;
+            @DebugAction.performed -= instance.OnDebugAction;
+            @DebugAction.canceled -= instance.OnDebugAction;
         }
 
         /// <summary>
@@ -2323,6 +2355,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnStandUp(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "DebugAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnDebugAction(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

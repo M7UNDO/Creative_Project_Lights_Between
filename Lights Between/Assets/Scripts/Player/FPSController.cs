@@ -537,9 +537,12 @@ public class FPSController : MonoBehaviour
 
             if (hasInteractable || hasPower || hasGrabbable)
             {
-                if (interactable is PlayerPoseAnchor && _currentGrabbable != null)
+                if (interactable is PlayerPoseAnchor poseAnchor)
                 {
-                    return;
+                    if (_currentGrabbable != null || !poseAnchor.IsAnchorUnlocked())
+                    {
+                        return;
+                    }
                 }
 
                 if (hasGrabbable && isSeated)
