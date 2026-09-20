@@ -13,6 +13,10 @@ public class SnapZone : MonoBehaviour, IInteractable
     [SerializeField] private bool destroyObjectOnSnap = false;
     [SerializeField] private GameObject enableVisualOnSnap;
 
+    [Header("Completion Cleanup")]
+    [Tooltip("If true, destroys this GameObject when complete. If false, disables the collider and script instead.")]
+    [SerializeField] private bool destroySnapZoneOnComplete = false;
+
     [Header("Events & Audio")]
     [SerializeField] private StringGameEventSO interactionChannel;
     [SerializeField] private string interactionEventID = InteractionIDs.PackBags;
@@ -72,19 +76,42 @@ public class SnapZone : MonoBehaviour, IInteractable
                 {
                     DialogueManager.Instance.StartDialogue(postSnapDialogue);
                 }
+
+                CleanupSnapZone();
             }
+        }
+    }
+
+    private void CleanupSnapZone()
+    {
+        if (destroySnapZoneOnComplete)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            if (TryGetComponent<Collider>(out Collider col))
+            {
+                col.enabled = false;
+            }
+
+            enabled = false;
         }
     }
 
     public bool CanSnap(ObjectGrabbable heldItem)
     {
+        if (currentSnappedCount >= requiredItemCount) return false;
+
         if (heldItem != null && heldItem.ItemID == invalidItemID) return true;
 
-        return heldItem != null && heldItem.ItemID == requiredItemID && currentSnappedCount < requiredItemCount;
+        return heldItem != null && heldItem.ItemID == requiredItemID;
     }
 
     public string GetPromptMessage(ObjectGrabbable heldItem)
     {
+        if (currentSnappedCount >= requiredItemCount) return string.Empty;
+
         if (heldItem != null && heldItem.ItemID == invalidItemID)
         {
             return "Place Pizza";
