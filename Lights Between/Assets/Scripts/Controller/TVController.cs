@@ -22,7 +22,7 @@ public class TVController : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        SetTVState(false);
+        //SetTVState(false);
     }
 
     public void Interact()

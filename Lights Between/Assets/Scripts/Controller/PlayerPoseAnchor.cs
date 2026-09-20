@@ -1,7 +1,11 @@
 using UnityEngine;
+using System.Collections;
 
 public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 {
+    [Header("References")]
+    [SerializeField] private FPSController playerController;
+
     [Header("Pose Targets")]
     [SerializeField] private Transform sitTargetPosition;
     [SerializeField] private Transform lookAtTarget;
@@ -18,49 +22,62 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     private bool isOccupied;
 
+    private void Start()
+    {
+        if (playerController != null) return;
+
+        playerController = Object.FindFirstObjectByType<FPSController>();
+    }
+
     public void Interact()
+    {
+        if (!isOccupied)
+        {
+            SitDown();
+        }
+        else
+        {
+            RequestStandUp();
+        }
+    }
+
+    public void SitDown()
     {
         FPSController player = FindFirstObjectByType<FPSController>();
         if (player == null) return;
 
-        if (!isOccupied)
+        if (ScreenFadeController.Instance != null)
         {
-            // Transition to sitting
-            if (ScreenFadeController.Instance != null)
+            ScreenFadeController.Instance.DoBlinkTransition(() =>
             {
-                ScreenFadeController.Instance.DoBlinkTransition(() =>
-                {
-                    player.SetSeatedState(true, sitTargetPosition, lookAtTarget);
-                    isOccupied = true;
-
-                    if (interactionChannel != null && !string.IsNullOrEmpty(interactionEventID))
-                    {
-                        interactionChannel.Raise(interactionEventID);
-                    }
-                }, fadeDuration);
-            }
-            else
-            {
-                player.SetSeatedState(true, sitTargetPosition, lookAtTarget);
+                player.SetSeatedState(true, sitTargetPosition, lookAtTarget, this);
                 isOccupied = true;
-            }
+
+                if (interactionChannel != null && !string.IsNullOrEmpty(interactionEventID))
+                {
+                    interactionChannel.Raise(interactionEventID);
+                }
+            }, fadeDuration);
         }
         else
         {
-            // Transition to standing up
-            if (ScreenFadeController.Instance != null)
-            {
-                ScreenFadeController.Instance.DoBlinkTransition(() =>
-                {
-                    player.SetSeatedState(false);
-                    if (standUpPosition != null)
-                    {
-                        player.Teleport(standUpPosition.position, standUpPosition.rotation);
-                    }
-                    isOccupied = false;
-                }, fadeDuration);
-            }
-            else
+            player.SetSeatedState(true, sitTargetPosition, lookAtTarget, this);
+            isOccupied = true;
+        }
+
+        StartCoroutine(DisplayUI(true, 3f));
+    }
+
+    public void RequestStandUp()
+    {
+        if (!isOccupied) return;
+
+        FPSController player = FindFirstObjectByType<FPSController>();
+        if (player == null) return;
+
+        if (ScreenFadeController.Instance != null)
+        {
+            ScreenFadeController.Instance.DoBlinkTransition(() =>
             {
                 player.SetSeatedState(false);
                 if (standUpPosition != null)
@@ -68,12 +85,36 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
                     player.Teleport(standUpPosition.position, standUpPosition.rotation);
                 }
                 isOccupied = false;
-            }
+            }, fadeDuration);
         }
+        else
+        {
+            player.SetSeatedState(false);
+            if (standUpPosition != null)
+            {
+                player.Teleport(standUpPosition.position, standUpPosition.rotation);
+            }
+            isOccupied = false;
+        }
+
+        StartCoroutine(DisplayUI(false, 1f));
+
+
     }
 
     public string GetPromptMessage()
     {
         return isOccupied ? standPrompt : sitPrompt;
+    }
+
+    IEnumerator DisplayUI(bool display, float transition)
+    {
+        yield return new WaitForSeconds(transition);
+
+        if(playerController.PosepromptUI != null)
+        {
+            playerController.PosepromptUI.SetActive(display);
+        }
+        
     }
 }

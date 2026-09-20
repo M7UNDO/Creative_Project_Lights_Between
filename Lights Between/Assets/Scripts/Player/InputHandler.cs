@@ -9,6 +9,7 @@ public class InputHandler : MonoBehaviour
     public Vector2 wheelNavigate;
 
     public bool sprint;
+    public bool standUp;
     public bool interact;
     public bool drop;
     public bool wheel;
@@ -43,6 +44,9 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Player.Look.performed += ctx => { if (cursorInputForLook && !blockLookInput) LookInput(ctx.ReadValue<Vector2>()); };
         playerControls.Player.Look.canceled += ctx => LookInput(Vector2.zero);
+
+        playerControls.Player.StandUp.performed += ctx => StandUpInput(true);
+        playerControls.Player.StandUp.canceled += ctx => StandUpInput(false);
 
         playerControls.Player.WheelNavigate.performed += ctx => WheelNavigateInput(ctx.ReadValue<Vector2>());
         playerControls.Player.WheelNavigate.canceled += ctx => WheelNavigateInput(Vector2.zero);
@@ -115,6 +119,11 @@ public class InputHandler : MonoBehaviour
         drop = newDropState;
     }
 
+    public void StandUpInput(bool newStandUpState)
+    {
+        standUp = newStandUpState;
+    }
+
     public void WheelInput(bool newWheelState)
     {
         wheel = newWheelState;
@@ -171,6 +180,7 @@ public class InputHandler : MonoBehaviour
         wheelNavigate = Vector2.zero;
 
         sprint = false;
+        standUp = false;
         interact = false;
         drop = false;
         wheel = false;

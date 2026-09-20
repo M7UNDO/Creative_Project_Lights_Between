@@ -262,6 +262,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""StandUp"",
+                    ""type"": ""Button"",
+                    ""id"": ""f6d6e41e-b2f5-40a9-ab02-f41f78ab623e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -768,6 +777,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""ExitDialogue"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""190b1eda-55ba-4d89-907b-df7bf68ef8bb"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardMouse"",
+                    ""action"": ""StandUp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cbed447e-f303-41bb-b7dd-8407c25847bf"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""StandUp"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1467,6 +1498,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Select = m_Player.FindAction("Select", throwIfNotFound: true);
         m_Player_ContinueDialogue = m_Player.FindAction("ContinueDialogue", throwIfNotFound: true);
         m_Player_ExitDialogue = m_Player.FindAction("ExitDialogue", throwIfNotFound: true);
+        m_Player_StandUp = m_Player.FindAction("StandUp", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1582,6 +1614,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Select;
     private readonly InputAction m_Player_ContinueDialogue;
     private readonly InputAction m_Player_ExitDialogue;
+    private readonly InputAction m_Player_StandUp;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1670,6 +1703,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ExitDialogue => m_Wrapper.m_Player_ExitDialogue;
         /// <summary>
+        /// Provides access to the underlying input action "Player/StandUp".
+        /// </summary>
+        public InputAction @StandUp => m_Wrapper.m_Player_StandUp;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1752,6 +1789,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ExitDialogue.started += instance.OnExitDialogue;
             @ExitDialogue.performed += instance.OnExitDialogue;
             @ExitDialogue.canceled += instance.OnExitDialogue;
+            @StandUp.started += instance.OnStandUp;
+            @StandUp.performed += instance.OnStandUp;
+            @StandUp.canceled += instance.OnStandUp;
         }
 
         /// <summary>
@@ -1820,6 +1860,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ExitDialogue.started -= instance.OnExitDialogue;
             @ExitDialogue.performed -= instance.OnExitDialogue;
             @ExitDialogue.canceled -= instance.OnExitDialogue;
+            @StandUp.started -= instance.OnStandUp;
+            @StandUp.performed -= instance.OnStandUp;
+            @StandUp.canceled -= instance.OnStandUp;
         }
 
         /// <summary>
@@ -2273,6 +2316,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnExitDialogue(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "StandUp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnStandUp(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

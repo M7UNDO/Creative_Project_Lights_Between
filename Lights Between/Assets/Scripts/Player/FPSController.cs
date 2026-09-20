@@ -102,6 +102,8 @@ public class FPSController : MonoBehaviour
 
     [Header("Sitting & Sleeping State")]
     public bool isSeated { get; private set; }
+    public PlayerPoseAnchor CurrentPoseAnchor { get; private set; }
+    public GameObject PosepromptUI;
 
     [Header("Proximity & Occlusion Settings")]
     [SerializeField] private LayerMask occlusionLayer;
@@ -164,10 +166,6 @@ public class FPSController : MonoBehaviour
             }
         }
     }
-
-
-
-    public bool isInDialogue { get; private set; }
 
     [Header("Dialogue Sensitivity Settings")]
     [SerializeField] private float dialogueSensitivityMultiplier = 0.5f;
@@ -233,28 +231,26 @@ public class FPSController : MonoBehaviour
         _fallTimeoutDelta = FallTimeout;
     }
 
-    private void HandleDialogueStarted()
-    {
-        isInDialogue = true;
-        if (_input != null)
-        {
-            _input.move = Vector2.zero;
-            _input.sprint = false;
-        }
-        StopFootsteps();
-        ClearInteractionState();
-    }
-
-    private void HandleDialogueEnded()
-    {
-        isInDialogue = false;
-    }
+    
 
     private void Update()
     {
         UpdateSensitivityMultiplier();
 
         if (isInMiniGame || isInspecting || isJumpscareActive || isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
+
+        if (isSeated)
+        {
+            if (_input != null && (_input.standUp || _input.cancel))
+            {
+                if (CurrentPoseAnchor != null)
+                {
+                    CurrentPoseAnchor.RequestStandUp();
+                }
+                _input.standUp = false;
+                _input.cancel = false;
+            }
+        }
 
         ApplyGravity();
         GroundedCheck();
@@ -282,9 +278,10 @@ public class FPSController : MonoBehaviour
         _currentSensitivityMultiplier = Mathf.Lerp(_currentSensitivityMultiplier, targetMultiplier, Time.deltaTime * sensitivityTransitionSpeed);
     }
 
-    public void SetSeatedState(bool seated, Transform seatPoint = null, Transform lookAtTarget = null)
+    public void SetSeatedState(bool seated, Transform seatPoint = null, Transform lookAtTarget = null, PlayerPoseAnchor anchor = null)
     {
         isSeated = seated;
+        CurrentPoseAnchor = seated ? anchor : null;
 
         if (seated && seatPoint != null)
         {
