@@ -537,6 +537,16 @@ public class FPSController : MonoBehaviour
 
             if (hasInteractable || hasPower || hasGrabbable)
             {
+                if (interactable is PlayerPoseAnchor && _currentGrabbable != null)
+                {
+                    return;
+                }
+
+                if (hasGrabbable && isSeated)
+                {
+                    return;
+                }
+
                 if (hasInteractable)
                 {
                     currentInteractable = interactable;
@@ -705,7 +715,7 @@ public class FPSController : MonoBehaviour
                     }
                 }
             }
-            else if (_currentGrabbable == null)
+            else if (_currentGrabbable == null && !isSeated)
             {
                 Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
                 if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))

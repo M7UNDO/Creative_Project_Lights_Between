@@ -47,7 +47,6 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
                 poseCanvasGroup = playerController.PosepromptUI.AddComponent<CanvasGroup>();
             }
 
-            // Ensure prompt starts hidden
             poseCanvasGroup.alpha = 0f;
             playerController.PosepromptUI.SetActive(true);
         }
@@ -56,6 +55,11 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
     public void Interact()
     {
         if (isTransitioning) return;
+
+        if (playerController != null && playerController.CurrentGrabbable != null)
+        {
+            return;
+        }
 
         if (!isOccupied)
         {
@@ -77,6 +81,9 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
             if (playerController == null) return;
         }
 
+        // Double-check grabbable state before proceeding
+        if (playerController.CurrentGrabbable != null) return;
+
         CacheCanvasGroup();
         isTransitioning = true;
 
@@ -88,7 +95,6 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
                 isOccupied = true;
                 isTransitioning = false;
 
-                // Show UI prompt and handle 5-second auto fadeout
                 ShowPromptTimed();
 
                 if (interactionChannel != null && !string.IsNullOrEmpty(interactionEventID))
@@ -117,8 +123,6 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         }
 
         isTransitioning = true;
-
-        // Instantly hide prompt if still fading/showing
         HidePromptImmediate();
 
         if (ScreenFadeController.Instance != null)
@@ -174,7 +178,6 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     private IEnumerator FadePromptRoutine()
     {
-        // 1. Fade In
         float elapsed = 0f;
         while (elapsed < 0.3f)
         {
@@ -184,10 +187,8 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         }
         poseCanvasGroup.alpha = 1f;
 
-        // 2. Display for 5 seconds
         yield return new WaitForSeconds(uiDisplayDuration);
 
-        // 3. Fade Out
         elapsed = 0f;
         while (elapsed < 1f)
         {
@@ -201,6 +202,11 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     public string GetPromptMessage()
     {
+        if (!isOccupied && playerController != null && playerController.CurrentGrabbable != null)
+        {
+            return "";
+        }
+
         return isOccupied ? standPrompt : sitPrompt;
     }
 }
