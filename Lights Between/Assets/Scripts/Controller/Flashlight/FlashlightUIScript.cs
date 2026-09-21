@@ -1,7 +1,6 @@
-using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class FlashlightUIScript : MonoBehaviour
 {
@@ -17,7 +16,8 @@ public class FlashlightUIScript : MonoBehaviour
     [SerializeField] private TextMeshProUGUI tutorialPromptText;
     [SerializeField] private CanvasGroup tutorialPromptCanvasGroup;
 
-    private Coroutine promptCoroutine;
+    public TextMeshProUGUI TutorialPromptText => tutorialPromptText;
+    public CanvasGroup TutorialPromptCanvasGroup => tutorialPromptCanvasGroup;
 
     private void Awake()
     {
@@ -64,56 +64,5 @@ public class FlashlightUIScript : MonoBehaviour
                 batteryIcons[i].gameObject.SetActive(false);
             }
         }
-    }
-
-    public void ShowTutorialPrompt(string promptText, float duration, float fadeDuration)
-    {
-        if (tutorialPromptText == null || tutorialPromptCanvasGroup == null) return;
-
-        if (promptCoroutine != null)
-        {
-            StopCoroutine(promptCoroutine);
-        }
-
-        promptCoroutine = StartCoroutine(DisplayPromptRoutine(promptText, duration, fadeDuration));
-    }
-
-    public void UpdatePromptText(string promptText)
-    {
-        if (tutorialPromptText != null)
-        {
-            tutorialPromptText.text = promptText;
-        }
-    }
-
-    private IEnumerator DisplayPromptRoutine(string message, float duration, float fadeDuration)
-    {
-        tutorialPromptText.text = message;
-
-        float timer = 0f;
-        float startAlpha = tutorialPromptCanvasGroup.alpha;
-
-        while (timer < fadeDuration)
-        {
-            timer += Time.deltaTime;
-            tutorialPromptCanvasGroup.alpha = Mathf.Lerp(startAlpha, 1f, timer / fadeDuration);
-            yield return null;
-        }
-
-        tutorialPromptCanvasGroup.alpha = 1f;
-
-        yield return new WaitForSeconds(duration);
-
-        timer = 0f;
-        while (timer < fadeDuration)
-        {
-            timer += Time.deltaTime;
-            tutorialPromptCanvasGroup.alpha = Mathf.Lerp(1f, 0f, timer / fadeDuration);
-            yield return null;
-        }
-
-        tutorialPromptCanvasGroup.alpha = 0f;
-        tutorialPromptText.text = "";
-        promptCoroutine = null;
     }
 }

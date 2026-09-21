@@ -15,8 +15,7 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
     [SerializeField] private string sitPrompt = "Sit Down";
     [SerializeField] private string standPrompt = "Stand Up";
     [SerializeField] private float fadeDuration = 0.4f;
-    [SerializeField] private float uiDisplayDuration = 5.0f;
-    [SerializeField] private float uiFadeSpeed = 2.0f;
+    [SerializeField] private float uiFadeSpeed = 4.0f;
 
     [Header("Narrative/Objective Lock")]
     [Tooltip("If assigned, the player can only interact when this objective is active.")]
@@ -30,6 +29,7 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     private bool isOccupied;
     private bool isTransitioning;
+    private bool canStandUp = true;
     private CanvasGroup poseCanvasGroup;
     private Coroutine uiFadeCoroutine;
 
@@ -43,6 +43,30 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         }
 
         CacheCanvasGroup();
+        SubscribeToDialogueManager();
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeFromDialogueManager();
+    }
+
+    private void SubscribeToDialogueManager()
+    {
+        if (DialogueManager.Instance != null)
+        {
+            DialogueManager.Instance.OnDialogueStarted += HandleDialogueStarted;
+            DialogueManager.Instance.OnDialogueEnded += HandleDialogueEnded;
+        }
+    }
+
+    private void UnsubscribeFromDialogueManager()
+    {
+        if (DialogueManager.Instance != null)
+        {
+            DialogueManager.Instance.OnDialogueStarted -= HandleDialogueStarted;
+            DialogueManager.Instance.OnDialogueEnded -= HandleDialogueEnded;
+        }
     }
 
     private void CacheCanvasGroup()
@@ -60,12 +84,39 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         }
     }
 
+    private void HandleDialogueStarted()
+    {
+        if (isOccupied)
+        {
+            FadePromptTo(0f);
+        }
+    }
+
+    private void HandleDialogueEnded()
+    {
+        if (isOccupied && canStandUp)
+        {
+            FadePromptTo(1f);
+        }
+    }
+
+    public void SetStandUpPermission(bool permit)
+    {
+        canStandUp = permit;
+        if (!canStandUp)
+        {
+            FadePromptTo(0f);
+        }
+        else if (isOccupied && (DialogueManager.Instance == null || !DialogueManager.Instance.IsDialogueActive))
+        {
+            FadePromptTo(1f);
+        }
+    }
+
     public bool IsAnchorUnlocked()
     {
-        // If no required objective is set, it's always accessible (like normal chairs)
         if (requiredObjective == null) return true;
 
-        // Otherwise check if the required objective is active in the ObjectiveManager
         if (ObjectiveManager.Instance != null)
         {
             return ObjectiveManager.Instance.GetObjectiveStatus(requiredObjective.ID) == ObjectiveStatus.Active;
@@ -83,7 +134,6 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
             return;
         }
 
-        // Check if locked narratively
         if (!IsAnchorUnlocked())
         {
             if (lockedDialogue != null && DialogueManager.Instance != null)
@@ -97,7 +147,7 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         {
             SitDown();
         }
-        else
+        else if (canStandUp)
         {
             RequestStandUp();
         }
@@ -126,7 +176,10 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
                 isOccupied = true;
                 isTransitioning = false;
 
-                ShowPromptTimed();
+                if (canStandUp && (DialogueManager.Instance == null || !DialogueManager.Instance.IsDialogueActive))
+                {
+                    FadePromptTo(1f);
+                }
 
                 OnPoseEntered?.Invoke();
 
@@ -141,13 +194,16 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
             playerController.SetSeatedState(true, sitTargetPosition, lookAtTarget, this);
             isOccupied = true;
             isTransitioning = false;
-            ShowPromptTimed();
+            if (canStandUp && (DialogueManager.Instance == null || !DialogueManager.Instance.IsDialogueActive))
+            {
+                FadePromptTo(1f);
+            }
         }
     }
 
     public void RequestStandUp()
     {
-        if (isTransitioning || !isOccupied) return;
+        if (isTransitioning || !isOccupied || !canStandUp) return;
 
         if (playerController == null)
         {
@@ -156,7 +212,7 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         }
 
         isTransitioning = true;
-        HidePromptImmediate();
+        FadePromptTo(0f);
 
         if (ScreenFadeController.Instance != null)
         {
@@ -183,7 +239,7 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         }
     }
 
-    private void ShowPromptTimed()
+    public void FadePromptTo(float targetAlpha)
     {
         if (poseCanvasGroup == null) return;
 
@@ -192,44 +248,22 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
             StopCoroutine(uiFadeCoroutine);
         }
 
-        uiFadeCoroutine = StartCoroutine(FadePromptRoutine());
+        uiFadeCoroutine = StartCoroutine(FadePromptRoutine(targetAlpha));
     }
 
-    private void HidePromptImmediate()
+    private IEnumerator FadePromptRoutine(float targetAlpha)
     {
-        if (uiFadeCoroutine != null)
-        {
-            StopCoroutine(uiFadeCoroutine);
-            uiFadeCoroutine = null;
-        }
-
-        if (poseCanvasGroup != null)
-        {
-            poseCanvasGroup.alpha = 0f;
-        }
-    }
-
-    private IEnumerator FadePromptRoutine()
-    {
+        float startAlpha = poseCanvasGroup.alpha;
         float elapsed = 0f;
-        while (elapsed < 0.3f)
-        {
-            elapsed += Time.deltaTime;
-            poseCanvasGroup.alpha = Mathf.Clamp01(elapsed / 0.3f);
-            yield return null;
-        }
-        poseCanvasGroup.alpha = 1f;
 
-        yield return new WaitForSeconds(uiDisplayDuration);
-
-        elapsed = 0f;
         while (elapsed < 1f)
         {
             elapsed += Time.deltaTime * uiFadeSpeed;
-            poseCanvasGroup.alpha = Mathf.Clamp01(1f - elapsed);
+            poseCanvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsed);
             yield return null;
         }
-        poseCanvasGroup.alpha = 0f;
+
+        poseCanvasGroup.alpha = targetAlpha;
         uiFadeCoroutine = null;
     }
 

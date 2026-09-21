@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class FlashlightScript : MonoBehaviour, IToolPower
 {
@@ -42,15 +43,19 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     [Range(0f, 1f)]
     [SerializeField] private float dropToBlackChance = 0.35f;
 
-    [Header("First Equip Prompt Settings")]
+    [Header("Prompt Timings")]
     [SerializeField] private float promptDuration = 4f;
     [SerializeField] private float fadeDuration = 0.5f;
-    [TextArea]
-    [SerializeField] private string keyboardTogglePrompt = "[F] to toggle On/Off";
-    [TextArea]
-    [SerializeField] private string xboxTogglePrompt = "Press <sprite name=\"Right Bumper\"> to toggle On/Off";
-    [TextArea]
-    [SerializeField] private string playStationTogglePrompt = "Press <sprite name=\"R1\"> to toggle On/Off";
+
+    [Header("Toggle On/Off Prompts")]
+    [TextArea][SerializeField] private string keyboardTogglePrompt = "[F] to toggle On/Off";
+    [TextArea][SerializeField] private string xboxTogglePrompt = "Press <sprite name=\"Right Bumper\"> to toggle On/Off";
+    [TextArea][SerializeField] private string playStationTogglePrompt = "Press <sprite name=\"R1\"> to toggle On/Off";
+
+    [Header("Equipment Wheel Prompts")]
+    [TextArea][SerializeField] private string keyboardWheelPrompt = "Hold [TAB] + Move [Mouse]\nRelease [TAB] to equip item";
+    [TextArea][SerializeField] private string xboxWheelPrompt = "Hold <sprite name=\"Left Bumper\"> + Move <sprite name=\"Right Stick\">\nRelease <sprite name=\"Left Bumper\"> to equip item";
+    [TextArea][SerializeField] private string playStationWheelPrompt = "Hold <sprite name=\"L1\"> + Move <sprite name=\"_Right Stick\">\nRelease <sprite name=\"L1\"> to equip item";
 
     private ToolClass toolData;
     private float maxPower;
@@ -69,6 +74,8 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     public GameObject torchLightZone;
 
     private FlashlightUIScript flashlightUI;
+    private TextMeshProUGUI promptTextUI;
+    private CanvasGroup promptCanvasGroup;
 
     private bool isOn;
     private bool isEquipped;
@@ -79,12 +86,16 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     private InputHandler inputHandler;
     private CharacterController characterController;
+    private PlayerInput playerInput;
 
     private static bool hasShownTorchPromptOnce = false;
 
     private Coroutine flickerCoroutine;
+    private Coroutine tutorialSequenceCoroutine;
 
     private InputDeviceType currentDevice = InputDeviceType.KeyboardMouse;
+    private bool isShowingTogglePrompt;
+    private bool isShowingWheelPrompt;
 
     public float CurrentPower => (batteryCount > 0 ? currentBatteryPower : 0f) + (Mathf.Max(0, batteryCount - 1) * singleBatteryMaxPower);
     public float MaxPower => maxPower;
@@ -100,6 +111,12 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         if (flashlightUI == null)
         {
             flashlightUI = FindFirstObjectByType<FlashlightUIScript>(FindObjectsInactive.Include);
+        }
+
+        if (flashlightUI != null)
+        {
+            promptTextUI = flashlightUI.TutorialPromptText;
+            promptCanvasGroup = flashlightUI.TutorialPromptCanvasGroup;
         }
     }
 
@@ -133,7 +150,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         if (!hasShownTorchPromptOnce)
         {
             hasShownTorchPromptOnce = true;
-            ShowFirstTimePrompt();
+            StartTutorialSequence();
         }
     }
 
@@ -148,6 +165,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         {
             inputHandler = fpsController.InputHandler;
             characterController = fpsController.Controller;
+            playerInput = fpsController.GetComponent<PlayerInput>();
 
             if (fpsController.FlashlightAnchor != null)
             {
@@ -188,19 +206,117 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         spawnedPlayerLightZone.transform.localRotation = Quaternion.identity;
     }
 
-    private void ShowFirstTimePrompt()
+    private void StartTutorialSequence()
     {
-        FindFlashlightUI();
-
         if (InputDeviceDetector.Instance != null)
         {
             currentDevice = InputDeviceDetector.Instance.CurrentDevice;
             InputDeviceDetector.Instance.OnDeviceChanged += HandleDeviceChanged;
         }
 
-        if (flashlightUI != null)
+        if (tutorialSequenceCoroutine != null)
         {
-            flashlightUI.ShowTutorialPrompt(GetDevicePromptString(), promptDuration, fadeDuration);
+            StopCoroutine(tutorialSequenceCoroutine);
+        }
+
+        tutorialSequenceCoroutine = StartCoroutine(FullTutorialSequenceRoutine());
+    }
+
+    private IEnumerator FullTutorialSequenceRoutine()
+    {
+        yield return null;
+
+        while (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive)
+        {
+            yield return null;
+        }
+
+        isShowingTogglePrompt = true;
+        yield return StartCoroutine(FadePromptRoutine(GetTogglePromptString()));
+        isShowingTogglePrompt = false;
+
+        while (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive)
+        {
+            yield return null;
+        }
+
+        isShowingWheelPrompt = true;
+        yield return StartCoroutine(FadePromptRoutine(GetWheelPromptString()));
+        isShowingWheelPrompt = false;
+
+        tutorialSequenceCoroutine = null;
+    }
+
+    private IEnumerator FadePromptRoutine(string message)
+    {
+        if (promptTextUI == null || promptCanvasGroup == null) yield break;
+
+        promptTextUI.text = message;
+
+        float timer = 0f;
+        float startAlpha = promptCanvasGroup.alpha;
+
+        while (timer < fadeDuration)
+        {
+            timer += Time.deltaTime;
+            promptCanvasGroup.alpha = Mathf.Lerp(startAlpha, 1f, timer / fadeDuration);
+            yield return null;
+        }
+
+        promptCanvasGroup.alpha = 1f;
+
+        yield return new WaitForSeconds(promptDuration);
+
+        timer = 0f;
+        while (timer < fadeDuration)
+        {
+            timer += Time.deltaTime;
+            promptCanvasGroup.alpha = Mathf.Lerp(1f, 0f, timer / fadeDuration);
+            yield return null;
+        }
+
+        promptCanvasGroup.alpha = 0f;
+        promptTextUI.text = "";
+    }
+
+    private string GetTogglePromptString()
+    {
+        switch (currentDevice)
+        {
+            case InputDeviceType.Xbox:
+                return xboxTogglePrompt;
+            case InputDeviceType.PlayStation:
+                return playStationTogglePrompt;
+            default:
+                return keyboardTogglePrompt;
+        }
+    }
+
+    private string GetWheelPromptString()
+    {
+        if (playerInput != null)
+        {
+            string scheme = playerInput.currentControlScheme;
+            if (scheme == "PlayStation" || scheme == "PS4" || scheme == "PS5") return playStationWheelPrompt;
+            if (scheme == "Xbox" || scheme == "Gamepad") return xboxWheelPrompt;
+        }
+
+        return keyboardWheelPrompt;
+    }
+
+    private void HandleDeviceChanged(InputDeviceType newDevice)
+    {
+        currentDevice = newDevice;
+
+        if (promptTextUI == null) return;
+
+        if (isShowingTogglePrompt)
+        {
+            promptTextUI.text = GetTogglePromptString();
+        }
+        else if (isShowingWheelPrompt)
+        {
+            promptTextUI.text = GetWheelPromptString();
         }
     }
 
@@ -567,30 +683,6 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         if (InputDeviceDetector.Instance != null)
         {
             InputDeviceDetector.Instance.OnDeviceChanged -= HandleDeviceChanged;
-        }
-    }
-
-    private void HandleDeviceChanged(InputDeviceType newDevice)
-    {
-        currentDevice = newDevice;
-        if (flashlightUI != null)
-        {
-            flashlightUI.UpdatePromptText(GetDevicePromptString());
-        }
-    }
-
-    private string GetDevicePromptString()
-    {
-        switch (currentDevice)
-        {
-            case InputDeviceType.Xbox:
-                return xboxTogglePrompt;
-
-            case InputDeviceType.PlayStation:
-                return playStationTogglePrompt;
-
-            default:
-                return keyboardTogglePrompt;
         }
     }
 

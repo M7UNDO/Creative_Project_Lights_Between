@@ -81,6 +81,7 @@ public class FPSController : MonoBehaviour
     [Header("Interaction Settings")]
     [Space(5)]
     public Canvas hudCanvas;
+    private CanvasGroup hudCanvasGroup;
     [SerializeField] private GameObject dropUI;
     [SerializeField] public float interactionRange = 5f;
     [SerializeField] private LayerMask interactionLayer;
@@ -545,6 +546,14 @@ public class FPSController : MonoBehaviour
                     }
                 }
 
+                if (interactable is ToolPickup toolPickup)
+                {
+                    if (!toolPickup.IsPickupUnlocked())
+                    {
+                        return;
+                    }
+                }
+
                 if (hasGrabbable && isSeated)
                 {
                     return;
@@ -582,7 +591,7 @@ public class FPSController : MonoBehaviour
                 }
                 else if (hit.collider.TryGetComponent<ToolPickup>(out ToolPickup pickup))
                 {
-                    basePrompt = "Pick up";
+                    basePrompt = pickup.PromptMessage;
                     canCurrentlyInteract = true;
                 }
                 else if (hit.collider.TryGetComponent<ElectricBoxBreaker>(out ElectricBoxBreaker electricBox))
@@ -645,6 +654,20 @@ public class FPSController : MonoBehaviour
         {
             if (ui == null) continue;
             if (ui == targetedWorldUI) continue;
+
+            ToolPickup parentPickup = ui.GetComponentInParent<ToolPickup>();
+            if (parentPickup != null && !parentPickup.IsPickupUnlocked())
+            {
+                ui.HidePrompt();
+                continue;
+            }
+
+            PlayerPoseAnchor parentAnchor = ui.GetComponentInParent<PlayerPoseAnchor>();
+            if (parentAnchor != null && !parentAnchor.IsAnchorUnlocked())
+            {
+                ui.HidePrompt();
+                continue;
+            }
 
             float distance = Vector3.Distance(transform.position, ui.transform.position);
 
@@ -817,13 +840,27 @@ public class FPSController : MonoBehaviour
         bool shouldShowHUD = !isInspecting
                            && !isInMiniGame
                            && !isJumpscareActive
+                           && !isDialogueActive
                            && !LevelManager.IsGameOver
                            && !NoteUIController.isNoteOpen;
 
-        if (hudCanvas.gameObject.activeSelf != shouldShowHUD)
+        if (hudCanvasGroup == null)
         {
-            hudCanvas.gameObject.SetActive(shouldShowHUD);
+            hudCanvasGroup = hudCanvas.GetComponent<CanvasGroup>();
+            if (hudCanvasGroup == null)
+            {
+                hudCanvasGroup = hudCanvas.gameObject.AddComponent<CanvasGroup>();
+            }
         }
+
+        if (!hudCanvas.gameObject.activeSelf)
+        {
+            hudCanvas.gameObject.SetActive(true);
+        }
+
+        hudCanvasGroup.alpha = shouldShowHUD ? 1f : 0f;
+        hudCanvasGroup.interactable = shouldShowHUD;
+        hudCanvasGroup.blocksRaycasts = shouldShowHUD;
     }
 
     public void SetInspectionMode(bool inspecting)

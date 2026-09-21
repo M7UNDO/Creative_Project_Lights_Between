@@ -40,6 +40,8 @@ public class DialogueManager : MonoBehaviour
     private bool isTyping;
     private bool canAdvance;
 
+    public bool IsDialogueActive => isDialogueActive;
+
     private Coroutine typingCoroutine;
     private Coroutine ellipsisCoroutine;
     private WaitForSeconds typeSpeedWait;
@@ -77,16 +79,15 @@ public class DialogueManager : MonoBehaviour
     {
         if (isDialogueActive || dialogue == null || dialogue.Lines == null || dialogue.Lines.Length == 0) return;
 
-        if(playerController == null)
+        if (playerController == null)
         {
             playerController = FindFirstObjectByType<FPSController>();
         }
-        
+
         if (playerController != null)
         {
             playerController.SetDialogueMode(true);
         }
-
 
         currentDialogue = dialogue;
         currentLineIndex = 0;

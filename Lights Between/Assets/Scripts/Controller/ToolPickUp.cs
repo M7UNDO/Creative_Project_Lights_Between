@@ -5,18 +5,45 @@ public class ToolPickup : MonoBehaviour, IInteractable
     [SerializeField] private ToolClass tool;
     [SerializeField] private string promptMessage = "Pick up";
 
+    [Header("Narrative/Objective Lock")]
+    [Tooltip("If assigned, the player can only interact when this objective is active.")]
+    [SerializeField] private ObjectiveSO requiredObjective;
+    [Tooltip("Optional dialogue to play if player tries to use this before it's unlocked.")]
+    [SerializeField] private DialogueSO lockedDialogue;
+
     [Header("Narrative & Objective Progression")]
-    [SerializeField] private ObjectiveSO objectiveToComplete; // Drag "Obj_FindTorch"
-    [SerializeField] private ObjectiveSO objectiveToActivate; // Drag "Obj_RestorePower"
-    [SerializeField] private DialogueSO postPickupDialogue;   // "Got it. Now I need to check the generator out back."
+    [SerializeField] private ObjectiveSO objectiveToComplete;
+    [SerializeField] private ObjectiveSO objectiveToActivate;
+    [SerializeField] private DialogueSO postPickupDialogue;
 
     [Header("SFX")]
     [SerializeField] private AudioClip pickUpSFX;
 
     public string PromptMessage => promptMessage;
 
+    public bool IsPickupUnlocked()
+    {
+        if (requiredObjective == null) return true;
+
+        if (ObjectiveManager.Instance != null)
+        {
+            return ObjectiveManager.Instance.GetObjectiveStatus(requiredObjective.ID) == ObjectiveStatus.Active;
+        }
+
+        return false;
+    }
+
     public void Interact()
     {
+        if (!IsPickupUnlocked())
+        {
+            if (lockedDialogue != null && DialogueManager.Instance != null)
+            {
+                DialogueManager.Instance.StartDialogue(lockedDialogue);
+            }
+            return;
+        }
+
         PlayerToolInventory inventory = FindFirstObjectByType<PlayerToolInventory>();
 
         if (inventory != null)
@@ -28,13 +55,6 @@ public class ToolPickup : MonoBehaviour, IInteractable
                 AudioSource.PlayClipAtPoint(pickUpSFX, transform.position);
             }
 
-            ToolEquipmentManager equipmentManager = FindFirstObjectByType<ToolEquipmentManager>();
-            if (equipmentManager != null && !equipmentManager.HasToolEquipped)
-            {
-                equipmentManager.EquipTool(tool);
-            }
-
-            // Progress Narrative Objectives
             if (ObjectiveManager.Instance != null)
             {
                 if (objectiveToComplete != null)
@@ -48,10 +68,15 @@ public class ToolPickup : MonoBehaviour, IInteractable
                 }
             }
 
-            // Trigger Reaction Dialogue
             if (DialogueManager.Instance != null && postPickupDialogue != null)
             {
                 DialogueManager.Instance.StartDialogue(postPickupDialogue);
+            }
+
+            ToolEquipmentManager equipmentManager = FindFirstObjectByType<ToolEquipmentManager>();
+            if (equipmentManager != null && !equipmentManager.HasToolEquipped)
+            {
+                equipmentManager.EquipTool(tool);
             }
 
             Destroy(gameObject);

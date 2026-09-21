@@ -57,6 +57,11 @@ public class SleepSequenceController : MonoBehaviour
     {
         float originalVignette = 0.4f;
 
+        if (bedPoseAnchor != null)
+        {
+            bedPoseAnchor.SetStandUpPermission(false);
+        }
+
         if (vignetteComponent != null)
         {
             originalVignette = vignetteComponent.intensity.value;
@@ -91,6 +96,11 @@ public class SleepSequenceController : MonoBehaviour
             targetGenerator.ForceOutageNoFuel();
         }
 
+        if (BackgroundMusicManager.Instance != null)
+        {
+            BackgroundMusicManager.Instance.TransitionToState(MusicState.Tension, 0.5f);
+        }
+
         if (vignetteComponent != null)
         {
             float elapsed = 0f;
@@ -103,19 +113,24 @@ public class SleepSequenceController : MonoBehaviour
             vignetteComponent.intensity.value = originalVignette;
         }
 
+        if (DialogueManager.Instance != null && powerOutageReactionDialogue != null)
+        {
+            DialogueManager.Instance.StartDialogue(powerOutageReactionDialogue);
+        }
+
+        while (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive)
+        {
+            yield return null;
+        }
+
         if (bedPoseAnchor != null)
         {
-            bedPoseAnchor.RequestStandUp();
+            bedPoseAnchor.SetStandUpPermission(true);
         }
 
         if (ObjectiveManager.Instance != null && findTorchObjectiveToActivate != null)
         {
             ObjectiveManager.Instance.ActivateObjective(findTorchObjectiveToActivate);
-        }
-
-        if (DialogueManager.Instance != null && powerOutageReactionDialogue != null)
-        {
-            DialogueManager.Instance.StartDialogue(powerOutageReactionDialogue);
         }
     }
 }
