@@ -52,6 +52,11 @@ public class BackgroundMusicManager : MonoBehaviour
         BuildLookupDictionary();
     }
 
+    public void Start()
+    {
+        TransitionToState(MusicState.CalmAmbience, 1f);
+    }
+
     private void InitializeSources()
     {
         if (audioSourceA == null) audioSourceA = gameObject.AddComponent<AudioSource>();
