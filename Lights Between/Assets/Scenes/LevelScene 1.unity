@@ -27640,6 +27640,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ToolPickup
   tool: {fileID: 11400000, guid: 6648c57b1f63bbb4a8ce5f7b129395f3, type: 2}
   promptMessage: Pick up
+  requiredObjective: {fileID: 0}
+  lockedDialogue: {fileID: 0}
   objectiveToComplete: {fileID: 0}
   objectiveToActivate: {fileID: 0}
   postPickupDialogue: {fileID: 0}
@@ -32840,6 +32842,10 @@ PrefabInstance:
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
+    - target: {fileID: 1467964414377652416, guid: 2fc4ea73195110b418cd7e54b80b5c89, type: 3}
+      propertyPath: proximityDistance
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2881076938218722114, guid: 2fc4ea73195110b418cd7e54b80b5c89, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -32902,15 +32908,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6009995816800087800, guid: 2fc4ea73195110b418cd7e54b80b5c89, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -5.408908
+      value: 3.591092
       objectReference: {fileID: 0}
     - target: {fileID: 6009995816800087800, guid: 2fc4ea73195110b418cd7e54b80b5c89, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.9375
+      value: -6.0625
       objectReference: {fileID: 0}
     - target: {fileID: 6009995816800087800, guid: 2fc4ea73195110b418cd7e54b80b5c89, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 21.081669
+      value: 35.08167
       objectReference: {fileID: 0}
     - target: {fileID: 6009995816800087800, guid: 2fc4ea73195110b418cd7e54b80b5c89, type: 3}
       propertyPath: m_LocalRotation.w
@@ -42984,6 +42990,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ToolPickup
   tool: {fileID: 11400000, guid: 5e2bb8308498abc45b9d3ba6b3a96ddd, type: 2}
   promptMessage: Pick up
+  requiredObjective: {fileID: 11400000, guid: 979b7a4330153e440aeeaf7b1d74c126, type: 2}
+  lockedDialogue: {fileID: 0}
   objectiveToComplete: {fileID: 11400000, guid: 979b7a4330153e440aeeaf7b1d74c126, type: 2}
   objectiveToActivate: {fileID: 11400000, guid: f2697c6b9156d3140aa775544c9ca747, type: 2}
   postPickupDialogue: {fileID: 11400000, guid: ecff4dc5aaa78de4a954f89bdfffa7f4, type: 2}
@@ -47885,6 +47893,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GeneratorPowerSystem
   interactionChannel: {fileID: 11400000, guid: cb19ddd6cccc2bb4491ea76187c72150, type: 2}
+  interactionEventID: GeneratorStarted
+  objectiveToComplete: {fileID: 11400000, guid: f2697c6b9156d3140aa775544c9ca747, type: 2}
+  objectiveToActivate: {fileID: 0}
+  postRestoreDialogue: {fileID: 11400000, guid: b78db67095d24df4dbe9f31e8d556380, type: 2}
   hasFuel: 1
   isPoweredOn: 1
   enableFuelDrain: 0
@@ -49298,6 +49310,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ToolPickup
   tool: {fileID: 11400000, guid: d0ce8a7628d237a48938f622f7cd89be, type: 2}
   promptMessage: Pick up
+  requiredObjective: {fileID: 0}
+  lockedDialogue: {fileID: 0}
   objectiveToComplete: {fileID: 0}
   objectiveToActivate: {fileID: 0}
   postPickupDialogue: {fileID: 0}

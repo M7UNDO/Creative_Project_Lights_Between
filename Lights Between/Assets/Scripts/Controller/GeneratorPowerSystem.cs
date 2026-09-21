@@ -7,13 +7,19 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
 {
     [Header("Event Channel")]
     [SerializeField] private StringGameEventSO interactionChannel;
+    [SerializeField] private string interactionEventID = "GeneratorStarted";
+
+    [Header("Narrative & Objective Progression")]
+    [SerializeField] private ObjectiveSO objectiveToComplete; 
+    [SerializeField] private ObjectiveSO objectiveToActivate; 
+    [SerializeField] private DialogueSO postRestoreDialogue;
 
     [Header("Generator State")]
     [SerializeField] private bool hasFuel = true;
     [SerializeField] private bool isPoweredOn = true;
 
     [Header("Power Settings")]
-    [SerializeField] private bool enableFuelDrain = false; 
+    [SerializeField] private bool enableFuelDrain = false;
     [SerializeField] private float maxFuel = 100f;
     [SerializeField] private float fuelDrainRate = 0.14f;
     private float currentFuel;
@@ -54,7 +60,6 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
 
     private void Awake()
     {
-        // Initialize fuel early so connected breakers read the correct fuel level immediately
         currentFuel = hasFuel ? maxFuel : 0f;
     }
 
@@ -245,9 +250,31 @@ public class GeneratorPowerSystem : MonoBehaviour, IInteractable, IToolPower
         }
         audioTransitionCoroutine = StartCoroutine(PlayStartupSequence());
 
+        // 1. Raise Event Channel
         if (interactionChannel != null)
         {
-            interactionChannel.Raise(InteractionIDs.Generator);
+            string eventID = !string.IsNullOrEmpty(interactionEventID) ? interactionEventID : InteractionIDs.Generator;
+            interactionChannel.Raise(eventID);
+        }
+
+        // 2. Complete/Activate Narrative Objectives
+        if (ObjectiveManager.Instance != null)
+        {
+            if (objectiveToComplete != null)
+            {
+                ObjectiveManager.Instance.CompleteObjective(objectiveToComplete.ID);
+            }
+
+            if (objectiveToActivate != null)
+            {
+                ObjectiveManager.Instance.ActivateObjective(objectiveToActivate);
+            }
+        }
+
+        // 3. Optional Reaction Dialogue
+        if (DialogueManager.Instance != null && postRestoreDialogue != null)
+        {
+            DialogueManager.Instance.StartDialogue(postRestoreDialogue);
         }
 
         onGeneratorStarted?.Invoke();
