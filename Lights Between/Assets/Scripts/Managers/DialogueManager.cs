@@ -8,7 +8,7 @@ public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
 
-    [SerializeField] FPSController playerController;
+    [SerializeField] private FPSController playerController;
 
     [Header("Input Setup")]
     [SerializeField] private InputActionReference advanceDialogueAction;
@@ -18,6 +18,10 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TMP_Text dialogueText;
     [SerializeField] private TMP_Text ellipsisText;
     [SerializeField] private CanvasGroup advancePromptCanvasGroup;
+
+    [Header("Speaker Text Colors")]
+    [SerializeField] private Color defaultTextColor = Color.white;
+    [SerializeField] private Color unknownSpeakerColor = new Color(0.65f, 0.65f, 0.65f, 1f);
 
     [Header("Prompt Opacity Settings")]
     [SerializeField] private float typingPromptAlpha = 0.3f;
@@ -77,7 +81,12 @@ public class DialogueManager : MonoBehaviour
 
     public void StartDialogue(DialogueSO dialogue)
     {
-        if (isDialogueActive || dialogue == null || dialogue.Lines == null || dialogue.Lines.Length == 0) return;
+        if (isDialogueActive || dialogue == null) return;
+
+        bool hasFormatted = dialogue.FormattedLines != null && dialogue.FormattedLines.Length > 0;
+        bool hasLegacy = dialogue.Lines != null && dialogue.Lines.Length > 0;
+
+        if (!hasFormatted && !hasLegacy) return;
 
         if (playerController == null)
         {
@@ -122,18 +131,41 @@ public class DialogueManager : MonoBehaviour
 
     private void ShowNextLine()
     {
-        if (currentLineIndex >= currentDialogue.Lines.Length)
+        bool hasFormatted = currentDialogue.FormattedLines != null && currentDialogue.FormattedLines.Length > 0;
+        int totalLines = hasFormatted ? currentDialogue.FormattedLines.Length : currentDialogue.Lines.Length;
+
+        if (currentLineIndex >= totalLines)
         {
             EndDialogue();
             return;
         }
 
         if (typingCoroutine != null) StopCoroutine(typingCoroutine);
-        typingCoroutine = StartCoroutine(TypeLineRoutine(currentDialogue.Lines[currentLineIndex]));
+
+        if (hasFormatted)
+        {
+            var lineData = currentDialogue.FormattedLines[currentLineIndex];
+            Color targetColor = lineData.textColor != Color.clear ? lineData.textColor : defaultTextColor;
+            string fullText = string.IsNullOrEmpty(lineData.speakerName) ? lineData.text : $"{lineData.speakerName}: {lineData.text}";
+            typingCoroutine = StartCoroutine(TypeLineRoutine(fullText, targetColor));
+        }
+        else
+        {
+            string rawLine = currentDialogue.Lines[currentLineIndex];
+            Color targetColor = defaultTextColor;
+
+            if (rawLine.StartsWith("???") || rawLine.StartsWith("Unknown"))
+            {
+                targetColor = unknownSpeakerColor;
+            }
+
+            typingCoroutine = StartCoroutine(TypeLineRoutine(rawLine, targetColor));
+        }
+
         currentLineIndex++;
     }
 
-    private IEnumerator TypeLineRoutine(string line)
+    private IEnumerator TypeLineRoutine(string line, Color textColor)
     {
         isTyping = true;
         canAdvance = false;
@@ -141,6 +173,7 @@ public class DialogueManager : MonoBehaviour
         HideEllipsis();
         SetAdvancePromptAlpha(typingPromptAlpha);
 
+        dialogueText.color = textColor;
         dialogueText.text = line;
         dialogueText.maxVisibleCharacters = 0;
         dialogueText.ForceMeshUpdate();
