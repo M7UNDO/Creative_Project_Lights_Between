@@ -12,11 +12,8 @@ public class JournalPowerOutageTrigger : MonoBehaviour, IInteractable
     [SerializeField] private ElectricBoxBreaker breakerBox;
 
     [Header("Post-Journal Triggers To Activate")]
-    [Tooltip("Drag both the Exit Trigger Zone and the Basement Trigger Zone here.")]
+    [Tooltip("Drag the Exit Trigger Zone GameObject here.")]
     [SerializeField] private List<GameObject> triggersToActivate = new List<GameObject>();
-
-    [Header("Objective Progression")]
-    [SerializeField] private ObjectiveSO findSpareLeverObjective;
 
     private bool hasTriggeredPowerOutage = false;
 
@@ -61,11 +58,6 @@ public class JournalPowerOutageTrigger : MonoBehaviour, IInteractable
                         triggersToActivate[i].SetActive(true);
                     }
                 }
-            }
-
-            if (ObjectiveManager.Instance != null && findSpareLeverObjective != null)
-            {
-                ObjectiveManager.Instance.ActivateObjective(findSpareLeverObjective);
             }
         }
     }

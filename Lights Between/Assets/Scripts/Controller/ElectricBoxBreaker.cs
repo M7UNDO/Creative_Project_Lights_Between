@@ -17,6 +17,10 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     [Header("Lever Handle Animation & Mesh")]
     [SerializeField] private Transform leverHandleTransform;
     [SerializeField] private Renderer leverHandleRenderer;
+    [SerializeField] private Collider leverCollider;
+    [SerializeField] private GameObject leverWorldSpaceUI;
+
+    [Header("Rotations")]
     [SerializeField] private Vector3 leverOffRotationEuler;
     [SerializeField] private Vector3 leverOnRotationEuler;
 
@@ -86,6 +90,11 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
             leverHandleTransform.localRotation = isLeverUp ? onRotation : offRotation;
         }
 
+        if (leverCollider == null && leverHandleTransform != null)
+        {
+            leverCollider = leverHandleTransform.GetComponent<Collider>();
+        }
+
         emissionPropertyBlock = new MaterialPropertyBlock();
 
         BuildLightmapDataCache();
@@ -143,13 +152,25 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
     private void UpdateLeverMeshVisibility()
     {
+        bool showLeverComponents = !isLeverMissing;
+
         if (leverHandleRenderer != null)
         {
-            leverHandleRenderer.enabled = !isLeverMissing;
+            leverHandleRenderer.enabled = showLeverComponents;
         }
         else if (leverHandleTransform != null)
         {
-            leverHandleTransform.gameObject.SetActive(!isLeverMissing);
+            leverHandleTransform.gameObject.SetActive(showLeverComponents);
+        }
+
+        if (leverCollider != null)
+        {
+            leverCollider.enabled = showLeverComponents;
+        }
+
+        if (leverWorldSpaceUI != null)
+        {
+            leverWorldSpaceUI.SetActive(showLeverComponents);
         }
     }
 
@@ -369,7 +390,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     {
         if (isLeverMissing)
         {
-            promptMessage = "Missing Breaker Lever";
+            promptMessage = string.Empty;
             return;
         }
 

@@ -7,12 +7,11 @@ public class ElectricBoxDoorTrigger : MonoBehaviour
     [SerializeField] private RotatingOpenable doorOpenable;
     [SerializeField] private ElectricBoxBreaker breakerBox;
 
-    [Header("Dialogue Trigger")]
-    [SerializeField] private DialogueTrigger basementDialogueTrigger;
+    [Header("Dialogue Asset")]
+    [SerializeField] private DialogueSO basementDialogue;
 
     [Header("Door State Rules")]
     [SerializeField] private bool triggerOnce = true;
-    [SerializeField] private bool autoCloseDoorOnPowerOutage = true;
 
     private bool hasTriggered = false;
     private bool wasOpen = false;
@@ -44,9 +43,9 @@ public class ElectricBoxDoorTrigger : MonoBehaviour
 
         hasTriggered = true;
 
-        if (basementDialogueTrigger != null)
+        if (DialogueManager.Instance != null && basementDialogue != null)
         {
-            basementDialogueTrigger.TriggerDialogue();
+            DialogueManager.Instance.StartDialogue(basementDialogue);
         }
     }
 
