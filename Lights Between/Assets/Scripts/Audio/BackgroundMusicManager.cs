@@ -6,6 +6,7 @@ public enum MusicState
 {
     CalmAmbience,
     Tension,
+    DoorKnockTension,
     HorrorStinger,
     Action
 }

@@ -127,6 +127,11 @@ public class DoorSequenceController : MonoBehaviour
             ObjectiveManager.Instance.ActivateObjective(investigateKnockObjective);
         }
 
+        if (BackgroundMusicManager.Instance != null)
+        {
+            BackgroundMusicManager.Instance.TransitionToState(MusicState.DoorKnockTension, 0.5f);
+        }
+
         yield return new WaitForSeconds(1.0f);
 
         while (!hasReachedDoor)
