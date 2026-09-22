@@ -7,7 +7,6 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
     public struct PadlockDial
     {
         public Transform dialTransform;
-        public Transform uiAnchorPoint;
         [HideInInspector] public int currentValue;
     }
 
@@ -18,7 +17,7 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
     [Header("UI Selection Indicator")]
     [SerializeField] private RectTransform selectionArrowUI;
-    [SerializeField] private Camera mainCamera;
+    [SerializeField] private float[] dialXPositions = new float[4] { -150f, -50f, 50f, 150f };
 
     [Header("Inspection Offsets")]
     [SerializeField] private Vector3 inspectionPositionOffset = Vector3.zero;
@@ -49,6 +48,7 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
     [SerializeField] private GameEventSO onLockUnlockedEvent;
 
     private InputHandler inputHandler;
+    private FPSController fpsController;
     private GameObject currentInspectInstance;
     private Outline overallModelOutline;
     private int selectedDialIndex = 0;
@@ -62,11 +62,7 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
     private void Awake()
     {
         inputHandler = FindFirstObjectByType<InputHandler>();
-
-        if (mainCamera == null)
-        {
-            mainCamera = Camera.main;
-        }
+        fpsController = FindFirstObjectByType<FPSController>();
 
         if (puzzleUIPanel != null)
         {
@@ -81,11 +77,7 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
     private void Update()
     {
-        if (!isInspecting || isUnlocked) return;
-
-        UpdateArrowUIPosition();
-
-        if (isBusy) return;
+        if (!isInspecting || isUnlocked || isBusy) return;
 
         HandleInspectInputs();
     }
@@ -101,9 +93,10 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
     {
         isInspecting = true;
 
-        if (inputHandler != null)
+        if (fpsController != null)
         {
-            inputHandler.blockLookInput = true;
+            fpsController.SetMiniGameMode(true);
+            fpsController.ForceLookAt(transform.position + transform.forward * 2.0f);
         }
 
         if (inspectPadlockPrefab != null && holdPoint != null)
@@ -158,9 +151,13 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
             Destroy(currentInspectInstance);
         }
 
+        if (fpsController != null)
+        {
+            fpsController.SetMiniGameMode(false);
+        }
+
         if (inputHandler != null)
         {
-            inputHandler.blockLookInput = false;
             inputHandler.ResetInputValues();
         }
     }
@@ -170,24 +167,27 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
         if (currentInspectInstance == null) return;
 
         PadlockInspectContainer container = currentInspectInstance.GetComponent<PadlockInspectContainer>();
-        if (container != null && container.GetDials() != null && container.GetDials().Length == dials.Length)
+        if (container != null)
         {
-            dials = container.GetDials();
+            if (container.GetDials() != null && container.GetDials().Length == dials.Length)
+            {
+                dials = container.GetDials();
+            }
+
+            if (container.GetDialXPositions() != null && container.GetDialXPositions().Length == dialXPositions.Length)
+            {
+                dialXPositions = container.GetDialXPositions();
+            }
         }
     }
 
     private void UpdateArrowUIPosition()
     {
-        if (selectionArrowUI == null || dials == null || dials.Length == 0 || selectedDialIndex >= dials.Length) return;
+        if (selectionArrowUI == null || dialXPositions == null || dialXPositions.Length == 0 || selectedDialIndex >= dialXPositions.Length) return;
 
-        Transform activeAnchor = dials[selectedDialIndex].uiAnchorPoint != null
-            ? dials[selectedDialIndex].uiAnchorPoint
-            : dials[selectedDialIndex].dialTransform;
-
-        if (activeAnchor == null || mainCamera == null) return;
-
-        Vector3 screenPos = mainCamera.WorldToScreenPoint(activeAnchor.position);
-        selectionArrowUI.position = screenPos;
+        Vector2 anchoredPos = selectionArrowUI.anchoredPosition;
+        anchoredPos.x = dialXPositions[selectedDialIndex];
+        selectionArrowUI.anchoredPosition = anchoredPos;
     }
 
     private void HandleInspectInputs()
