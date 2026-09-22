@@ -11,11 +11,15 @@ public class InputTextPrompt : MonoBehaviour
     [SerializeField] private string formatTemplate = "Press {0} to Start";
 
     [Header("Keyboard Text")]
-    [SerializeField] private string keyboardInputText = "[Space]";
+    [SerializeField] private string keyboardInputText = "[A] [D]";
 
-    [Header("Controller Sprite Names")]
-    [SerializeField] private string xboxSpriteName = "Xbox_A";
-    [SerializeField] private string playstationSpriteName = "PS_Cross";
+    [Header("Xbox Sprite Names")]
+    [SerializeField] private string xboxPrimarySpriteName = "Xbox_DPad_Left";
+    [SerializeField] private string xboxSecondarySpriteName = "Xbox_DPad_Right";
+
+    [Header("PlayStation Sprite Names")]
+    [SerializeField] private string playstationPrimarySpriteName = "PS_DPad_Left";
+    [SerializeField] private string playstationSecondarySpriteName = "PS_DPad_Right";
 
     private void Awake()
     {
@@ -52,13 +56,31 @@ public class InputTextPrompt : MonoBehaviour
                 return keyboardInputText;
 
             case InputDeviceType.Xbox:
-                return string.IsNullOrEmpty(xboxSpriteName) ? string.Empty : $"<sprite name=\"{xboxSpriteName}\">";
+                return FormatDualSprites(xboxPrimarySpriteName, xboxSecondarySpriteName);
 
             case InputDeviceType.PlayStation:
-                return string.IsNullOrEmpty(playstationSpriteName) ? string.Empty : $"<sprite name=\"{playstationSpriteName}\">";
+                return FormatDualSprites(playstationPrimarySpriteName, playstationSecondarySpriteName);
 
             default:
                 return string.Empty;
         }
+    }
+
+    private string FormatDualSprites(string primarySprite, string secondarySprite)
+    {
+        string result = string.Empty;
+
+        if (!string.IsNullOrEmpty(primarySprite))
+        {
+            result += $"<sprite name=\"{primarySprite}\">";
+        }
+
+        if (!string.IsNullOrEmpty(secondarySprite))
+        {
+            if (!string.IsNullOrEmpty(result)) result += " ";
+            result += $"<sprite name=\"{secondarySprite}\">";
+        }
+
+        return result;
     }
 }

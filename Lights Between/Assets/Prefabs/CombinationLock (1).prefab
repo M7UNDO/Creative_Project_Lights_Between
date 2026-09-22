@@ -246,6 +246,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -3760042067377630078, guid: ef1923ba0ffaeb542827b3c4c12d3397, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5650799107701363816}
+    - targetCorrespondingSourceObject: {fileID: 999404285501708131, guid: ef1923ba0ffaeb542827b3c4c12d3397, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5727517720129749102}
   m_SourcePrefab: {fileID: 100100000, guid: ef1923ba0ffaeb542827b3c4c12d3397, type: 3}
 --- !u!1 &362200179742852337 stripped
 GameObject:
@@ -308,6 +311,29 @@ MonoBehaviour:
   - -66
   - 69
   - 128.8
+--- !u!1 &4830663013178312464 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 999404285501708131, guid: ef1923ba0ffaeb542827b3c4c12d3397, type: 3}
+  m_PrefabInstance: {fileID: 5681131009811779699}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5727517720129749102
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4830663013178312464}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Outline
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 1
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!4 &5098548481516548878 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 582864690622702461, guid: ef1923ba0ffaeb542827b3c4c12d3397, type: 3}

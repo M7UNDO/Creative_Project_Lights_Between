@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class CombinationPadlock : MonoBehaviour, IInteractable
@@ -14,6 +15,12 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
     [SerializeField] private Transform holdPoint;
     [SerializeField] private GameObject inspectPadlockPrefab;
     [SerializeField] private GameObject puzzleUIPanel;
+
+    [Header("Accessibility & Text UI")]
+    [SerializeField] private TMP_Text combinationDisplayTMP;
+    [SerializeField] private InputTextPrompt horizontalPromptUI;
+    [SerializeField] private InputTextPrompt verticalPromptUI;
+    [SerializeField] private InputTextPrompt confirmPromptUI;
 
     [Header("UI Selection Indicator")]
     [SerializeField] private RectTransform selectionArrowUI;
@@ -107,6 +114,11 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
             currentInspectInstance.transform.localScale = inspectionScale;
 
             overallModelOutline = currentInspectInstance.GetComponent<Outline>();
+            if (overallModelOutline == null)
+            {
+                overallModelOutline = currentInspectInstance.GetComponentInChildren<Outline>();
+            }
+
             if (overallModelOutline != null)
             {
                 overallModelOutline.enabled = true;
@@ -128,6 +140,7 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
         selectedDialIndex = 0;
         UpdateArrowUIPosition();
+        UpdateCombinationTextDisplay();
 
         Debug.Log($"[Padlock] Entered Inspect Mode. Selected Dial Index: {selectedDialIndex} | Current Value: {dials[selectedDialIndex].currentValue}");
     }
@@ -192,6 +205,13 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
         Vector2 anchoredPos = selectionArrowUI.anchoredPosition;
         anchoredPos.x = dialXPositions[selectedDialIndex];
         selectionArrowUI.anchoredPosition = anchoredPos;
+    }
+
+    private void UpdateCombinationTextDisplay()
+    {
+        if (combinationDisplayTMP == null || dials == null || dials.Length < 4) return;
+
+        combinationDisplayTMP.text = $"{dials[0].currentValue} {dials[1].currentValue} {dials[2].currentValue} {dials[3].currentValue}";
     }
 
     private void HandleInspectInputs()
@@ -262,6 +282,8 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
         dials[dialIndex].currentValue = (dials[dialIndex].currentValue + direction) % 10;
         if (dials[dialIndex].currentValue < 0) dials[dialIndex].currentValue += 10;
+
+        UpdateCombinationTextDisplay();
 
         Debug.Log($"[Padlock] Rotated Dial [{dialIndex}] -> New Value: {dials[dialIndex].currentValue}");
 
