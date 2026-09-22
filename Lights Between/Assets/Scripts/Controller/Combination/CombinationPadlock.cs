@@ -128,6 +128,8 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
         selectedDialIndex = 0;
         UpdateArrowUIPosition();
+
+        Debug.Log($"[Padlock] Entered Inspect Mode. Selected Dial Index: {selectedDialIndex} | Current Value: {dials[selectedDialIndex].currentValue}");
     }
 
     public void ExitInspectMode()
@@ -160,6 +162,8 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
         {
             inputHandler.ResetInputValues();
         }
+
+        Debug.Log("[Padlock] Exited Inspect Mode.");
     }
 
     private void CacheSpawnedDials()
@@ -248,6 +252,8 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
         if (selectedDialIndex < 0) selectedDialIndex = dials.Length - 1;
 
         UpdateArrowUIPosition();
+
+        Debug.Log($"[Padlock] Dial Changed -> Index: {selectedDialIndex} | Target Pos X: {dialXPositions[selectedDialIndex]} | Current Value: {dials[selectedDialIndex].currentValue}");
     }
 
     private IEnumerator RotateDialRoutine(int dialIndex, int direction)
@@ -256,6 +262,8 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
         dials[dialIndex].currentValue = (dials[dialIndex].currentValue + direction) % 10;
         if (dials[dialIndex].currentValue < 0) dials[dialIndex].currentValue += 10;
+
+        Debug.Log($"[Padlock] Rotated Dial [{dialIndex}] -> New Value: {dials[dialIndex].currentValue}");
 
         if (audioSource != null && dialTurnSFX != null)
         {
@@ -279,6 +287,11 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
     private void EvaluateCombination()
     {
+        string currentAttempt = $"{dials[0].currentValue}-{dials[1].currentValue}-{dials[2].currentValue}-{dials[3].currentValue}";
+        string expectedCode = $"{correctCode[0]}-{correctCode[1]}-{correctCode[2]}-{correctCode[3]}";
+
+        Debug.Log($"[Padlock] Confirm Pressed. Current Input: [{currentAttempt}] | Expected Code: [{expectedCode}]");
+
         bool isCorrect = true;
 
         for (int i = 0; i < dials.Length; i++)
@@ -304,6 +317,8 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
         if (isCorrect)
         {
+            Debug.Log("<color=green>[Padlock] Code Correct! Unlocking...</color>");
+
             if (audioSource != null && lockSuccessSFX != null)
             {
                 audioSource.PlayOneShot(lockSuccessSFX);
@@ -323,6 +338,8 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
         }
         else
         {
+            Debug.Log("<color=red>[Padlock] Code Incorrect!</color>");
+
             if (audioSource != null && lockErrorSFX != null)
             {
                 audioSource.PlayOneShot(lockErrorSFX);
