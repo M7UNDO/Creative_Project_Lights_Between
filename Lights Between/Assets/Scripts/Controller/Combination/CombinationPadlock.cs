@@ -1,13 +1,13 @@
 using System.Collections;
 using UnityEngine;
 
-public class CombinationPadlock : MonoBehaviour
+public class CombinationPadlock : MonoBehaviour, IInteractable
 {
     [System.Serializable]
     public struct PadlockDial
     {
         public Transform dialTransform;
-        public Outline dialOutline;
+        public Transform uiAnchorPoint;
         [HideInInspector] public int currentValue;
     }
 
@@ -15,6 +15,15 @@ public class CombinationPadlock : MonoBehaviour
     [SerializeField] private Transform holdPoint;
     [SerializeField] private GameObject inspectPadlockPrefab;
     [SerializeField] private GameObject puzzleUIPanel;
+
+    [Header("UI Selection Indicator")]
+    [SerializeField] private RectTransform selectionArrowUI;
+    [SerializeField] private Camera mainCamera;
+
+    [Header("Inspection Offsets")]
+    [SerializeField] private Vector3 inspectionPositionOffset = Vector3.zero;
+    [SerializeField] private Vector3 inspectionRotationOffset = Vector3.zero;
+    [SerializeField] private Vector3 inspectionScale = Vector3.one;
 
     [Header("Lock Configuration")]
     [SerializeField] private PadlockDial[] dials = new PadlockDial[4];
@@ -25,7 +34,7 @@ public class CombinationPadlock : MonoBehaviour
     [SerializeField] private float rotationSpeed = 12.0f;
     [SerializeField] private float degreesPerStep = 36.0f;
 
-    [Header("Outline Colors")]
+    [Header("Overall Model Outline Feedback")]
     [SerializeField] private Color activeOutlineColor = Color.yellow;
     [SerializeField] private Color correctOutlineColor = Color.green;
     [SerializeField] private Color wrongOutlineColor = Color.red;
@@ -41,6 +50,7 @@ public class CombinationPadlock : MonoBehaviour
 
     private InputHandler inputHandler;
     private GameObject currentInspectInstance;
+    private Outline overallModelOutline;
     private int selectedDialIndex = 0;
     private bool isInspecting = false;
     private bool isUnlocked = false;
@@ -53,15 +63,29 @@ public class CombinationPadlock : MonoBehaviour
     {
         inputHandler = FindFirstObjectByType<InputHandler>();
 
+        if (mainCamera == null)
+        {
+            mainCamera = Camera.main;
+        }
+
         if (puzzleUIPanel != null)
         {
             puzzleUIPanel.SetActive(false);
+        }
+
+        if (selectionArrowUI != null)
+        {
+            selectionArrowUI.gameObject.SetActive(false);
         }
     }
 
     private void Update()
     {
-        if (!isInspecting || isUnlocked || isBusy) return;
+        if (!isInspecting || isUnlocked) return;
+
+        UpdateArrowUIPosition();
+
+        if (isBusy) return;
 
         HandleInspectInputs();
     }
@@ -84,8 +108,19 @@ public class CombinationPadlock : MonoBehaviour
 
         if (inspectPadlockPrefab != null && holdPoint != null)
         {
-            currentInspectInstance = Instantiate(inspectPadlockPrefab, holdPoint.position, holdPoint.rotation, holdPoint);
-            CacheInspectInstanceDials();
+            currentInspectInstance = Instantiate(inspectPadlockPrefab, holdPoint);
+            currentInspectInstance.transform.localPosition = inspectionPositionOffset;
+            currentInspectInstance.transform.localRotation = Quaternion.Euler(inspectionRotationOffset);
+            currentInspectInstance.transform.localScale = inspectionScale;
+
+            overallModelOutline = currentInspectInstance.GetComponent<Outline>();
+            if (overallModelOutline != null)
+            {
+                overallModelOutline.enabled = true;
+                overallModelOutline.OutlineColor = activeOutlineColor;
+            }
+
+            CacheSpawnedDials();
         }
 
         if (puzzleUIPanel != null)
@@ -93,8 +128,13 @@ public class CombinationPadlock : MonoBehaviour
             puzzleUIPanel.SetActive(true);
         }
 
+        if (selectionArrowUI != null)
+        {
+            selectionArrowUI.gameObject.SetActive(true);
+        }
+
         selectedDialIndex = 0;
-        UpdateDialOutlines();
+        UpdateArrowUIPosition();
     }
 
     public void ExitInspectMode()
@@ -103,14 +143,19 @@ public class CombinationPadlock : MonoBehaviour
 
         isInspecting = false;
 
-        if (currentInspectInstance != null)
+        if (selectionArrowUI != null)
         {
-            Destroy(currentInspectInstance);
+            selectionArrowUI.gameObject.SetActive(false);
         }
 
         if (puzzleUIPanel != null)
         {
             puzzleUIPanel.SetActive(false);
+        }
+
+        if (currentInspectInstance != null)
+        {
+            Destroy(currentInspectInstance);
         }
 
         if (inputHandler != null)
@@ -120,18 +165,29 @@ public class CombinationPadlock : MonoBehaviour
         }
     }
 
-    private void CacheInspectInstanceDials()
+    private void CacheSpawnedDials()
     {
         if (currentInspectInstance == null) return;
 
-        PadlockDial[] inspectDials = currentInspectInstance.GetComponentsInChildren<PadlockDialHolder>() != null
-            ? currentInspectInstance.GetComponent<PadlockInspectContainer>()?.GetDials()
-            : null;
-
-        if (inspectDials != null && inspectDials.Length == dials.Length)
+        PadlockInspectContainer container = currentInspectInstance.GetComponent<PadlockInspectContainer>();
+        if (container != null && container.GetDials() != null && container.GetDials().Length == dials.Length)
         {
-            dials = inspectDials;
+            dials = container.GetDials();
         }
+    }
+
+    private void UpdateArrowUIPosition()
+    {
+        if (selectionArrowUI == null || dials == null || dials.Length == 0 || selectedDialIndex >= dials.Length) return;
+
+        Transform activeAnchor = dials[selectedDialIndex].uiAnchorPoint != null
+            ? dials[selectedDialIndex].uiAnchorPoint
+            : dials[selectedDialIndex].dialTransform;
+
+        if (activeAnchor == null || mainCamera == null) return;
+
+        Vector3 screenPos = mainCamera.WorldToScreenPoint(activeAnchor.position);
+        selectionArrowUI.position = screenPos;
     }
 
     private void HandleInspectInputs()
@@ -146,7 +202,7 @@ public class CombinationPadlock : MonoBehaviour
             return;
         }
 
-        Vector2 navVector = inputHandler.wheelNavigate.sqrMagnitude > 0.1f ? inputHandler.wheelNavigate : inputHandler.move;
+        Vector2 navVector = inputHandler.navigateDial.sqrMagnitude > 0.1f ? inputHandler.navigateDial : inputHandler.move;
 
         if (Mathf.Abs(navVector.x) > 0.5f)
         {
@@ -176,10 +232,10 @@ public class CombinationPadlock : MonoBehaviour
             rotateInputAxisInUse = false;
         }
 
-        if (inputHandler.interact || inputHandler.timedAction)
+        if (inputHandler.confirmDial || inputHandler.interact)
         {
+            inputHandler.confirmDial = false;
             inputHandler.interact = false;
-            inputHandler.timedAction = false;
             EvaluateCombination();
         }
     }
@@ -191,25 +247,7 @@ public class CombinationPadlock : MonoBehaviour
         if (selectedDialIndex >= dials.Length) selectedDialIndex = 0;
         if (selectedDialIndex < 0) selectedDialIndex = dials.Length - 1;
 
-        UpdateDialOutlines();
-    }
-
-    private void UpdateDialOutlines()
-    {
-        for (int i = 0; i < dials.Length; i++)
-        {
-            if (dials[i].dialOutline == null) continue;
-
-            if (i == selectedDialIndex)
-            {
-                dials[i].dialOutline.enabled = true;
-                dials[i].dialOutline.OutlineColor = activeOutlineColor;
-            }
-            else
-            {
-                dials[i].dialOutline.enabled = false;
-            }
-        }
+        UpdateArrowUIPosition();
     }
 
     private IEnumerator RotateDialRoutine(int dialIndex, int direction)
@@ -259,15 +297,9 @@ public class CombinationPadlock : MonoBehaviour
     {
         isBusy = true;
 
-        Color targetColor = isCorrect ? correctOutlineColor : wrongOutlineColor;
-
-        for (int i = 0; i < dials.Length; i++)
+        if (overallModelOutline != null)
         {
-            if (dials[i].dialOutline != null)
-            {
-                dials[i].dialOutline.enabled = true;
-                dials[i].dialOutline.OutlineColor = targetColor;
-            }
+            overallModelOutline.OutlineColor = isCorrect ? correctOutlineColor : wrongOutlineColor;
         }
 
         if (isCorrect)
@@ -298,8 +330,12 @@ public class CombinationPadlock : MonoBehaviour
 
             yield return new WaitForSeconds(1.2f);
 
+            if (overallModelOutline != null)
+            {
+                overallModelOutline.OutlineColor = activeOutlineColor;
+            }
+
             isBusy = false;
-            UpdateDialOutlines();
         }
     }
 }

@@ -7,6 +7,7 @@ public class InputHandler : MonoBehaviour
     public Vector2 move;
     public Vector2 look;
     public Vector2 wheelNavigate;
+    public Vector2 navigateDial;
 
     public bool sprint;
     public bool standUp;
@@ -21,6 +22,7 @@ public class InputHandler : MonoBehaviour
     public bool cancel;
     public bool close;
     public bool timedAction;
+    public bool confirmDial;
 
     [Header("Movement Settings")]
     public bool analogMovement;
@@ -50,6 +52,9 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Player.WheelNavigate.performed += ctx => WheelNavigateInput(ctx.ReadValue<Vector2>());
         playerControls.Player.WheelNavigate.canceled += ctx => WheelNavigateInput(Vector2.zero);
+
+        playerControls.Player.NavigateDial.performed += ctx => NavigateDialInput(ctx.ReadValue<Vector2>());
+        playerControls.Player.NavigateDial.canceled += ctx => NavigateDialInput(Vector2.zero);
 
         playerControls.Player.Sprint.performed += ctx => SprintInput(true);
         playerControls.Player.Sprint.canceled += ctx => SprintInput(false);
@@ -81,6 +86,9 @@ public class InputHandler : MonoBehaviour
         playerControls.Player.Close.performed += ctx => CloseInput(true);
         playerControls.Player.Close.canceled += ctx => CloseInput(false);
 
+        playerControls.Player.ConfirmDial.performed += ctx => ConfirmDialInput(true);
+        playerControls.Player.ConfirmDial.canceled += ctx => ConfirmDialInput(false);
+
         playerControls.Enable();
     }
 
@@ -102,6 +110,11 @@ public class InputHandler : MonoBehaviour
     public void WheelNavigateInput(Vector2 newWheelNavigateDirection)
     {
         wheelNavigate = newWheelNavigateDirection;
+    }
+
+    public void NavigateDialInput(Vector2 newNavigateDialDirection)
+    {
+        navigateDial = newNavigateDialDirection;
     }
 
     public void SprintInput(bool newSprintState)
@@ -133,6 +146,7 @@ public class InputHandler : MonoBehaviour
     {
         toggleFlashlight = newFlashlightState;
     }
+
     public void ChangeBatteryInput(bool newBatteryState)
     {
         changeBattery = newBatteryState;
@@ -168,6 +182,11 @@ public class InputHandler : MonoBehaviour
         timedAction = newTimedActionState;
     }
 
+    public void ConfirmDialInput(bool newConfirmDialState)
+    {
+        confirmDial = newConfirmDialState;
+    }
+
     public void ClearLookInput()
     {
         look = Vector2.zero;
@@ -178,6 +197,7 @@ public class InputHandler : MonoBehaviour
         move = Vector2.zero;
         look = Vector2.zero;
         wheelNavigate = Vector2.zero;
+        navigateDial = Vector2.zero;
 
         sprint = false;
         standUp = false;
@@ -192,6 +212,7 @@ public class InputHandler : MonoBehaviour
         cancel = false;
         close = false;
         timedAction = false;
+        confirmDial = false;
     }
 
     private void OnApplicationFocus(bool hasFocus)
