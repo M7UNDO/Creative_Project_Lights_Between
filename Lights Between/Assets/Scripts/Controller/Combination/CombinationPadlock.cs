@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text;
 using TMPro;
 using UnityEngine;
 
@@ -16,6 +17,10 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
     [SerializeField] private GameObject inspectPadlockPrefab;
     [SerializeField] private GameObject puzzleUIPanel;
 
+    [Header("Power & Inspection Light")]
+    [SerializeField] private ElectricBoxBreaker breakerBox;
+    [SerializeField] private GameObject inspectionLightObject;
+
     [Header("Accessibility & Text UI")]
     [SerializeField] private TMP_Text combinationDisplayTMP;
     [SerializeField] private InputTextPrompt horizontalPromptUI;
@@ -24,7 +29,7 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
     [Header("UI Selection Indicator")]
     [SerializeField] private RectTransform selectionArrowUI;
-    [SerializeField] private float[] dialXPositions = new float[4] { -150f, -50f, 50f, 150f };
+    [SerializeField] private float[] dialXPositions = new float[5] { -200f, -100f, 0f, 100f, 200f };
 
     [Header("Inspection Offsets")]
     [SerializeField] private Vector3 inspectionPositionOffset = Vector3.zero;
@@ -32,8 +37,8 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
     [SerializeField] private Vector3 inspectionScale = Vector3.one;
 
     [Header("Lock Configuration")]
-    [SerializeField] private PadlockDial[] dials = new PadlockDial[4];
-    [SerializeField] private int[] correctCode = new int[4] { 1, 9, 2, 5 };
+    [SerializeField] private PadlockDial[] dials = new PadlockDial[5];
+    [SerializeField] private int[] correctCode = new int[5] { 1, 9, 2, 5, 0 };
 
     [Header("Rotation Settings")]
     [SerializeField] private Vector3 rotationAxis = new Vector3(1f, 0f, 0f);
@@ -79,6 +84,11 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
         if (selectionArrowUI != null)
         {
             selectionArrowUI.gameObject.SetActive(false);
+        }
+
+        if (inspectionLightObject != null)
+        {
+            inspectionLightObject.SetActive(false);
         }
     }
 
@@ -128,6 +138,8 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
             CacheSpawnedDials();
         }
 
+        EvaluateInspectionLight();
+
         if (puzzleUIPanel != null)
         {
             puzzleUIPanel.SetActive(true);
@@ -150,6 +162,11 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
         if (!isInspecting) return;
 
         isInspecting = false;
+
+        if (inspectionLightObject != null)
+        {
+            inspectionLightObject.SetActive(false);
+        }
 
         if (selectionArrowUI != null)
         {
@@ -177,6 +194,14 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
         }
 
         Debug.Log("[Padlock] Exited Inspect Mode.");
+    }
+
+    private void EvaluateInspectionLight()
+    {
+        if (inspectionLightObject == null) return;
+
+        bool isPowerOn = breakerBox != null && breakerBox.IsGridActive;
+        inspectionLightObject.SetActive(!isPowerOn);
     }
 
     private void CacheSpawnedDials()
@@ -209,9 +234,16 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
     private void UpdateCombinationTextDisplay()
     {
-        if (combinationDisplayTMP == null || dials == null || dials.Length < 4) return;
+        if (combinationDisplayTMP == null || dials == null || dials.Length == 0) return;
 
-        combinationDisplayTMP.text = $"{dials[0].currentValue} {dials[1].currentValue} {dials[2].currentValue} {dials[3].currentValue}";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < dials.Length; i++)
+        {
+            sb.Append(dials[i].currentValue);
+            if (i < dials.Length - 1) sb.Append(" ");
+        }
+
+        combinationDisplayTMP.text = sb.ToString();
     }
 
     private void HandleInspectInputs()
@@ -309,21 +341,34 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
     private void EvaluateCombination()
     {
-        string currentAttempt = $"{dials[0].currentValue}-{dials[1].currentValue}-{dials[2].currentValue}-{dials[3].currentValue}";
-        string expectedCode = $"{correctCode[0]}-{correctCode[1]}-{correctCode[2]}-{correctCode[3]}";
+        if (dials == null || correctCode == null || dials.Length != correctCode.Length)
+        {
+            Debug.LogWarning("[Padlock] Dials count does not match Correct Code count!");
+            return;
+        }
 
-        Debug.Log($"[Padlock] Confirm Pressed. Current Input: [{currentAttempt}] | Expected Code: [{expectedCode}]");
-
+        StringBuilder currentAttemptSB = new StringBuilder();
+        StringBuilder expectedCodeSB = new StringBuilder();
         bool isCorrect = true;
 
         for (int i = 0; i < dials.Length; i++)
         {
+            currentAttemptSB.Append(dials[i].currentValue);
+            expectedCodeSB.Append(correctCode[i]);
+
+            if (i < dials.Length - 1)
+            {
+                currentAttemptSB.Append("-");
+                expectedCodeSB.Append("-");
+            }
+
             if (dials[i].currentValue != correctCode[i])
             {
                 isCorrect = false;
-                break;
             }
         }
+
+        Debug.Log($"[Padlock] Confirm Pressed. Current Input: [{currentAttemptSB}] | Expected Code: [{expectedCodeSB}]");
 
         StartCoroutine(EvaluateRoutine(isCorrect));
     }
