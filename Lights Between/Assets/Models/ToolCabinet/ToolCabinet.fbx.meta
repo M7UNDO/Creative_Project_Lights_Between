@@ -1,9 +1,24 @@
 fileFormatVersion: 2
-guid: a2749e731c1c292459c05dcc0e161a98
+guid: 466273797d35b5141926f6ee895f90b8
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cardboard_diffuse
+    second: {fileID: 2100000, guid: 84c19ac34f49ab54cb6d60011d2e0958, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: material_albedo
+    second: {fileID: 2100000, guid: 4f220a9caedc5224a8ef8cdd12ac6979, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wood_diffuse
+    second: {fileID: 2100000, guid: bc749731a9107cc47b4b12a3991eff69, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

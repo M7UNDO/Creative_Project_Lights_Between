@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using TMPro;
 
 public class NoteUIController : MonoBehaviour
@@ -8,9 +9,14 @@ public class NoteUIController : MonoBehaviour
     [SerializeField] private InputHandler _input;
     [SerializeField] private FPSController playerController;
 
+    [Header("Input Action References")]
+    [SerializeField] private InputActionReference nextPageAction;
+    [SerializeField] private InputActionReference previousPageAction;
+
     [Header("UI References")]
     [SerializeField] private GameObject notePanelUI;
     [SerializeField] private TextMeshProUGUI noteText;
+    [SerializeField] private TextMeshProUGUI pageNumberText;
 
     [Header("Objective Activation (Scenario A)")]
     [SerializeField] private ObjectiveSO objectiveToActivate;
@@ -22,11 +28,13 @@ public class NoteUIController : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip openNoteSound;
     [SerializeField] private AudioClip closeNoteSound;
+    [SerializeField] private AudioClip pageTurnSound;
 
     public static bool isNoteOpen { get; private set; }
-
     public bool IsNoteOpen => isNoteOpen;
 
+    private NoteData currentNoteData;
+    private int currentPageIndex = 0;
     private bool hasTriggeredObjective;
 
     private void Awake()
@@ -53,6 +61,36 @@ public class NoteUIController : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        if (nextPageAction != null)
+        {
+            nextPageAction.action.performed += OnNextPagePerformed;
+            nextPageAction.action.Enable();
+        }
+
+        if (previousPageAction != null)
+        {
+            previousPageAction.action.performed += OnPreviousPagePerformed;
+            previousPageAction.action.Enable();
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (nextPageAction != null)
+        {
+            nextPageAction.action.performed -= OnNextPagePerformed;
+            nextPageAction.action.Disable();
+        }
+
+        if (previousPageAction != null)
+        {
+            previousPageAction.action.performed -= OnPreviousPagePerformed;
+            previousPageAction.action.Disable();
+        }
+    }
+
     private void Update()
     {
         if (isNoteOpen && _input != null && _input.close)
@@ -62,11 +100,39 @@ public class NoteUIController : MonoBehaviour
         }
     }
 
+    private void OnNextPagePerformed(InputAction.CallbackContext context)
+    {
+        if (!isNoteOpen || currentNoteData == null) return;
+
+        if (currentPageIndex < currentNoteData.TotalPages - 1)
+        {
+            currentPageIndex++;
+            UpdateNoteDisplay();
+            PlayPageTurnSFX();
+        }
+    }
+
+    private void OnPreviousPagePerformed(InputAction.CallbackContext context)
+    {
+        if (!isNoteOpen || currentNoteData == null) return;
+
+        if (currentPageIndex > 0)
+        {
+            currentPageIndex--;
+            UpdateNoteDisplay();
+            PlayPageTurnSFX();
+        }
+    }
+
     public void OpenNote(NoteData data)
     {
         if (data == null || notePanelUI == null || noteText == null) return;
 
-        noteText.text = data.NoteContent;
+        currentNoteData = data;
+        currentPageIndex = 0;
+
+        UpdateNoteDisplay();
+
         notePanelUI.SetActive(true);
         isNoteOpen = true;
 
@@ -83,6 +149,29 @@ public class NoteUIController : MonoBehaviour
         if (VolumeBlurController.Instance != null)
         {
             VolumeBlurController.Instance.SetMenuBlurState(true);
+        }
+    }
+
+    private void UpdateNoteDisplay()
+    {
+        if (currentNoteData == null) return;
+
+        if (noteText != null)
+        {
+            noteText.text = currentNoteData.GetPageContent(currentPageIndex);
+        }
+
+        if (pageNumberText != null)
+        {
+            pageNumberText.text = $"{currentPageIndex + 1} / {currentNoteData.TotalPages}";
+        }
+    }
+
+    private void PlayPageTurnSFX()
+    {
+        if (audioSource != null && pageTurnSound != null)
+        {
+            audioSource.PlayOneShot(pageTurnSound);
         }
     }
 
@@ -117,20 +206,23 @@ public class NoteUIController : MonoBehaviour
 
     private void OnCloseNoteUI()
     {
-        if (hasTriggeredObjective) return;
-
-        if (fridgeToUnlock != null)
+        if (currentNoteData != null && currentNoteData.TriggersObjective)
         {
-            fridgeToUnlock.SetLockedState(false);
+            if (!hasTriggeredObjective)
+            {
+                if (fridgeToUnlock != null)
+                {
+                    fridgeToUnlock.SetLockedState(false);
+                }
+
+                if (ObjectiveManager.Instance != null && objectiveToActivate != null)
+                {
+                    ObjectiveManager.Instance.ActivateObjective(objectiveToActivate);
+                    hasTriggeredObjective = true;
+                }
+            }
         }
 
-        if (ObjectiveManager.Instance != null && objectiveToActivate != null)
-        {
-            ObjectiveManager.Instance.ActivateObjective(objectiveToActivate);
-            hasTriggeredObjective = true;
-        }
-        
-
-
+        currentNoteData = null;
     }
 }
