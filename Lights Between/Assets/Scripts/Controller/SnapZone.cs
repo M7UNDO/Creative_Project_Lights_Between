@@ -1,17 +1,24 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class SnapZone : MonoBehaviour, IInteractable
 {
     [Header("Requirements")]
-    [SerializeField] private string requiredItemID = "Bag";
-    [SerializeField] private int requiredItemCount = 2;
-    [SerializeField] private string promptText = "Place Bag";
+    [SerializeField] private string requiredItemID = "BreakerHandle";
+    [SerializeField] private int requiredItemCount = 1;
+    [SerializeField] private string promptText = "Attach Lever";
 
     [Header("Snap Behavior")]
     [SerializeField] private List<Transform> snapPoints = new List<Transform>();
-    [SerializeField] private bool destroyObjectOnSnap = false;
+    [SerializeField] private bool destroyObjectOnSnap = true;
     [SerializeField] private GameObject enableVisualOnSnap;
+
+    [Header("Breaker Box Target")]
+    [SerializeField] private ElectricBoxBreaker breakerBoxToRepair;
+
+    [Header("Objective Progression")]
+    [SerializeField] private ObjectiveSO performRitualObjective;
 
     [Header("Completion Cleanup")]
     [Tooltip("If true, destroys this GameObject when complete. If false, disables the collider and script instead.")]
@@ -19,7 +26,7 @@ public class SnapZone : MonoBehaviour, IInteractable
 
     [Header("Events & Audio")]
     [SerializeField] private StringGameEventSO interactionChannel;
-    [SerializeField] private string interactionEventID = InteractionIDs.PackBags;
+    [SerializeField] private string interactionEventID = "BreakerRepaired";
     [SerializeField] private AudioClip snapSFX;
 
     [Header("Invalid Item Dialogue")]
@@ -30,9 +37,17 @@ public class SnapZone : MonoBehaviour, IInteractable
     [SerializeField] private DialogueSO postSnapDialogue;
 
     private int currentSnappedCount = 0;
+    private Collider triggerCollider;
+
+    private void Awake()
+    {
+        triggerCollider = GetComponent<Collider>();
+    }
 
     public void Interact()
     {
+        if (!CanSnapForScenario()) return;
+
         FPSController player = FindFirstObjectByType<FPSController>();
         if (player == null) return;
 
@@ -60,6 +75,11 @@ public class SnapZone : MonoBehaviour, IInteractable
                 enableVisualOnSnap.SetActive(true);
             }
 
+            if (breakerBoxToRepair != null)
+            {
+                breakerBoxToRepair.AttachMissingLever();
+            }
+
             if (snapSFX != null)
             {
                 AudioSource.PlayClipAtPoint(snapSFX, transform.position);
@@ -70,6 +90,11 @@ public class SnapZone : MonoBehaviour, IInteractable
                 if (interactionChannel != null)
                 {
                     interactionChannel.Raise(interactionEventID);
+                }
+
+                if (ObjectiveManager.Instance != null && performRitualObjective != null)
+                {
+                    ObjectiveManager.Instance.ActivateObjective(performRitualObjective);
                 }
 
                 if (DialogueManager.Instance != null && postSnapDialogue != null)
@@ -84,24 +109,33 @@ public class SnapZone : MonoBehaviour, IInteractable
 
     private void CleanupSnapZone()
     {
+        if (triggerCollider != null)
+        {
+            triggerCollider.enabled = false;
+        }
+
         if (destroySnapZoneOnComplete)
         {
             Destroy(gameObject);
         }
         else
         {
-            if (TryGetComponent<Collider>(out Collider col))
-            {
-                col.enabled = false;
-            }
-
             enabled = false;
         }
     }
 
+    private bool CanSnapForScenario()
+    {
+        if (breakerBoxToRepair != null)
+        {
+            return breakerBoxToRepair.IsLeverMissing;
+        }
+        return true;
+    }
+
     public bool CanSnap(ObjectGrabbable heldItem)
     {
-        if (currentSnappedCount >= requiredItemCount) return false;
+        if (!CanSnapForScenario() || currentSnappedCount >= requiredItemCount) return false;
 
         if (heldItem != null && heldItem.ItemID == invalidItemID) return true;
 
@@ -110,7 +144,7 @@ public class SnapZone : MonoBehaviour, IInteractable
 
     public string GetPromptMessage(ObjectGrabbable heldItem)
     {
-        if (currentSnappedCount >= requiredItemCount) return string.Empty;
+        if (!CanSnapForScenario() || currentSnappedCount >= requiredItemCount) return string.Empty;
 
         if (heldItem != null && heldItem.ItemID == invalidItemID)
         {

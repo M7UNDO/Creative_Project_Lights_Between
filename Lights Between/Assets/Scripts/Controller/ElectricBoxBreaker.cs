@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -12,10 +11,12 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
     [Header("Breaker State")]
     [SerializeField] private bool isLeverUp = true;
+    [SerializeField] private bool isLeverMissing = false;
     [SerializeField] private float smoothSpeed = 1.5f;
 
-    [Header("Lever Handle Animation")]
+    [Header("Lever Handle Animation & Mesh")]
     [SerializeField] private Transform leverHandleTransform;
+    [SerializeField] private Renderer leverHandleRenderer;
     [SerializeField] private Vector3 leverOffRotationEuler;
     [SerializeField] private Vector3 leverOnRotationEuler;
 
@@ -71,7 +72,8 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
     private bool previousGridState;
 
-    public bool IsGridActive => isLeverUp && connectedGenerator != null && connectedGenerator.CurrentPower > 0f;
+    public bool IsGridActive => !isLeverMissing && isLeverUp && connectedGenerator != null && connectedGenerator.CurrentPower > 0f;
+    public bool IsLeverMissing => isLeverMissing;
 
     private void Awake()
     {
@@ -87,6 +89,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         emissionPropertyBlock = new MaterialPropertyBlock();
 
         BuildLightmapDataCache();
+        UpdateLeverMeshVisibility();
         UpdatePromptMessage();
     }
 
@@ -111,8 +114,49 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         }
     }
 
+    public void SetLeverMissingState(bool missing)
+    {
+        isLeverMissing = missing;
+        if (missing) isLeverUp = false;
+
+        UpdateLeverMeshVisibility();
+        UpdatePromptMessage();
+        RefreshPowerGrid();
+    }
+
+    public void AttachMissingLever()
+    {
+        isLeverMissing = false;
+        isLeverUp = true;
+
+        UpdateLeverMeshVisibility();
+        UpdatePromptMessage();
+
+        if (rotationCoroutine != null)
+        {
+            StopCoroutine(rotationCoroutine);
+        }
+        rotationCoroutine = StartCoroutine(AnimateLever());
+
+        RefreshPowerGrid();
+    }
+
+    private void UpdateLeverMeshVisibility()
+    {
+        if (leverHandleRenderer != null)
+        {
+            leverHandleRenderer.enabled = !isLeverMissing;
+        }
+        else if (leverHandleTransform != null)
+        {
+            leverHandleTransform.gameObject.SetActive(!isLeverMissing);
+        }
+    }
+
     public void Interact()
     {
+        if (isLeverMissing) return;
+
         isLeverUp = !isLeverUp;
         UpdatePromptMessage();
 
@@ -133,7 +177,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
     public void TripBreaker()
     {
-        if (!isLeverUp) return;
+        if (!isLeverUp || isLeverMissing) return;
 
         isLeverUp = false;
         UpdatePromptMessage();
@@ -185,10 +229,7 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     {
         bool hasGeneratorPower = connectedGenerator != null && connectedGenerator.CurrentPower > 0f;
 
-        // Green Indicator: ON when generator has power, OFF when no power
         SetRendererEmission(greenStatusRenderer, hasGeneratorPower, greenIndicatorColor);
-
-        // Red Indicator: ON when generator has NO power, OFF when power is supplied
         SetRendererEmission(redStatusRenderer, !hasGeneratorPower, redIndicatorColor);
     }
 
@@ -326,6 +367,12 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
     private void UpdatePromptMessage()
     {
+        if (isLeverMissing)
+        {
+            promptMessage = "Missing Breaker Lever";
+            return;
+        }
+
         promptMessage = isLeverUp ? "Pull down" : "Pull up";
     }
 

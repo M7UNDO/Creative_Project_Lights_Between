@@ -7,4 +7,6 @@ public static class InteractionIDs
     public const string RestorePower = "RestorePower";
     public const string ReturnDoll = "ReturnDoll";
     public const string InvestigateKnock = "InvestigateKnock";
+    public const string FindGarageKey = "InvestigateKnock";
+    public const string PerformRitual = "PerformRitual";
 }

@@ -11,8 +11,21 @@ public class ObjectiveDebugManager : MonoBehaviour
     [SerializeField] private ObjectiveSO startObjectiveOverride;
 
     [Header("New Input System Debug Controls")]
-    [Tooltip("Input Action to trigger completion of the active override objective (e.g., press F1 or a gamepad button).")]
+    [Tooltip("Input Action to trigger completion of the active override objective (e.g., F1).")]
     [SerializeField] private InputActionReference completeObjectiveAction;
+
+    [Tooltip("Input Action to trigger a specific game event for testing (e.g., F2).")]
+    [SerializeField] private InputActionReference raiseGameEventAction;
+
+    [Header("Debug Game Event Cheat")]
+    [Tooltip("The parameterless GameEventSO you want to raise via keypress.")]
+    [SerializeField] private GameEventSO debugGameEventToRaise;
+
+    [Header("Optional String Game Event Cheat")]
+    [Tooltip("The StringGameEventSO channel to raise.")]
+    [SerializeField] private StringGameEventSO debugStringGameEventChannel;
+    [Tooltip("The event ID payload string to pass.")]
+    [SerializeField] private string debugStringEventID = "EnterGarage";
 
     private void OnEnable()
     {
@@ -20,6 +33,12 @@ public class ObjectiveDebugManager : MonoBehaviour
         {
             completeObjectiveAction.action.Enable();
             completeObjectiveAction.action.performed += OnCompleteObjectivePerformed;
+        }
+
+        if (raiseGameEventAction != null)
+        {
+            raiseGameEventAction.action.Enable();
+            raiseGameEventAction.action.performed += OnRaiseGameEventPerformed;
         }
     }
 
@@ -29,6 +48,12 @@ public class ObjectiveDebugManager : MonoBehaviour
         {
             completeObjectiveAction.action.performed -= OnCompleteObjectivePerformed;
             completeObjectiveAction.action.Disable();
+        }
+
+        if (raiseGameEventAction != null)
+        {
+            raiseGameEventAction.action.performed -= OnRaiseGameEventPerformed;
+            raiseGameEventAction.action.Disable();
         }
     }
 
@@ -43,6 +68,11 @@ public class ObjectiveDebugManager : MonoBehaviour
     private void OnCompleteObjectivePerformed(InputAction.CallbackContext context)
     {
         CompleteCurrentDebugObjective();
+    }
+
+    private void OnRaiseGameEventPerformed(InputAction.CallbackContext context)
+    {
+        TriggerDebugGameEvent();
     }
 
     public void ForceStartObjective(ObjectiveSO objective)
@@ -66,6 +96,21 @@ public class ObjectiveDebugManager : MonoBehaviour
         {
             ObjectiveManager.Instance.CompleteObjective(startObjectiveOverride.ID);
             Debug.Log($"<color=green>[DEBUG]</color> Force Completed Objective: {startObjectiveOverride.Title} ({startObjectiveOverride.ID})");
+        }
+    }
+
+    public void TriggerDebugGameEvent()
+    {
+        if (debugGameEventToRaise != null)
+        {
+            debugGameEventToRaise.Raise();
+            Debug.Log($"<color=cyan>[DEBUG CHEAT]</color> Raised GameEventSO: {debugGameEventToRaise.name}");
+        }
+
+        if (debugStringGameEventChannel != null && !string.IsNullOrEmpty(debugStringEventID))
+        {
+            debugStringGameEventChannel.Raise(debugStringEventID);
+            Debug.Log($"<color=cyan>[DEBUG CHEAT]</color> Raised StringGameEventSO ({debugStringGameEventChannel.name}) -> Payload: '{debugStringEventID}'");
         }
     }
 }
