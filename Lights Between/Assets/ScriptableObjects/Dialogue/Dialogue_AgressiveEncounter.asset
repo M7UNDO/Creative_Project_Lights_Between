@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce59cacb38a79c4bafa296c62696bed, type: 3}
+  m_Name: Dialogue_AgressiveEncounter
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSO
+  formattedLines:
+  - speakerName: ???
+    textColor: {r: 0.53333336, g: 0.53333336, b: 0.53333336, a: 1}
+    text: Miguel.
+  - speakerName: Miguel
+    textColor: {r: 1, g: 1, b: 1, a: 1}
+    text: ...How do you know my name?
+  - speakerName: ???
+    textColor: {r: 0.53333336, g: 0.53333336, b: 0.53333336, a: 1}
+    text: You don't have to be afraid.
+  - speakerName: Miguel
+    textColor: {r: 1, g: 1, b: 1, a: 1}
+    text: Stay away from the door!
+  - speakerName: ???
+    textColor: {r: 0.53333336, g: 0.53333336, b: 0.53333336, a: 1}
+    text: I won't make it hurt
+  - speakerName: Miguel
+    textColor: {r: 1, g: 1, b: 1, a: 1}
+    text: ...What?
+  - speakerName: ???
+    textColor: {r: 0.53333336, g: 0.53333336, b: 0.53333336, a: 1}
+    text: WHEN I KILL YOU!
+  lines: []
+  onDialogueCompletedEvent: {fileID: 11400000, guid: 4590c409d8b9a2b499280daf6ca1ce6f, type: 2}
+  objectiveToActivateOnComplete: {fileID: 0}

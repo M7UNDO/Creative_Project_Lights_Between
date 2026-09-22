@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ce59cacb38a79c4bafa296c62696bed, type: 3}
   m_Name: Dialogue_DialPhone
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSO
+  formattedLines: []
   lines:
   - This can't be happening right now.
   - The line has been disconnected.
   - How? What is that thing? Please let it all be in my head
-  onDialogueCompletedEvent: {fileID: 0}
+  onDialogueCompletedEvent: {fileID: 11400000, guid: 308a30ba859de3949bc5e1b98e525c63, type: 2}
   objectiveToActivateOnComplete: {fileID: 0}

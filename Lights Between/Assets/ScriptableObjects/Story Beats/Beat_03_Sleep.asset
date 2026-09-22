@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f16982f202bdd4e4582f8e023d881e6e, type: 3}
+  m_Name: Beat_03_Sleep
+  m_EditorClassIdentifier: Assembly-CSharp::StoryBeatSO
+  beatID: Beat03_Sleep
+  activeObjectives:
+  - {fileID: 11400000, guid: ff00254873a9c0b4baa115740cf14a67, type: 2}
+  - {fileID: 11400000, guid: f2697c6b9156d3140aa775544c9ca747, type: 2}
+  completionStoryEvent: {fileID: 11400000, guid: 89932dd89cb81544098c304821743345, type: 2}
+  nextBeat: {fileID: 11400000, guid: 23255dfa263574f41a9938b2c5989444, type: 2}

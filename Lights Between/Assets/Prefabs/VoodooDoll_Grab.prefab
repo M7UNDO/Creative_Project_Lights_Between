@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8746111724162825894}
   - component: {fileID: 911769175524780822}
   - component: {fileID: 8801835804116158827}
+  - component: {fileID: 6513302364407292518}
   m_Layer: 7
   m_Name: VoodooDoll_Grab
   m_TagString: Untagged
@@ -158,3 +159,17 @@ MonoBehaviour:
   grabPositionOffset: {x: 0, y: -0.29, z: 1.9}
   grabRotationOffset: {x: -50, y: 160, z: 0}
   pickUpSFX: {fileID: 0}
+--- !u!114 &6513302364407292518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5971300992251850149}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 592581a780447114481ccc5537cfbbbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PickableDollInteraction
+  initialDollDialogue: {fileID: 11400000, guid: 2fa128cb3f951504cb57fffd58f69c84, type: 2}
+  grabbableComponent: {fileID: 8801835804116158827}

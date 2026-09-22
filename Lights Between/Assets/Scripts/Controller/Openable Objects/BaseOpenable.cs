@@ -13,6 +13,10 @@ public abstract class BaseOpenable : MonoBehaviour, IInteractable
     [SerializeField] protected float smoothSpeed = 1.0f;
     [SerializeField] private string customObjectName = "Object";
 
+    [Header("Container Contents")]
+    [Tooltip("Drag items inside this cabinet/drawer here, or leave empty to auto-detect children.")]
+    [SerializeField] protected ContainerItem[] containedItems;
+
     [Header("Audio Settings")]
     [SerializeField] private AudioClip openSFX;
     [SerializeField] private AudioClip closeSFX;
@@ -26,7 +30,14 @@ public abstract class BaseOpenable : MonoBehaviour, IInteractable
     protected virtual void Awake()
     {
         audioSource = GetComponent<AudioSource>();
+
+        if (containedItems == null || containedItems.Length == 0)
+        {
+            containedItems = GetComponentsInChildren<ContainerItem>(true);
+        }
+
         UpdatePromptMessage();
+        UpdateContainedItemsState();
     }
 
     public virtual bool CanInteract()
@@ -52,6 +63,7 @@ public abstract class BaseOpenable : MonoBehaviour, IInteractable
 
         isOpen = !isOpen;
         UpdatePromptMessage();
+        UpdateContainedItemsState();
         PlayInteractionSFX();
 
         if (animationCoroutine != null)
@@ -76,6 +88,19 @@ public abstract class BaseOpenable : MonoBehaviour, IInteractable
         }
 
         promptMessage = isOpen ? "Close" : "Open";
+    }
+
+    protected void UpdateContainedItemsState()
+    {
+        if (containedItems == null) return;
+
+        for (int i = 0; i < containedItems.Length; i++)
+        {
+            if (containedItems[i] != null)
+            {
+                containedItems[i].SetContentState(isOpen);
+            }
+        }
     }
 
     private void PlayInteractionSFX()

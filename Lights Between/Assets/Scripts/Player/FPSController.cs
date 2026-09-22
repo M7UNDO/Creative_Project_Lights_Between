@@ -532,9 +532,11 @@ public class FPSController : MonoBehaviour
                 return;
             }
 
-            bool hasInteractable = hit.collider.TryGetComponent<IInteractable>(out var interactable);
+            IInteractable interactable = hit.collider.GetComponentInParent<IInteractable>();
+
+            bool hasInteractable = interactable != null && (!(interactable is MonoBehaviour mb) || mb.enabled);
             bool hasPower = hit.collider.TryGetComponent<IToolPower>(out var powerItem);
-            bool hasGrabbable = grabbable != null && _currentGrabbable == null;
+            bool hasGrabbable = grabbable != null && grabbable.enabled && _currentGrabbable == null;
 
             if (hasInteractable || hasPower || hasGrabbable)
             {
@@ -629,7 +631,42 @@ public class FPSController : MonoBehaviour
                     }
                 }
 
-                targetedWorldUI = hit.collider.GetComponentInChildren<WorldSpaceInteractableUI>();
+                Transform interactionRoot = null;
+                if (hasInteractable && interactable is MonoBehaviour rootMb)
+                {
+                    interactionRoot = rootMb.transform;
+                }
+                else if (hasGrabbable)
+                {
+                    interactionRoot = grabbable.transform;
+                }
+                else
+                {
+                    interactionRoot = hit.collider.transform;
+                }
+
+                WorldSpaceInteractableUI[] nestedUIs = interactionRoot.GetComponentsInChildren<WorldSpaceInteractableUI>(true);
+                foreach (WorldSpaceInteractableUI ui in nestedUIs)
+                {
+                    IInteractable parentInteractable = ui.GetComponentInParent<IInteractable>();
+                    ObjectGrabbable parentGrabbable = ui.GetComponentInParent<ObjectGrabbable>();
+
+                    Transform closestOwner = null;
+                    if (parentInteractable != null && parentInteractable is MonoBehaviour pMb)
+                    {
+                        closestOwner = pMb.transform;
+                    }
+                    else if (parentGrabbable != null)
+                    {
+                        closestOwner = parentGrabbable.transform;
+                    }
+
+                    if (closestOwner == interactionRoot)
+                    {
+                        targetedWorldUI = ui;
+                        break;
+                    }
+                }
 
                 if (targetedWorldUI != null && !isInspecting)
                 {
@@ -652,7 +689,7 @@ public class FPSController : MonoBehaviour
 
         foreach (var ui in WorldSpaceInteractableUI.AllInteractableUIs)
         {
-            if (ui == null) continue;
+            if (ui == null || !ui.enabled || !ui.gameObject.activeInHierarchy) continue;
             if (ui == targetedWorldUI) continue;
 
             ToolPickup parentPickup = ui.GetComponentInParent<ToolPickup>();
@@ -677,7 +714,7 @@ public class FPSController : MonoBehaviour
                 Vector3 direction = (targetPos - origin).normalized;
                 float checkDistance = Vector3.Distance(origin, targetPos);
 
-                if (Physics.Raycast(origin, direction, out RaycastHit losHit, checkDistance, occlusionLayer))
+                if (Physics.Raycast(origin, direction, out RaycastHit losHit, checkDistance, occlusionLayer, QueryTriggerInteraction.Ignore))
                 {
                     ui.HidePrompt();
                 }
@@ -697,6 +734,8 @@ public class FPSController : MonoBehaviour
 
     public void Interact()
     {
+        if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive) return;
+
         if (_input.drop)
         {
             if (_currentGrabbable != null)
@@ -715,7 +754,7 @@ public class FPSController : MonoBehaviour
 
         if (_input.interact)
         {
-            if (currentInteractable != null)
+            if (currentInteractable != null && (!(currentInteractable is MonoBehaviour mb) || mb.enabled))
             {
                 if (currentInteractable is SnapZone snapZone)
                 {
@@ -747,7 +786,7 @@ public class FPSController : MonoBehaviour
                 if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))
                 {
                     ObjectGrabbable grabbable = hit.collider.GetComponentInParent<ObjectGrabbable>();
-                    if (grabbable != null)
+                    if (grabbable != null && grabbable.enabled)
                     {
                         _currentGrabbable = grabbable;
                         _currentGrabbable.Grab(objectGrabPointTransform, GetLayerFromMask(heldLayer));

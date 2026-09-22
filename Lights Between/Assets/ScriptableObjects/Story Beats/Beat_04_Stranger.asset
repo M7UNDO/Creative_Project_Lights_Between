@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f16982f202bdd4e4582f8e023d881e6e, type: 3}
+  m_Name: Beat_04_Stranger
+  m_EditorClassIdentifier: Assembly-CSharp::StoryBeatSO
+  beatID: Beat04_Stranger
+  activeObjectives:
+  - {fileID: 11400000, guid: 2f44a72aea9de4a4183ab41f8c13bf20, type: 2}
+  - {fileID: 11400000, guid: 2db001a62c6358845bdb9a35f10a0a43, type: 2}
+  completionStoryEvent: {fileID: 11400000, guid: 89932dd89cb81544098c304821743345, type: 2}
+  nextBeat: {fileID: 0}
