@@ -14,6 +14,7 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private InputActionReference advanceDialogueAction;
 
     [Header("UI References")]
+    [SerializeField] private GameObject dialoguePanel;
     [SerializeField] private CanvasGroup dialogueCanvasGroup;
     [SerializeField] private TMP_Text dialogueText;
     [SerializeField] private TMP_Text ellipsisText;
@@ -39,10 +40,14 @@ public class DialogueManager : MonoBehaviour
     public event Action OnDialogueEnded;
 
     private DialogueSO currentDialogue;
+    private string[] customLines;
+    private Action onCustomDialogueEnded;
+
     private int currentLineIndex;
     private bool isDialogueActive;
     private bool isTyping;
     private bool canAdvance;
+    private bool overridesPlayerMode = true;
 
     public bool IsDialogueActive => isDialogueActive;
 
@@ -56,7 +61,9 @@ public class DialogueManager : MonoBehaviour
         else Destroy(gameObject);
 
         typeSpeedWait = new WaitForSeconds(typeSpeed);
+
         if (dialogueCanvasGroup != null) dialogueCanvasGroup.alpha = 0f;
+        if (dialoguePanel != null) dialoguePanel.SetActive(false);
 
         ClearDialogueUI();
     }
@@ -88,28 +95,42 @@ public class DialogueManager : MonoBehaviour
 
         if (!hasFormatted && !hasLegacy) return;
 
-        if (playerController == null)
-        {
-            playerController = FindFirstObjectByType<FPSController>();
-        }
-
-        if (playerController != null)
-        {
-            playerController.SetDialogueMode(true);
-        }
+        overridesPlayerMode = true;
+        SetPlayerDialogueMode(true);
 
         currentDialogue = dialogue;
+        customLines = null;
+        onCustomDialogueEnded = null;
+
+        InitDialogueState();
+    }
+
+    public void StartCustomLines(string[] lines, Action onComplete = null, bool managePlayerMode = false)
+    {
+        if (isDialogueActive || lines == null || lines.Length == 0) return;
+
+        overridesPlayerMode = managePlayerMode;
+        if (overridesPlayerMode) SetPlayerDialogueMode(true);
+
+        currentDialogue = null;
+        customLines = lines;
+        onCustomDialogueEnded = onComplete;
+
+        InitDialogueState();
+    }
+
+    private void InitDialogueState()
+    {
         currentLineIndex = 0;
         isDialogueActive = true;
 
         OnDialogueStarted?.Invoke();
-
         StartCoroutine(EnterDialogueRoutine());
     }
 
     private IEnumerator EnterDialogueRoutine()
     {
-        yield return StartCoroutine(FadeCanvasGroup(dialogueCanvasGroup, 0f, 1f, 0.25f));
+        yield return StartCoroutine(FadeCanvasGroupWithPanelState(dialoguePanel, dialogueCanvasGroup, 0f, 1f, 0.25f));
         ShowNextLine();
     }
 
@@ -131,38 +152,55 @@ public class DialogueManager : MonoBehaviour
 
     private void ShowNextLine()
     {
-        bool hasFormatted = currentDialogue.FormattedLines != null && currentDialogue.FormattedLines.Length > 0;
-        int totalLines = hasFormatted ? currentDialogue.FormattedLines.Length : currentDialogue.Lines.Length;
-
-        if (currentLineIndex >= totalLines)
+        if (customLines != null)
         {
-            EndDialogue();
+            if (currentLineIndex >= customLines.Length)
+            {
+                EndDialogue();
+                return;
+            }
+
+            if (typingCoroutine != null) StopCoroutine(typingCoroutine);
+            typingCoroutine = StartCoroutine(TypeLineRoutine(customLines[currentLineIndex], defaultTextColor));
+            currentLineIndex++;
             return;
         }
 
-        if (typingCoroutine != null) StopCoroutine(typingCoroutine);
-
-        if (hasFormatted)
+        if (currentDialogue != null)
         {
-            var lineData = currentDialogue.FormattedLines[currentLineIndex];
-            Color targetColor = lineData.textColor != Color.clear ? lineData.textColor : defaultTextColor;
-            string fullText = string.IsNullOrEmpty(lineData.speakerName) ? lineData.text : $"{lineData.speakerName}: {lineData.text}";
-            typingCoroutine = StartCoroutine(TypeLineRoutine(fullText, targetColor));
-        }
-        else
-        {
-            string rawLine = currentDialogue.Lines[currentLineIndex];
-            Color targetColor = defaultTextColor;
+            bool hasFormatted = currentDialogue.FormattedLines != null && currentDialogue.FormattedLines.Length > 0;
+            int totalLines = hasFormatted ? currentDialogue.FormattedLines.Length : currentDialogue.Lines.Length;
 
-            if (rawLine.StartsWith("???") || rawLine.StartsWith("Unknown"))
+            if (currentLineIndex >= totalLines)
             {
-                targetColor = unknownSpeakerColor;
+                EndDialogue();
+                return;
             }
 
-            typingCoroutine = StartCoroutine(TypeLineRoutine(rawLine, targetColor));
-        }
+            if (typingCoroutine != null) StopCoroutine(typingCoroutine);
 
-        currentLineIndex++;
+            if (hasFormatted)
+            {
+                var lineData = currentDialogue.FormattedLines[currentLineIndex];
+                Color targetColor = lineData.textColor != Color.clear ? lineData.textColor : defaultTextColor;
+                string fullText = string.IsNullOrEmpty(lineData.speakerName) ? lineData.text : $"{lineData.speakerName}: {lineData.text}";
+                typingCoroutine = StartCoroutine(TypeLineRoutine(fullText, targetColor));
+            }
+            else
+            {
+                string rawLine = currentDialogue.Lines[currentLineIndex];
+                Color targetColor = defaultTextColor;
+
+                if (rawLine.StartsWith("???") || rawLine.StartsWith("Unknown"))
+                {
+                    targetColor = unknownSpeakerColor;
+                }
+
+                typingCoroutine = StartCoroutine(TypeLineRoutine(rawLine, targetColor));
+            }
+
+            currentLineIndex++;
+        }
     }
 
     private IEnumerator TypeLineRoutine(string line, Color textColor)
@@ -224,25 +262,25 @@ public class DialogueManager : MonoBehaviour
         canAdvance = false;
         HideEllipsis();
 
-        yield return StartCoroutine(FadeCanvasGroup(dialogueCanvasGroup, 1f, 0f, 0.25f));
+        yield return StartCoroutine(FadeCanvasGroupWithPanelState(dialoguePanel, dialogueCanvasGroup, 1f, 0f, 0.25f));
 
         ClearDialogueUI();
 
         DialogueSO finishedDialogue = currentDialogue;
+        Action callback = onCustomDialogueEnded;
+
         currentDialogue = null;
+        customLines = null;
+        onCustomDialogueEnded = null;
         isDialogueActive = false;
 
-        if (playerController == null)
+        if (overridesPlayerMode)
         {
-            playerController = FindFirstObjectByType<FPSController>();
-        }
-
-        if (playerController != null)
-        {
-            playerController.SetDialogueMode(false);
+            SetPlayerDialogueMode(false);
         }
 
         OnDialogueEnded?.Invoke();
+        callback?.Invoke();
 
         if (finishedDialogue != null)
         {
@@ -258,7 +296,20 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private void ClearDialogueUI()
+    private void SetPlayerDialogueMode(bool state)
+    {
+        if (playerController == null)
+        {
+            playerController = FindFirstObjectByType<FPSController>();
+        }
+
+        if (playerController != null)
+        {
+            playerController.SetDialogueMode(state);
+        }
+    }
+
+    public void ClearDialogueUI()
     {
         if (dialogueText != null)
         {
@@ -299,19 +350,32 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    private IEnumerator FadeCanvasGroup(CanvasGroup group, float startAlpha, float endAlpha, float duration)
+    private IEnumerator FadeCanvasGroupWithPanelState(GameObject panel, CanvasGroup group, float startAlpha, float endAlpha, float duration)
     {
-        if (group == null) yield break;
-
-        float timer = 0f;
-        while (timer < duration)
+        if (startAlpha < endAlpha && panel != null)
         {
-            timer += Time.deltaTime;
-            group.alpha = Mathf.Lerp(startAlpha, endAlpha, timer / duration);
-            yield return null;
+            panel.SetActive(true);
         }
 
-        group.alpha = endAlpha;
+        if (group != null)
+        {
+            group.alpha = startAlpha;
+            float timer = 0f;
+
+            while (timer < duration)
+            {
+                timer += Time.deltaTime;
+                group.alpha = Mathf.Lerp(startAlpha, endAlpha, timer / duration);
+                yield return null;
+            }
+
+            group.alpha = endAlpha;
+        }
+
+        if (startAlpha > endAlpha && panel != null)
+        {
+            panel.SetActive(false);
+        }
     }
 
     private void PlayTypeSound()
