@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 5251564095849455983}
   - component: {fileID: 3856160082177905203}
   - component: {fileID: 3859389092391420969}
+  - component: {fileID: 4560953669358339504}
   - component: {fileID: 6125947028593617924}
   - component: {fileID: 6783654155545850060}
-  - component: {fileID: 4560953669358339504}
   - component: {fileID: 3243857061100583393}
   m_Layer: 5
   m_Name: ObjectivePanel
@@ -80,48 +80,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6125947028593617924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2848064645372696875}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be818de4fd7d4624ca3294c0912458b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ObjectiveUIItem
-  titleText: {fileID: 9032876178609362019}
-  animator: {fileID: 6783654155545850060}
-  audioSource: {fileID: 4560953669358339504}
-  objectiveSFX: {fileID: 8300000, guid: 86d3d589b52afd14798827cb431d7a0d, type: 3}
-  completedColor: {r: 1, g: 0.8392157, b: 0.4392157, a: 1}
-  animateInDuration: 0.5
-  displayDuration: 3
-  animateOutDuration: 0.5
---- !u!95 &6783654155545850060
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2848064645372696875}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d5c2df4fc732aad4d9d3d60203817bac, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!82 &4560953669358339504
 AudioSource:
   m_ObjectHideFlags: 0
@@ -219,6 +177,48 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &6125947028593617924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2848064645372696875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be818de4fd7d4624ca3294c0912458b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObjectiveUIItem
+  titleText: {fileID: 9032876178609362019}
+  animator: {fileID: 6783654155545850060}
+  audioSource: {fileID: 4560953669358339504}
+  objectiveSFX: {fileID: 8300000, guid: 86d3d589b52afd14798827cb431d7a0d, type: 3}
+  completedColor: {r: 1, g: 0.8392157, b: 0.4392157, a: 1}
+  animateInDuration: 0.5
+  displayDuration: 6
+  animateOutDuration: 0.5
+--- !u!95 &6783654155545850060
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2848064645372696875}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d5c2df4fc732aad4d9d3d60203817bac, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!225 &3243857061100583393
 CanvasGroup:
   m_ObjectHideFlags: 0
