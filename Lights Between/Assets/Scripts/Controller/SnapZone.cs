@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SnapZone : MonoBehaviour, IInteractable
 {
@@ -28,6 +29,9 @@ public class SnapZone : MonoBehaviour, IInteractable
     [SerializeField] private StringGameEventSO interactionChannel;
     [SerializeField] private string interactionEventID = "BreakerRepaired";
     [SerializeField] private AudioClip snapSFX;
+
+    [Header("Unity Event Hook")]
+    [SerializeField] private UnityEvent onSnapComplete;
 
     [Header("Invalid Item Dialogue")]
     [SerializeField] private string invalidItemID = "UncookedPizza";
@@ -101,6 +105,8 @@ public class SnapZone : MonoBehaviour, IInteractable
                 {
                     DialogueManager.Instance.StartDialogue(postSnapDialogue);
                 }
+
+                onSnapComplete?.Invoke();
 
                 CleanupSnapZone();
             }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -16,9 +17,12 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
     [Header("Lever Handle Animation & Mesh")]
     [SerializeField] private Transform leverHandleTransform;
-    [SerializeField] private Renderer leverHandleRenderer;
+    [SerializeField] private Renderer[] leverHandleRenderers;
     [SerializeField] private Collider leverCollider;
     [SerializeField] private GameObject leverWorldSpaceUI;
+
+    [Header("Repair Snap Zone Target")]
+    [SerializeField] private GameObject snapZoneObject;
 
     [Header("Rotations")]
     [SerializeField] private Vector3 leverOffRotationEuler;
@@ -100,6 +104,11 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         BuildLightmapDataCache();
         UpdateLeverMeshVisibility();
         UpdatePromptMessage();
+
+        if (snapZoneObject != null)
+        {
+            snapZoneObject.SetActive(isLeverMissing);
+        }
     }
 
     private void Start()
@@ -154,9 +163,15 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     {
         bool showLeverComponents = !isLeverMissing;
 
-        if (leverHandleRenderer != null)
+        if (leverHandleRenderers != null && leverHandleRenderers.Length > 0)
         {
-            leverHandleRenderer.enabled = showLeverComponents;
+            for (int i = 0; i < leverHandleRenderers.Length; i++)
+            {
+                if (leverHandleRenderers[i] != null)
+                {
+                    leverHandleRenderers[i].enabled = showLeverComponents;
+                }
+            }
         }
         else if (leverHandleTransform != null)
         {
@@ -171,6 +186,11 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         if (leverWorldSpaceUI != null)
         {
             leverWorldSpaceUI.SetActive(showLeverComponents);
+        }
+
+        if (snapZoneObject != null)
+        {
+            snapZoneObject.SetActive(isLeverMissing);
         }
     }
 

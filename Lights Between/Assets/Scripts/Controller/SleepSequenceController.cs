@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
@@ -9,6 +10,9 @@ public class SleepSequenceController : MonoBehaviour
     [SerializeField] private PlayerPoseAnchor bedPoseAnchor;
     [SerializeField] private GeneratorPowerSystem targetGenerator;
     [SerializeField] private Volume postProcessingVolume;
+
+    [Header("Objects to Deactivate on Interaction")]
+    [SerializeField] private List<GameObject> objectsToDeactivate = new List<GameObject>();
 
     [Header("Sequence Timings")]
     [SerializeField] private float sleepDelay = 1.5f;
@@ -50,6 +54,7 @@ public class SleepSequenceController : MonoBehaviour
 
     private void OnPlayerEnteredBed()
     {
+        DeactivateTargetObjects();
         StartCoroutine(PlaySleepAndPowerOutageSequence());
     }
 
@@ -131,6 +136,19 @@ public class SleepSequenceController : MonoBehaviour
         if (ObjectiveManager.Instance != null && findTorchObjectiveToActivate != null)
         {
             ObjectiveManager.Instance.ActivateObjective(findTorchObjectiveToActivate);
+        }
+    }
+
+    private void DeactivateTargetObjects()
+    {
+        if (objectsToDeactivate == null) return;
+
+        for (int i = 0; i < objectsToDeactivate.Count; i++)
+        {
+            if (objectsToDeactivate[i] != null)
+            {
+                objectsToDeactivate[i].SetActive(false);
+            }
         }
     }
 }

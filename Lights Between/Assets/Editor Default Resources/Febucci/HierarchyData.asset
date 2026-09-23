@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13e4683880117bb40bf96a253db55efe, type: 3}
+  m_Name: HierarchyData
+  m_EditorClassIdentifier: 
+  enabled: 1
+  icons:
+    enabled: 1
+    aligned: 0
+    pairs:
+    - iconToDraw: {fileID: 2800000, guid: 015d5dc5e425fff4b904721275cc38d2, type: 3}
+      targetClasses:
+      - {fileID: 11500000, guid: 5233d4a7fed986143a2fbed841375112, type: 3}
+      - {fileID: 11500000, guid: b8484fa71c8aa3b4b953ad929ebbedb1, type: 3}
+    - iconToDraw: {fileID: 2800000, guid: 86e6bf803151d534a8fc5706b1ae1225, type: 3}
+      targetClasses:
+      - {fileID: 11500000, guid: 9de964e625bf43946930812d539035e7, type: 3}
+    - iconToDraw: {fileID: 2800000, guid: dc35734711226214194bd9fb277c3f6e, type: 3}
+      targetClasses:
+      - {fileID: 11500000, guid: c0974490340b0b14a987b871121734e1, type: 3}
+  prefabsData:
+    enabled: 1
+    prefabs:
+    - gameObject: {fileID: 4568249183204167093, guid: 185494576af8a64458e176409236fce2, type: 3}
+      color: {r: 0.8301887, g: 0.8301887, b: 0.8301887, a: 0.15686275}
+    - gameObject: {fileID: 2711216198116367235, guid: ea5291617d7042c48a75064bda750b76, type: 3}
+      color: {r: 0.64114827, g: 1, b: 0.34449756, a: 0.14901961}
+  alternatingBackground:
+    enabled: 0
+    color: {r: 0, g: 0, b: 0, a: 0.08}
+  separator:
+    enabled: 0
+    startString: --
+    color: {r: 1, g: 0, b: 0.029707909, a: 0.19607843}
+  tree:
+    enabled: 1
+    drawOverlayOnColoredPrefabs: 1
+    dividerHeigth: 0
+    baseLevelColor: {r: 1, g: 1, b: 1, a: 1}
+    branches:
+    - overlayColor: {r: 1, g: 0.44, b: 0.97, a: 0}
+      colors:
+      - {r: 1, g: 1, b: 1, a: 1}
+      - {r: 0.5924933, g: 0.2999999, b: 1, a: 1}
+      - {r: 1, g: 0.9960462, b: 0.2980392, a: 1}
