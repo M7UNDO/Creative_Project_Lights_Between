@@ -8,6 +8,7 @@ public class NoteUIController : MonoBehaviour
 
     [SerializeField] private InputHandler _input;
     [SerializeField] private FPSController playerController;
+    private PlayerInteraction playerInteraction;
 
     [Header("Input Action References")]
     [SerializeField] private InputActionReference nextPageAction;
@@ -58,6 +59,11 @@ public class NoteUIController : MonoBehaviour
         if (playerController == null)
         {
             playerController = FindFirstObjectByType<FPSController>();
+        }
+
+        if (playerController != null)
+        {
+            playerInteraction = playerController.GetComponent<PlayerInteraction>();
         }
     }
 
@@ -136,9 +142,9 @@ public class NoteUIController : MonoBehaviour
         notePanelUI.SetActive(true);
         isNoteOpen = true;
 
-        if (playerController != null)
+        if (playerInteraction != null)
         {
-            playerController.EvaluateHUDState();
+            playerInteraction.EvaluateHUDState();
         }
 
         if (audioSource != null && openNoteSound != null)
@@ -186,9 +192,9 @@ public class NoteUIController : MonoBehaviour
 
         isNoteOpen = false;
 
-        if (playerController != null)
+        if (playerInteraction != null)
         {
-            playerController.EvaluateHUDState();
+            playerInteraction.EvaluateHUDState();
         }
 
         if (audioSource != null && closeNoteSound != null)

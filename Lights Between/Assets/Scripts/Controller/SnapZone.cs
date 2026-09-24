@@ -52,7 +52,7 @@ public class SnapZone : MonoBehaviour, IInteractable
     {
         if (!CanSnapForScenario()) return;
 
-        FPSController player = FindFirstObjectByType<FPSController>();
+        PlayerInteraction player = FindFirstObjectByType<PlayerInteraction>();
         if (player == null) return;
 
         ObjectGrabbable heldItem = player.CurrentGrabbable;

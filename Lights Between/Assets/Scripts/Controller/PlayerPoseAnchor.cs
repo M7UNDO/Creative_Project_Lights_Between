@@ -5,6 +5,7 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 {
     [Header("References")]
     [SerializeField] private FPSController playerController;
+    private PlayerInteraction playerInteraction;
 
     [Header("Pose Targets")]
     [SerializeField] private Transform sitTargetPosition;
@@ -12,15 +13,14 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
     [SerializeField] private Transform standUpPosition;
 
     [Header("Interaction Settings")]
+    [SerializeField] private GameObject posePromptUI;
     [SerializeField] private string sitPrompt = "Sit Down";
     [SerializeField] private string standPrompt = "Stand Up";
     [SerializeField] private float fadeDuration = 0.4f;
     [SerializeField] private float uiFadeSpeed = 4.0f;
 
     [Header("Narrative/Objective Lock")]
-    [Tooltip("If assigned, the player can only interact when this objective is active.")]
     [SerializeField] private ObjectiveSO requiredObjective;
-    [Tooltip("Optional dialogue to play if player tries to use this before it's unlocked.")]
     [SerializeField] private DialogueSO lockedDialogue;
 
     [Header("Optional Objectives/Events")]
@@ -40,6 +40,11 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         if (playerController == null)
         {
             playerController = Object.FindFirstObjectByType<FPSController>();
+        }
+
+        if (playerController != null)
+        {
+            playerInteraction = playerController.GetComponent<PlayerInteraction>();
         }
 
         CacheCanvasGroup();
@@ -71,16 +76,16 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     private void CacheCanvasGroup()
     {
-        if (playerController != null && playerController.PosepromptUI != null)
+        if (posePromptUI != null)
         {
-            poseCanvasGroup = playerController.PosepromptUI.GetComponent<CanvasGroup>();
+            poseCanvasGroup = posePromptUI.GetComponent<CanvasGroup>();
             if (poseCanvasGroup == null)
             {
-                poseCanvasGroup = playerController.PosepromptUI.AddComponent<CanvasGroup>();
+                poseCanvasGroup = posePromptUI.AddComponent<CanvasGroup>();
             }
 
             poseCanvasGroup.alpha = 0f;
-            playerController.PosepromptUI.SetActive(true);
+            posePromptUI.SetActive(true);
         }
     }
 
@@ -129,7 +134,7 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
     {
         if (isTransitioning) return;
 
-        if (playerController != null && playerController.CurrentGrabbable != null)
+        if (playerInteraction != null && playerInteraction.CurrentGrabbable != null)
         {
             return;
         }
@@ -161,9 +166,11 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         {
             playerController = Object.FindFirstObjectByType<FPSController>();
             if (playerController == null) return;
+
+            playerInteraction = playerController.GetComponent<PlayerInteraction>();
         }
 
-        if (playerController.CurrentGrabbable != null) return;
+        if (playerInteraction != null && playerInteraction.CurrentGrabbable != null) return;
 
         CacheCanvasGroup();
         isTransitioning = true;
@@ -269,7 +276,7 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     public string GetPromptMessage()
     {
-        if (!isOccupied && playerController != null && playerController.CurrentGrabbable != null)
+        if (!isOccupied && playerInteraction != null && playerInteraction.CurrentGrabbable != null)
         {
             return "";
         }

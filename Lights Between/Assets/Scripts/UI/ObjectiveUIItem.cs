@@ -76,8 +76,8 @@ public class ObjectiveUIItem : MonoBehaviour
         animator.ResetTrigger(ShowTrigger);
         animator.ResetTrigger(HideTrigger);
 
-        // Return to the normal visible position before playing the entrance.
-        animator.Play("Idle", 0, 0f);
+        animator.Rebind();
+        animator.Update(0f);
     }
 
     private void PlaySFX()
@@ -108,7 +108,6 @@ public class ObjectiveUIItem : MonoBehaviour
 
         yield return new WaitForSeconds(displayDuration);
 
-        // Play the slide-out animation.
         TriggerAnimator(HideTrigger);
 
         yield return StartCoroutine(

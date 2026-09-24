@@ -1,120 +1,48 @@
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(PlayerInteraction))]
+[RequireComponent(typeof(PlayerFootsteps))]
 #if ENABLE_INPUT_SYSTEM
 [RequireComponent(typeof(PlayerInput))]
 #endif
-
 public class FPSController : MonoBehaviour
 {
     [Header("Player")]
-    [Tooltip("Move speed of the character in m/s")]
     public float MoveSpeed = 4.0f;
-    [Tooltip("Sprint speed of the character in m/s")]
     public float SprintSpeed = 6.0f;
-    [Tooltip("Rotation speed of the character")]
     public float ControllerSensitivity = 1.0f;
     public float MouseSensitvity = 10f;
-    [Tooltip("Acceleration and deceleration")]
     public float SpeedChangeRate = 10.0f;
 
     [Space(10)]
-    [Tooltip("The height the player can jump")]
-    public float JumpHeight = 1.2f;
-    [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
     public float Gravity = -15.0f;
 
     [Space(10)]
-    [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
     public float JumpTimeout = 0.1f;
-    [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
     public float FallTimeout = 0.15f;
 
     [Header("Player Grounded")]
-    [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
     public bool Grounded = true;
-    [Tooltip("Useful for rough ground")]
     public float GroundedOffset = -0.14f;
-    [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
     public float GroundedRadius = 0.5f;
-    [Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers;
 
     [Header("Cinemachine")]
-    [Tooltip("The follow target set in the Cinemachine Virtual Camera that the camera will follow")]
     public GameObject CinemachineCameraTarget;
-    [Tooltip("How far in degrees can you move the camera up")]
     public float TopClamp = 90.0f;
-    [Tooltip("How far in degrees can you move the camera down")]
     public float BottomClamp = -90.0f;
-
-    [Tooltip("How restricted the up/down look angle is when holding a heavy object")]
     public float HeldObjectTopClamp = 30.0f;
-    [Tooltip("How restricted the up/down look angle is when holding a heavy object")]
     public float HeldObjectBottomClamp = -30.0f;
 
     [Header("Horizontal Clamp Settings")]
-    [Tooltip("Horizontal look restriction angle (left/right limit) when in Dialogue")]
     public float dialogueHorizontalClamp = 45.0f;
-    [Tooltip("Horizontal look restriction angle (left/right limit) when Seated/Sleeping")]
     public float seatedHorizontalClamp = 60.0f;
-
-    [Header("Movement SFX")]
-    [Space(5)]
-
-    public bool playingFootsteps = false;
-    [SerializeField] private float walkFootstepSpeed = 0.5f;
-    [SerializeField] private float sprintFootstepSpeed = 0.3f;
-    [SerializeField] private float currentFootstepSpeed;
-
-    [Header("Walk Footstep Clips")]
-    [SerializeField] private AudioClip[] woodWalkFootstepClips;
-    [SerializeField] private AudioClip[] tileWalkFootstepClips;
-    [SerializeField] private AudioClip[] carpetWalkFootstepClips;
-    [SerializeField] private AudioClip[] defaultWalkFootstepClips;
-
-    [Header("Run Footstep Clips")]
-    [SerializeField] private AudioClip[] woodRunFootstepClips;
-    [SerializeField] private AudioClip[] tileRunFootstepClips;
-    [SerializeField] private AudioClip[] carpetRunFootstepClips;
-    [SerializeField] private AudioClip[] defaultRunFootstepClips;
-
-    [SerializeField] private AudioSource stepSFX;
-    [SerializeField] private float groundRayDistance = 1.5f;
-
-    [Header("Interaction Settings")]
-    [Space(5)]
-    public Canvas hudCanvas;
-    private CanvasGroup hudCanvasGroup;
-    [SerializeField] private GameObject dropUI;
-    [SerializeField] public float interactionRange = 5f;
-    [SerializeField] private LayerMask interactionLayer;
-
-    [SerializeField] private Image defaultCrosshair;
-    [SerializeField] private Image interactableCrosshair;
-
-    public bool isInteractable = false;
-    public bool isInteracting;
-    private IInteractable currentInteractable;
-    private IKeyInventory _keyInventory;
-    private IInteractable _lastInteractable;
-
-    [Header("Grab Settings")]
-    [SerializeField] private LayerMask heldLayer;
-    [SerializeField] private Transform objectGrabPointTransform;
-    private ObjectGrabbable _currentGrabbable;
-    public ObjectGrabbable CurrentGrabbable => _currentGrabbable;
 
     [Header("Sitting & Sleeping State")]
     public bool isSeated { get; private set; }
     public PlayerPoseAnchor CurrentPoseAnchor { get; private set; }
-    public GameObject PosepromptUI;
-
-    [Header("Proximity & Occlusion Settings")]
-    [SerializeField] private LayerMask occlusionLayer;
-    private WorldSpaceInteractableUI _currentWorldUI;
 
     public Transform FlashlightAnchor;
 
@@ -127,7 +55,7 @@ public class FPSController : MonoBehaviour
             if (_isInspecting != value)
             {
                 _isInspecting = value;
-                EvaluateHUDState();
+                if (_interaction != null) _interaction.EvaluateHUDState();
             }
         }
     }
@@ -141,7 +69,7 @@ public class FPSController : MonoBehaviour
             if (_isDialogueActive != value)
             {
                 _isDialogueActive = value;
-                EvaluateHUDState();
+                if (_interaction != null) _interaction.EvaluateHUDState();
             }
         }
     }
@@ -155,7 +83,7 @@ public class FPSController : MonoBehaviour
             if (_isInMiniGame != value)
             {
                 _isInMiniGame = value;
-                EvaluateHUDState();
+                if (_interaction != null) _interaction.EvaluateHUDState();
             }
         }
     }
@@ -169,7 +97,7 @@ public class FPSController : MonoBehaviour
             if (_isJumpscareActive != value)
             {
                 _isJumpscareActive = value;
-                EvaluateHUDState();
+                if (_interaction != null) _interaction.EvaluateHUDState();
             }
         }
     }
@@ -179,9 +107,7 @@ public class FPSController : MonoBehaviour
     [SerializeField] private float sensitivityTransitionSpeed = 5.0f;
     private float _currentSensitivityMultiplier = 1.0f;
 
-    private float _footstepTimer;
     private float _cinemachineTargetPitch;
-
     private float _speed;
     private float _rotationVelocity;
     private float _verticalVelocity;
@@ -202,6 +128,9 @@ public class FPSController : MonoBehaviour
     private CharacterController _controller;
     private InputHandler _input;
     private GameObject _mainCamera;
+
+    private PlayerInteraction _interaction;
+    private PlayerFootsteps _footsteps;
 
     private const float _threshold = 0.01f;
 
@@ -229,13 +158,12 @@ public class FPSController : MonoBehaviour
     {
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<InputHandler>();
-        _keyInventory = GetComponent<IKeyInventory>();
-        if (_keyInventory == null)
-        {
-            _keyInventory = GetComponentInChildren<IKeyInventory>();
-        }
+        _interaction = GetComponent<PlayerInteraction>();
+        _footsteps = GetComponent<PlayerFootsteps>();
 
+#if ENABLE_INPUT_SYSTEM
         _playerInput = GetComponent<PlayerInput>();
+#endif
 
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
@@ -245,7 +173,6 @@ public class FPSController : MonoBehaviour
     {
         UpdateSensitivityMultiplier();
 
-        // ADDED isDialogueActive to the early return check below
         if (isInMiniGame || isInspecting || isJumpscareActive || isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
 
         if (isSeated)
@@ -268,12 +195,7 @@ public class FPSController : MonoBehaviour
         if (!isSeated)
         {
             Move();
-            HandleFootsteps();
         }
-
-        DetectInteractable();
-        UpdateCrosshair();
-        Interact();
     }
 
     private void LateUpdate()
@@ -313,7 +235,10 @@ public class FPSController : MonoBehaviour
             _input.sprint = false;
         }
 
-        StopFootsteps();
+        if (_footsteps != null)
+        {
+            _footsteps.StopFootsteps();
+        }
     }
 
     private void GroundedCheck()
@@ -338,7 +263,7 @@ public class FPSController : MonoBehaviour
         isGrabInputHeld = Input.GetKey(KeyCode.Mouse1);
 #endif
 
-        if (_currentGrabbable != null && isGrabInputHeld)
+        if (_interaction != null && _interaction.CurrentGrabbable != null && isGrabInputHeld)
         {
             if (_input.look.sqrMagnitude >= _threshold)
             {
@@ -346,7 +271,7 @@ public class FPSController : MonoBehaviour
                 float pivotSensitivity = IsCurrentDeviceMouse ? 0.5f : 50f;
                 float rotationSpeed = (IsCurrentDeviceMouse ? MouseSensitvity : ControllerSensitivity) * _currentSensitivityMultiplier;
 
-                objectGrabPointTransform.Rotate(Vector3.up * _input.look.x * rotationSpeed * pivotSensitivity * deltaTimeMultiplier);
+                _interaction.CurrentGrabbable.transform.parent.Rotate(Vector3.up * _input.look.x * rotationSpeed * pivotSensitivity * deltaTimeMultiplier);
             }
             return;
         }
@@ -359,11 +284,14 @@ public class FPSController : MonoBehaviour
             _cinemachineTargetPitch += _input.look.y * rotationSpeed * deltaTimeMultiplier;
             _rotationVelocity = _input.look.x * rotationSpeed * deltaTimeMultiplier;
 
-            float minPitch = _currentGrabbable != null ? HeldObjectBottomClamp : BottomClamp;
-            float maxPitch = _currentGrabbable != null ? HeldObjectTopClamp : TopClamp;
+            float minPitch = (_interaction != null && _interaction.CurrentGrabbable != null) ? HeldObjectBottomClamp : BottomClamp;
+            float maxPitch = (_interaction != null && _interaction.CurrentGrabbable != null) ? HeldObjectTopClamp : TopClamp;
 
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, minPitch, maxPitch);
-            CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
+            if (CinemachineCameraTarget != null)
+            {
+                CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
+            }
 
             if (isDialogueActive || isSeated)
             {
@@ -411,7 +339,10 @@ public class FPSController : MonoBehaviour
             }
 
             _cinemachineTargetPitch = Mathf.Clamp(pitch, BottomClamp, TopClamp);
-            CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
+            if (CinemachineCameraTarget != null)
+            {
+                CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
+            }
         }
     }
 
@@ -445,82 +376,6 @@ public class FPSController : MonoBehaviour
         _controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
     }
 
-    private void HandleFootsteps()
-    {
-        bool isMoving = _input.move.sqrMagnitude > 0.01f;
-        bool isSprinting = _input.sprint && isMoving;
-        bool shouldPlayFootsteps = isMoving && Grounded;
-
-        currentFootstepSpeed = isSprinting ? sprintFootstepSpeed : walkFootstepSpeed;
-
-        if (shouldPlayFootsteps)
-        {
-            playingFootsteps = true;
-            _footstepTimer -= Time.deltaTime;
-
-            if (_footstepTimer <= 0f)
-            {
-                PlayFootstepsSFX();
-                _footstepTimer = currentFootstepSpeed;
-            }
-        }
-        else
-        {
-            playingFootsteps = false;
-
-            if (!isMoving)
-            {
-                _footstepTimer = 0f;
-            }
-        }
-    }
-
-    public void StopFootsteps()
-    {
-        playingFootsteps = false;
-        _footstepTimer = 0f;
-    }
-
-    public void PlayFootstepsSFX()
-    {
-        if (stepSFX == null) return;
-
-        bool isSprinting = _input.sprint && _input.move.sqrMagnitude > 0.01f;
-
-        AudioClip[] chosenClips = GetFootstepClips(isSprinting);
-
-        if (chosenClips == null || chosenClips.Length == 0)
-            return;
-
-        int chosenStep = Random.Range(0, chosenClips.Length);
-
-        stepSFX.pitch = Random.Range(0.9f, 1.15f);
-        stepSFX.PlayOneShot(chosenClips[chosenStep]);
-    }
-
-    private AudioClip[] GetFootstepClips(bool isSprinting)
-    {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, groundRayDistance, GroundLayers))
-        {
-            if (hit.collider.CompareTag("Wood"))
-            {
-                return isSprinting ? woodRunFootstepClips : woodWalkFootstepClips;
-            }
-
-            if (hit.collider.CompareTag("Tile"))
-            {
-                return isSprinting ? tileRunFootstepClips : tileWalkFootstepClips;
-            }
-
-            if (hit.collider.CompareTag("Carpet"))
-            {
-                return isSprinting ? carpetRunFootstepClips : carpetWalkFootstepClips;
-            }
-        }
-
-        return isSprinting ? defaultRunFootstepClips : defaultRunFootstepClips;
-    }
-
     private void ApplyGravity()
     {
         if (Grounded)
@@ -546,399 +401,11 @@ public class FPSController : MonoBehaviour
         }
     }
 
-    public void DetectInteractable()
-    {
-        WorldSpaceInteractableUI targetedWorldUI = null;
-
-        currentInteractable = null;
-        isInteractable = false;
-
-        Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
-
-        if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))
-        {
-            ObjectGrabbable grabbable = hit.collider.GetComponentInParent<ObjectGrabbable>();
-
-            if (_currentGrabbable != null && grabbable == _currentGrabbable)
-            {
-                return;
-            }
-
-            IInteractable interactable = hit.collider.GetComponentInParent<IInteractable>();
-
-            bool hasInteractable = interactable != null && (!(interactable is MonoBehaviour mb) || mb.enabled);
-            bool hasPower = hit.collider.TryGetComponent<IToolPower>(out var powerItem);
-            bool hasGrabbable = grabbable != null && grabbable.enabled && _currentGrabbable == null;
-
-            if (hasInteractable || hasPower || hasGrabbable)
-            {
-                if (interactable is PlayerPoseAnchor poseAnchor)
-                {
-                    if (_currentGrabbable != null || !poseAnchor.IsAnchorUnlocked())
-                    {
-                        return;
-                    }
-                }
-
-                if (interactable is ToolPickup toolPickup)
-                {
-                    if (!toolPickup.IsPickupUnlocked())
-                    {
-                        return;
-                    }
-                }
-
-                if (hasGrabbable && isSeated)
-                {
-                    return;
-                }
-
-                if (hasInteractable)
-                {
-                    currentInteractable = interactable;
-                    isInteractable = true;
-                }
-                else if (hasGrabbable)
-                {
-                    isInteractable = true;
-                }
-
-                string basePrompt = "";
-                bool canCurrentlyInteract = true;
-
-                if (hit.collider.TryGetComponent<SnapZone>(out SnapZone snapZone))
-                {
-                    basePrompt = snapZone.GetPromptMessage(_currentGrabbable);
-                    canCurrentlyInteract = snapZone.CanSnap(_currentGrabbable);
-                    isInteractable = canCurrentlyInteract;
-                }
-                else if (hit.collider.TryGetComponent<DoorScript>(out DoorScript doorScript))
-                {
-                    doorScript.UpdatePromptMessage(_keyInventory);
-                    basePrompt = doorScript.promptMessage;
-                    canCurrentlyInteract = doorScript.CanInteract(_keyInventory);
-                }
-                else if (hit.collider.TryGetComponent<GeneratorPowerSystem>(out GeneratorPowerSystem generator))
-                {
-                    basePrompt = generator.promptMessage;
-                    canCurrentlyInteract = generator.CanInteract();
-                }
-                else if (hit.collider.TryGetComponent<ToolPickup>(out ToolPickup pickup))
-                {
-                    basePrompt = pickup.PromptMessage;
-                    canCurrentlyInteract = true;
-                }
-                else if (hit.collider.TryGetComponent<ElectricBoxBreaker>(out ElectricBoxBreaker electricBox))
-                {
-                    basePrompt = electricBox.promptMessage;
-                    canCurrentlyInteract = true;
-                }
-                else if (hit.collider.TryGetComponent<BaseOpenable>(out BaseOpenable openable))
-                {
-                    basePrompt = openable.promptMessage;
-                    canCurrentlyInteract = true;
-                }
-                else if (hasGrabbable)
-                {
-                    basePrompt = "Grab";
-                    canCurrentlyInteract = true;
-                }
-                else if (hasInteractable)
-                {
-                    basePrompt = "Interact";
-                    canCurrentlyInteract = true;
-                }
-
-                if (hasPower && powerItem.UsesPower)
-                {
-                    int powerPercent = Mathf.FloorToInt((powerItem.CurrentPower / powerItem.MaxPower) * 100f);
-
-                    if (!string.IsNullOrEmpty(basePrompt))
-                    {
-                        basePrompt = $"{basePrompt} {powerPercent}%";
-                    }
-                    else
-                    {
-                        basePrompt = $"Paraffin Lamp {powerPercent}%";
-                    }
-                }
-
-                Transform interactionRoot = null;
-                if (hasInteractable && interactable is MonoBehaviour rootMb)
-                {
-                    interactionRoot = rootMb.transform;
-                }
-                else if (hasGrabbable)
-                {
-                    interactionRoot = grabbable.transform;
-                }
-                else
-                {
-                    interactionRoot = hit.collider.transform;
-                }
-
-                WorldSpaceInteractableUI[] nestedUIs = interactionRoot.GetComponentsInChildren<WorldSpaceInteractableUI>(true);
-                foreach (WorldSpaceInteractableUI ui in nestedUIs)
-                {
-                    IInteractable parentInteractable = ui.GetComponentInParent<IInteractable>();
-                    ObjectGrabbable parentGrabbable = ui.GetComponentInParent<ObjectGrabbable>();
-
-                    Transform closestOwner = null;
-                    if (parentInteractable != null && parentInteractable is MonoBehaviour pMb)
-                    {
-                        closestOwner = pMb.transform;
-                    }
-                    else if (parentGrabbable != null)
-                    {
-                        closestOwner = parentGrabbable.transform;
-                    }
-
-                    if (closestOwner == interactionRoot)
-                    {
-                        targetedWorldUI = ui;
-                        break;
-                    }
-                }
-
-                if (targetedWorldUI != null && !isInspecting)
-                {
-                    targetedWorldUI.ShowPrompt(basePrompt, isInteractable, canCurrentlyInteract);
-                }
-            }
-        }
-
-        if (currentInteractable != _lastInteractable)
-        {
-            if (_lastInteractable is DoorScript lastDoor)
-            {
-                lastDoor.CancelInteract();
-            }
-        }
-
-        _lastInteractable = currentInteractable;
-
-        Vector3 origin = _mainCamera.transform.position;
-
-        foreach (var ui in WorldSpaceInteractableUI.AllInteractableUIs)
-        {
-            if (ui == null || !ui.enabled || !ui.gameObject.activeInHierarchy) continue;
-            if (ui == targetedWorldUI) continue;
-
-            ToolPickup parentPickup = ui.GetComponentInParent<ToolPickup>();
-            if (parentPickup != null && !parentPickup.IsPickupUnlocked())
-            {
-                ui.HidePrompt();
-                continue;
-            }
-
-            PlayerPoseAnchor parentAnchor = ui.GetComponentInParent<PlayerPoseAnchor>();
-            if (parentAnchor != null && !parentAnchor.IsAnchorUnlocked())
-            {
-                ui.HidePrompt();
-                continue;
-            }
-
-            float distance = Vector3.Distance(transform.position, ui.transform.position);
-
-            if (distance <= ui.ProximityDistance)
-            {
-                Vector3 targetPos = ui.transform.position;
-                Vector3 direction = (targetPos - origin).normalized;
-                float checkDistance = Vector3.Distance(origin, targetPos);
-
-                if (Physics.Raycast(origin, direction, out RaycastHit losHit, checkDistance, occlusionLayer, QueryTriggerInteraction.Ignore))
-                {
-                    ui.HidePrompt();
-                }
-                else
-                {
-                    ui.ShowSkeleton(true);
-                }
-            }
-            else
-            {
-                ui.HidePrompt();
-            }
-        }
-
-        _currentWorldUI = targetedWorldUI;
-    }
-
-    public void Interact()
-    {
-        if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive) return;
-
-        if (_input.drop)
-        {
-            if (_currentGrabbable != null)
-            {
-                _currentGrabbable.Drop();
-                _currentGrabbable = null;
-
-                if (dropUI != null)
-                {
-                    dropUI.SetActive(false);
-                }
-            }
-
-            _input.drop = false;
-        }
-
-        if (_input.interact)
-        {
-            if (currentInteractable != null && (!(currentInteractable is MonoBehaviour mb) || mb.enabled))
-            {
-                if (currentInteractable is SnapZone snapZone)
-                {
-                    snapZone.Interact();
-                    _input.interact = false;
-                }
-                else if (currentInteractable is DoorScript door)
-                {
-                    door.Interact(_keyInventory);
-
-                    if (!door.IsUnlocking)
-                    {
-                        _input.interact = false;
-                    }
-                }
-                else
-                {
-                    currentInteractable.Interact();
-
-                    if (currentInteractable is not GeneratorPowerSystem)
-                    {
-                        _input.interact = false;
-                    }
-                }
-            }
-            else if (_currentGrabbable == null && !isSeated)
-            {
-                Ray ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
-                if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))
-                {
-                    ObjectGrabbable grabbable = hit.collider.GetComponentInParent<ObjectGrabbable>();
-                    if (grabbable != null && grabbable.enabled)
-                    {
-                        _currentGrabbable = grabbable;
-                        _currentGrabbable.Grab(objectGrabPointTransform, GetLayerFromMask(heldLayer));
-                        _input.interact = false;
-
-                        if (dropUI != null)
-                        {
-                            dropUI.SetActive(true);
-                        }
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (currentInteractable is DoorScript door)
-            {
-                door.CancelInteract();
-            }
-        }
-    }
-
-    public void ForceEquipGrabbable(ObjectGrabbable grabbable)
-    {
-        if (grabbable == null) return;
-
-        _currentGrabbable = grabbable;
-        _currentGrabbable.Grab(objectGrabPointTransform, GetLayerFromMask(heldLayer));
-
-        if (dropUI != null)
-        {
-            dropUI.SetActive(true);
-        }
-    }
-
-    public void ClearCurrentGrabbableForSnap(Transform snapTarget, bool destroyOnSnap)
-    {
-        if (_currentGrabbable != null)
-        {
-            _currentGrabbable.SnapToTarget(snapTarget, destroyOnSnap);
-            _currentGrabbable = null;
-
-            if (dropUI != null)
-            {
-                dropUI.SetActive(false);
-            }
-        }
-    }
-
-    public void ClearInteractionState()
-    {
-        if (_currentGrabbable != null)
-        {
-            _currentGrabbable.Drop();
-            _currentGrabbable = null;
-        }
-
-        currentInteractable = null;
-        isInteractable = false;
-
-        if (_currentWorldUI != null)
-        {
-            _currentWorldUI.HidePrompt();
-            _currentWorldUI = null;
-        }
-    }
-
-    public void UpdateCrosshair()
-    {
-        if (defaultCrosshair != null && interactableCrosshair != null)
-        {
-            if (isInteractable)
-            {
-                defaultCrosshair.gameObject.SetActive(false);
-                interactableCrosshair.gameObject.SetActive(true);
-            }
-            else
-            {
-                defaultCrosshair.gameObject.SetActive(true);
-                interactableCrosshair.gameObject.SetActive(false);
-            }
-        }
-    }
-
-    public void EvaluateHUDState()
-    {
-        if (hudCanvas == null) return;
-
-        bool shouldShowHUD = !isInspecting
-                           && !isInMiniGame
-                           && !isJumpscareActive
-                           && !isDialogueActive
-                           && !LevelManager.IsGameOver
-                           && !NoteUIController.isNoteOpen;
-
-        if (hudCanvasGroup == null)
-        {
-            hudCanvasGroup = hudCanvas.GetComponent<CanvasGroup>();
-            if (hudCanvasGroup == null)
-            {
-                hudCanvasGroup = hudCanvas.gameObject.AddComponent<CanvasGroup>();
-            }
-        }
-
-        if (!hudCanvas.gameObject.activeSelf)
-        {
-            hudCanvas.gameObject.SetActive(true);
-        }
-
-        hudCanvasGroup.alpha = shouldShowHUD ? 1f : 0f;
-        hudCanvasGroup.interactable = shouldShowHUD;
-        hudCanvasGroup.blocksRaycasts = shouldShowHUD;
-    }
-
     public void SetInspectionMode(bool inspecting)
     {
         isInspecting = inspecting;
 
-        ClearInteractionState();
-        UpdateCrosshair();
+        if (_interaction != null) _interaction.ClearInteractionState();
 
         if (_input != null)
         {
@@ -946,13 +413,12 @@ public class FPSController : MonoBehaviour
             _input.look = Vector2.zero;
             _input.sprint = false;
             _input.ClearLookInput();
-
             _input.blockLookInput = inspecting;
         }
 
-        if (inspecting)
+        if (inspecting && _footsteps != null)
         {
-            StopFootsteps();
+            _footsteps.StopFootsteps();
         }
     }
 
@@ -965,21 +431,7 @@ public class FPSController : MonoBehaviour
             CacheAnchorYaw();
         }
 
-        currentInteractable = null;
-        isInteractable = false;
-
-        if (CurrentGrabbable != null && dropUI != null)
-        {
-            dropUI.SetActive(!dialogue);
-        }
-
-        if (_currentWorldUI != null)
-        {
-            _currentWorldUI.HidePrompt();
-            _currentWorldUI = null;
-        }
-
-        UpdateCrosshair();
+        if (_interaction != null) _interaction.ClearInteractionState();
 
         if (_input != null)
         {
@@ -988,18 +440,17 @@ public class FPSController : MonoBehaviour
             _input.sprint = false;
         }
 
-        if (dialogue)
+        if (dialogue && _footsteps != null)
         {
-            StopFootsteps();
+            _footsteps.StopFootsteps();
         }
     }
 
     public void SetJumpScareMode(bool inspecting)
     {
-        isInspecting = inspecting;
+        isJumpscareActive = inspecting;
 
-        ClearInteractionState();
-        UpdateCrosshair();
+        if (_interaction != null) _interaction.ClearInteractionState();
 
         if (_input != null)
         {
@@ -1012,16 +463,15 @@ public class FPSController : MonoBehaviour
             _input.blockLookInput = inspecting;
         }
 
-        if (inspecting)
+        if (inspecting && _footsteps != null)
         {
-            StopFootsteps();
+            _footsteps.StopFootsteps();
         }
     }
 
     public void SetMiniGameMode(bool active)
     {
         isInMiniGame = active;
-        EvaluateHUDState();
 
         if (_input != null)
         {
@@ -1036,19 +486,15 @@ public class FPSController : MonoBehaviour
             _input.blockLookInput = active;
         }
 
-        if (active)
+        if (active && _footsteps != null)
         {
-            StopFootsteps();
+            _footsteps.StopFootsteps();
         }
     }
 
     public void Teleport(Vector3 position, Quaternion rotation)
     {
-        if (_currentGrabbable != null)
-        {
-            _currentGrabbable.Drop();
-            _currentGrabbable = null;
-        }
+        if (_interaction != null) _interaction.ClearInteractionState();
 
         if (_controller != null) _controller.enabled = false;
 
@@ -1067,20 +513,6 @@ public class FPSController : MonoBehaviour
         }
 
         if (_controller != null) _controller.enabled = true;
-    }
-
-    private int GetLayerFromMask(LayerMask mask)
-    {
-        int bitmask = mask.value;
-        if (bitmask == 0) return gameObject.layer;
-
-        int layerIndex = 0;
-        while (bitmask > 1)
-        {
-            bitmask >>= 1;
-            layerIndex++;
-        }
-        return layerIndex;
     }
 
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)

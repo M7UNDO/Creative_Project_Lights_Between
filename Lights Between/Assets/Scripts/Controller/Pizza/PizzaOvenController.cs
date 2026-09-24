@@ -33,16 +33,19 @@ public class PizzaOvenController : MonoBehaviour, IInteractable
         FPSController player = FindFirstObjectByType<FPSController>();
         if (player == null) return;
 
-        ObjectGrabbable heldItem = player.CurrentGrabbable;
+        PlayerInteraction playerInteraction = player.GetComponent<PlayerInteraction>();
+        if (playerInteraction == null) return;
+
+        ObjectGrabbable heldItem = playerInteraction.CurrentGrabbable;
 
         if (heldItem != null && heldItem.ItemID == uncookedItemID)
         {
-            player.ClearCurrentGrabbableForSnap(transform, true);
-            StartCoroutine(CookPizzaRoutine(player));
+            playerInteraction.ClearCurrentGrabbableForSnap(transform, true);
+            StartCoroutine(CookPizzaRoutine(player, playerInteraction));
         }
     }
 
-    private IEnumerator CookPizzaRoutine(FPSController player)
+    private IEnumerator CookPizzaRoutine(FPSController player, PlayerInteraction playerInteraction)
     {
         isCooking = true;
 
@@ -74,14 +77,14 @@ public class PizzaOvenController : MonoBehaviour, IInteractable
             yield return null;
         }
 
-        if (cookedPizzaPrefab != null && player != null)
+        if (cookedPizzaPrefab != null && playerInteraction != null)
         {
             GameObject newCookedPizza = Instantiate(cookedPizzaPrefab);
             ObjectGrabbable grabbable = newCookedPizza.GetComponent<ObjectGrabbable>();
 
             if (grabbable != null)
             {
-                player.ForceEquipGrabbable(grabbable);
+                playerInteraction.ForceEquipGrabbable(grabbable);
             }
         }
 

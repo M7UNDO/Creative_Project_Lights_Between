@@ -2590,6 +2590,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4129561563042466, guid: 2eb487a1a7a52574b8137bb81207c94b, type: 3}
   m_PrefabInstance: {fileID: 2811096273786739165}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &124465359 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6492344288614412339, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+  m_PrefabInstance: {fileID: 9031210647009672252}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &125260746 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8246062914442541381, guid: 00f54845250d1b84790b60740a496ca6, type: 3}
@@ -17616,6 +17621,7 @@ MonoBehaviour:
   sitTargetPosition: {fileID: 1573079921}
   lookAtTarget: {fileID: 0}
   standUpPosition: {fileID: 50910316}
+  posePromptUI: {fileID: 0}
   sitPrompt: Sit Down
   standPrompt: Stand Up
   fadeDuration: 0.4
@@ -18772,6 +18778,7 @@ MonoBehaviour:
   sitTargetPosition: {fileID: 1489637548}
   lookAtTarget: {fileID: 0}
   standUpPosition: {fileID: 1089472418}
+  posePromptUI: {fileID: 0}
   sitPrompt: Sit Down
   standPrompt: Stand Up
   fadeDuration: 0.4
@@ -20625,6 +20632,81 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbf22d85e03ea794daf3d2fe00572706, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HoldProgressUI
+--- !u!1 &995340513
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 995340514}
+  - component: {fileID: 995340516}
+  - component: {fileID: 995340515}
+  m_Layer: 5
+  m_Name: Bg
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &995340514
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 995340513}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 124465359}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &995340515
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 995340513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.392}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &995340516
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 995340513}
+  m_CullTransparentMesh: 1
 --- !u!1 &998481209
 GameObject:
   m_ObjectHideFlags: 0
@@ -34582,6 +34664,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8173545045650637710, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
   m_PrefabInstance: {fileID: 9031210647009672252}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1814441699 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3155387697568116389, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+  m_PrefabInstance: {fileID: 9031210647009672252}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2f269d59b50fdf4c956c583562c31cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ManageUI
 --- !u!1 &1817901398
 GameObject:
   m_ObjectHideFlags: 0
@@ -42063,7 +42156,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2142410474}
   - component: {fileID: 2142410473}
-  - component: {fileID: 2142410472}
   - component: {fileID: 2142410471}
   - component: {fileID: 2142410470}
   - component: {fileID: 2142410469}
@@ -42522,18 +42614,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CreatureLightStatus
   isInLight: 0
---- !u!114 &2142410472
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2142410462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0a34cc18a9f9384ea086f27cfc40416, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CreatureAI
 --- !u!95 &2142410473
 Animator:
   serializedVersion: 7
@@ -49946,23 +50026,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
---- !u!1 &1303703769166832613
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 9144669656166967575}
-  - component: {fileID: 5056067240521862410}
-  m_Layer: 0
-  m_Name: MapLightManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
 --- !u!1 &1304614813712510597
 GameObject:
   m_ObjectHideFlags: 0
@@ -50749,6 +50812,8 @@ GameObject:
   - component: {fileID: 5510342764046550904}
   - component: {fileID: 3761817182018453851}
   - component: {fileID: 4958918896838999208}
+  - component: {fileID: 8672213539818312837}
+  - component: {fileID: 8672213539818312838}
   - component: {fileID: 340943153413703763}
   - component: {fileID: 1364298896413558572}
   - component: {fileID: 8047248179988981912}
@@ -67216,7 +67281,6 @@ MonoBehaviour:
   ControllerSensitivity: 0.4
   MouseSensitvity: 0.8
   SpeedChangeRate: 10
-  JumpHeight: 1.2
   Gravity: -15
   JumpTimeout: 0.1
   FallTimeout: 0.15
@@ -67233,104 +67297,6 @@ MonoBehaviour:
   HeldObjectBottomClamp: -30
   dialogueHorizontalClamp: 45
   seatedHorizontalClamp: 60
-  playingFootsteps: 0
-  walkFootstepSpeed: 0.5
-  sprintFootstepSpeed: 0.3
-  currentFootstepSpeed: 0
-  woodWalkFootstepClips:
-  - {fileID: 8300000, guid: 6627982b638038946802871f0ce5bb1d, type: 3}
-  - {fileID: 8300000, guid: 4053f15992d8f5047a33172619800da7, type: 3}
-  - {fileID: 8300000, guid: bcbc61746eea8644bbae6e63047bd6b1, type: 3}
-  - {fileID: 8300000, guid: 90b46735a66c4be42bc34e5cbe24a86e, type: 3}
-  - {fileID: 8300000, guid: 0b2754b77501f0b408fc48434e3f4977, type: 3}
-  - {fileID: 8300000, guid: 62c99e3c362e24741bffa80e78d3fd86, type: 3}
-  - {fileID: 8300000, guid: 934ee80b5cc830749b2898eb270ef731, type: 3}
-  - {fileID: 8300000, guid: e4d5e674ff3653d4ca06ceb57b3cbe51, type: 3}
-  - {fileID: 8300000, guid: 604dfeb6627dbe64cb4ffc0eb360db09, type: 3}
-  - {fileID: 8300000, guid: 9960274cf7cbac04e8e03fa542f0153d, type: 3}
-  tileWalkFootstepClips:
-  - {fileID: 8300000, guid: 7dd6241be3159e5408823c00f6216fcc, type: 3}
-  - {fileID: 8300000, guid: 164aa5f40372ba9419b1e3efc122c429, type: 3}
-  - {fileID: 8300000, guid: ec764ab1ed285714fb64405bfc571d6a, type: 3}
-  - {fileID: 8300000, guid: 5c121dd80a974564a87680a0b55e0a65, type: 3}
-  - {fileID: 8300000, guid: 55b7a7a23f8399543a7d14fd9273f9d9, type: 3}
-  - {fileID: 8300000, guid: bede57d2ba20dd44cb0f7484cc127f13, type: 3}
-  - {fileID: 8300000, guid: cc23758251f54fe4aac958882d3923bf, type: 3}
-  - {fileID: 8300000, guid: 493c096278e94974987b95dd03bf428c, type: 3}
-  carpetWalkFootstepClips:
-  - {fileID: 8300000, guid: 0bb2841903f490d41b65551694f3217c, type: 3}
-  - {fileID: 8300000, guid: 78b6a4d5005679a4fb5d3d70efc929f4, type: 3}
-  - {fileID: 8300000, guid: f539856fb22024b40ab33aaf2acf2021, type: 3}
-  - {fileID: 8300000, guid: db090814e45e36e40a864daa1c15a4ca, type: 3}
-  - {fileID: 8300000, guid: aaca2a8a53019d142b0a3d11bf0b68bb, type: 3}
-  - {fileID: 8300000, guid: 0500ea2ceceb5bc4c966f49013b287d1, type: 3}
-  - {fileID: 8300000, guid: a431be5dcd9ebcf469ce37222c6e9035, type: 3}
-  - {fileID: 8300000, guid: 0f151517f5efa1046a19d7b252295569, type: 3}
-  - {fileID: 8300000, guid: 8dc172cc160092b48a22cb809a0df7b3, type: 3}
-  - {fileID: 8300000, guid: ecf60378ba7ef864ab7a56f063d61ba3, type: 3}
-  - {fileID: 8300000, guid: 63dd96ea70c328946b22226a71e6bb29, type: 3}
-  defaultWalkFootstepClips:
-  - {fileID: 8300000, guid: 27a1e5bed05979e4b92f15d587adf81d, type: 3}
-  - {fileID: 8300000, guid: 54dee1307402cc44e961a6801021d266, type: 3}
-  - {fileID: 8300000, guid: 017cc6f3a8843b14386d6257a4ad71fa, type: 3}
-  - {fileID: 8300000, guid: 12ec36a2bc95fa543a9bc54f5fa7908c, type: 3}
-  - {fileID: 8300000, guid: fe66a10e915f7d141ae0bc019af32dfd, type: 3}
-  woodRunFootstepClips:
-  - {fileID: 8300000, guid: 47ba0ae6facf71640a92be2a7c42ebb3, type: 3}
-  - {fileID: 8300000, guid: 79bb48f0bda24ea46b6625d32144760b, type: 3}
-  - {fileID: 8300000, guid: fb72b4f87fe55854a948d1559e7fad10, type: 3}
-  - {fileID: 8300000, guid: e144752c0c10db841a9d7d91b2a225d4, type: 3}
-  - {fileID: 8300000, guid: df507b4527a92b8499c5f64d28c35b47, type: 3}
-  - {fileID: 8300000, guid: 37cc00f366b370a4aa613c952902eddf, type: 3}
-  - {fileID: 8300000, guid: 6e824285a6f9c964a9c05ccb04f5d122, type: 3}
-  - {fileID: 8300000, guid: 4b3f343ff135fd64d9c8b9a97dd6821e, type: 3}
-  - {fileID: 8300000, guid: db05c7e2a0df4a548bacad75169588ca, type: 3}
-  - {fileID: 8300000, guid: 88ac0d1cad32ba24690f30482637529b, type: 3}
-  tileRunFootstepClips:
-  - {fileID: 8300000, guid: 0ad97beb06b11d24cb6e43a679c75432, type: 3}
-  - {fileID: 8300000, guid: 666278c20d712ee48aa58e46c17422aa, type: 3}
-  - {fileID: 8300000, guid: 5181e3cd9a3b2cc4ab31dff47df01002, type: 3}
-  - {fileID: 8300000, guid: 9626fb9736d4503499e7066501a6a77c, type: 3}
-  - {fileID: 8300000, guid: 551dc6984bb26474e892515913275c27, type: 3}
-  - {fileID: 8300000, guid: feadc097450b72943b0bd09bc132e0ed, type: 3}
-  carpetRunFootstepClips:
-  - {fileID: 8300000, guid: 0bb2841903f490d41b65551694f3217c, type: 3}
-  - {fileID: 8300000, guid: 78b6a4d5005679a4fb5d3d70efc929f4, type: 3}
-  - {fileID: 8300000, guid: f539856fb22024b40ab33aaf2acf2021, type: 3}
-  - {fileID: 8300000, guid: db090814e45e36e40a864daa1c15a4ca, type: 3}
-  - {fileID: 8300000, guid: aaca2a8a53019d142b0a3d11bf0b68bb, type: 3}
-  - {fileID: 8300000, guid: 0500ea2ceceb5bc4c966f49013b287d1, type: 3}
-  - {fileID: 8300000, guid: a431be5dcd9ebcf469ce37222c6e9035, type: 3}
-  - {fileID: 8300000, guid: 0f151517f5efa1046a19d7b252295569, type: 3}
-  - {fileID: 8300000, guid: 8dc172cc160092b48a22cb809a0df7b3, type: 3}
-  - {fileID: 8300000, guid: ecf60378ba7ef864ab7a56f063d61ba3, type: 3}
-  - {fileID: 8300000, guid: 63dd96ea70c328946b22226a71e6bb29, type: 3}
-  defaultRunFootstepClips:
-  - {fileID: 8300000, guid: 27a1e5bed05979e4b92f15d587adf81d, type: 3}
-  - {fileID: 8300000, guid: 54dee1307402cc44e961a6801021d266, type: 3}
-  - {fileID: 8300000, guid: 017cc6f3a8843b14386d6257a4ad71fa, type: 3}
-  - {fileID: 8300000, guid: 12ec36a2bc95fa543a9bc54f5fa7908c, type: 3}
-  - {fileID: 8300000, guid: fe66a10e915f7d141ae0bc019af32dfd, type: 3}
-  stepSFX: {fileID: 4170265111131205632}
-  groundRayDistance: 1.5
-  hudCanvas: {fileID: 7923690859733667520}
-  dropUI: {fileID: 1528216395}
-  interactionRange: 3
-  interactionLayer:
-    serializedVersion: 2
-    m_Bits: 128
-  defaultCrosshair: {fileID: 7572633587466930537}
-  interactableCrosshair: {fileID: 138618882231563439}
-  isInteractable: 0
-  isInteracting: 0
-  heldLayer:
-    serializedVersion: 2
-    m_Bits: 512
-  objectGrabPointTransform: {fileID: 330802072}
-  PosepromptUI: {fileID: 13509925}
-  occlusionLayer:
-    serializedVersion: 2
-    m_Bits: 1
   FlashlightAnchor: {fileID: 6915232932934187063}
   dialogueSensitivityMultiplier: 0.5
   sensitivityTransitionSpeed: 5
@@ -67612,18 +67578,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2423971642291907898}
   m_CullTransparentMesh: 1
---- !u!114 &5056067240521862410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1303703769166832613}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b08dc5a8994f62348a6764502f9fca42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MapLightManager
 --- !u!222 &5064900852943251406
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -74403,7 +74357,6 @@ Transform:
   - {fileID: 9031003092236606012}
   - {fileID: 3771883561709211955}
   - {fileID: 6492186299357402244}
-  - {fileID: 9144669656166967575}
   - {fileID: 7245467456569828793}
   - {fileID: 8369497124159425117}
   - {fileID: 9204291935857880910}
@@ -88283,6 +88236,128 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerToolInventory
   acquiredTools: []
+--- !u!114 &8672213539818312837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1541411992301931478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e365b547902b6104089f534412df247a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteraction
+  hudCanvas: {fileID: 7923690859733667520}
+  dropUI: {fileID: 1528216395}
+  interactionRange: 3
+  interactionLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  occlusionLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  defaultCrosshair: {fileID: 7572633587466930537}
+  interactableCrosshair: {fileID: 138618882231563439}
+  isInteractable: 0
+  heldLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  objectGrabPointTransform: {fileID: 330802072}
+--- !u!114 &8672213539818312838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1541411992301931478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8c4c3cd83e5f504cbe25f8873db5260, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerFootsteps
+  playingFootsteps: 0
+  walkFootstepSpeed: 0.5
+  sprintFootstepSpeed: 0.3
+  woodWalkFootstepClips:
+  - {fileID: 8300000, guid: 6627982b638038946802871f0ce5bb1d, type: 3}
+  - {fileID: 8300000, guid: 4053f15992d8f5047a33172619800da7, type: 3}
+  - {fileID: 8300000, guid: bcbc61746eea8644bbae6e63047bd6b1, type: 3}
+  - {fileID: 8300000, guid: 90b46735a66c4be42bc34e5cbe24a86e, type: 3}
+  - {fileID: 8300000, guid: 0b2754b77501f0b408fc48434e3f4977, type: 3}
+  - {fileID: 8300000, guid: 62c99e3c362e24741bffa80e78d3fd86, type: 3}
+  - {fileID: 8300000, guid: 934ee80b5cc830749b2898eb270ef731, type: 3}
+  - {fileID: 8300000, guid: e4d5e674ff3653d4ca06ceb57b3cbe51, type: 3}
+  - {fileID: 8300000, guid: 604dfeb6627dbe64cb4ffc0eb360db09, type: 3}
+  - {fileID: 8300000, guid: 9960274cf7cbac04e8e03fa542f0153d, type: 3}
+  tileWalkFootstepClips:
+  - {fileID: 8300000, guid: 7dd6241be3159e5408823c00f6216fcc, type: 3}
+  - {fileID: 8300000, guid: 164aa5f40372ba9419b1e3efc122c429, type: 3}
+  - {fileID: 8300000, guid: ec764ab1ed285714fb64405bfc571d6a, type: 3}
+  - {fileID: 8300000, guid: 5c121dd80a974564a87680a0b55e0a65, type: 3}
+  - {fileID: 8300000, guid: 55b7a7a23f8399543a7d14fd9273f9d9, type: 3}
+  - {fileID: 8300000, guid: bede57d2ba20dd44cb0f7484cc127f13, type: 3}
+  - {fileID: 8300000, guid: cc23758251f54fe4aac958882d3923bf, type: 3}
+  - {fileID: 8300000, guid: 493c096278e94974987b95dd03bf428c, type: 3}
+  carpetWalkFootstepClips:
+  - {fileID: 8300000, guid: 0bb2841903f490d41b65551694f3217c, type: 3}
+  - {fileID: 8300000, guid: 78b6a4d5005679a4fb5d3d70efc929f4, type: 3}
+  - {fileID: 8300000, guid: f539856fb22024b40ab33aaf2acf2021, type: 3}
+  - {fileID: 8300000, guid: db090814e45e36e40a864daa1c15a4ca, type: 3}
+  - {fileID: 8300000, guid: aaca2a8a53019d142b0a3d11bf0b68bb, type: 3}
+  - {fileID: 8300000, guid: 0500ea2ceceb5bc4c966f49013b287d1, type: 3}
+  - {fileID: 8300000, guid: a431be5dcd9ebcf469ce37222c6e9035, type: 3}
+  - {fileID: 8300000, guid: 0f151517f5efa1046a19d7b252295569, type: 3}
+  - {fileID: 8300000, guid: 8dc172cc160092b48a22cb809a0df7b3, type: 3}
+  - {fileID: 8300000, guid: ecf60378ba7ef864ab7a56f063d61ba3, type: 3}
+  - {fileID: 8300000, guid: 63dd96ea70c328946b22226a71e6bb29, type: 3}
+  defaultWalkFootstepClips:
+  - {fileID: 8300000, guid: 27a1e5bed05979e4b92f15d587adf81d, type: 3}
+  - {fileID: 8300000, guid: 54dee1307402cc44e961a6801021d266, type: 3}
+  - {fileID: 8300000, guid: 017cc6f3a8843b14386d6257a4ad71fa, type: 3}
+  - {fileID: 8300000, guid: 12ec36a2bc95fa543a9bc54f5fa7908c, type: 3}
+  - {fileID: 8300000, guid: fe66a10e915f7d141ae0bc019af32dfd, type: 3}
+  woodRunFootstepClips:
+  - {fileID: 8300000, guid: 47ba0ae6facf71640a92be2a7c42ebb3, type: 3}
+  - {fileID: 8300000, guid: 79bb48f0bda24ea46b6625d32144760b, type: 3}
+  - {fileID: 8300000, guid: fb72b4f87fe55854a948d1559e7fad10, type: 3}
+  - {fileID: 8300000, guid: e144752c0c10db841a9d7d91b2a225d4, type: 3}
+  - {fileID: 8300000, guid: df507b4527a92b8499c5f64d28c35b47, type: 3}
+  - {fileID: 8300000, guid: 37cc00f366b370a4aa613c952902eddf, type: 3}
+  - {fileID: 8300000, guid: 6e824285a6f9c964a9c05ccb04f5d122, type: 3}
+  - {fileID: 8300000, guid: 4b3f343ff135fd64d9c8b9a97dd6821e, type: 3}
+  - {fileID: 8300000, guid: db05c7e2a0df4a548bacad75169588ca, type: 3}
+  - {fileID: 8300000, guid: 88ac0d1cad32ba24690f30482637529b, type: 3}
+  tileRunFootstepClips:
+  - {fileID: 8300000, guid: 0ad97beb06b11d24cb6e43a679c75432, type: 3}
+  - {fileID: 8300000, guid: 666278c20d712ee48aa58e46c17422aa, type: 3}
+  - {fileID: 8300000, guid: 5181e3cd9a3b2cc4ab31dff47df01002, type: 3}
+  - {fileID: 8300000, guid: 9626fb9736d4503499e7066501a6a77c, type: 3}
+  - {fileID: 8300000, guid: 551dc6984bb26474e892515913275c27, type: 3}
+  - {fileID: 8300000, guid: feadc097450b72943b0bd09bc132e0ed, type: 3}
+  carpetRunFootstepClips:
+  - {fileID: 8300000, guid: 0bb2841903f490d41b65551694f3217c, type: 3}
+  - {fileID: 8300000, guid: 78b6a4d5005679a4fb5d3d70efc929f4, type: 3}
+  - {fileID: 8300000, guid: f539856fb22024b40ab33aaf2acf2021, type: 3}
+  - {fileID: 8300000, guid: db090814e45e36e40a864daa1c15a4ca, type: 3}
+  - {fileID: 8300000, guid: aaca2a8a53019d142b0a3d11bf0b68bb, type: 3}
+  - {fileID: 8300000, guid: 0500ea2ceceb5bc4c966f49013b287d1, type: 3}
+  - {fileID: 8300000, guid: a431be5dcd9ebcf469ce37222c6e9035, type: 3}
+  - {fileID: 8300000, guid: 0f151517f5efa1046a19d7b252295569, type: 3}
+  - {fileID: 8300000, guid: 8dc172cc160092b48a22cb809a0df7b3, type: 3}
+  - {fileID: 8300000, guid: ecf60378ba7ef864ab7a56f063d61ba3, type: 3}
+  - {fileID: 8300000, guid: 63dd96ea70c328946b22226a71e6bb29, type: 3}
+  defaultRunFootstepClips:
+  - {fileID: 8300000, guid: 27a1e5bed05979e4b92f15d587adf81d, type: 3}
+  - {fileID: 8300000, guid: 54dee1307402cc44e961a6801021d266, type: 3}
+  - {fileID: 8300000, guid: 017cc6f3a8843b14386d6257a4ad71fa, type: 3}
+  - {fileID: 8300000, guid: 12ec36a2bc95fa543a9bc54f5fa7908c, type: 3}
+  - {fileID: 8300000, guid: fe66a10e915f7d141ae0bc019af32dfd, type: 3}
+  stepSFX: {fileID: 4170265111131205632}
+  groundRayDistance: 1.5
+  GroundLayers:
+    serializedVersion: 2
+    m_Bits: 257
 --- !u!4 &8681840835320591962
 Transform:
   m_ObjectHideFlags: 0
@@ -90270,6 +90345,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -47.5
       objectReference: {fileID: 0}
+    - target: {fileID: 7428255088376013053, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+      propertyPath: m_Color.a
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7671395619543505238, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
       propertyPath: m_fontColor.a
       value: 0.39215687
@@ -90321,14 +90400,49 @@ PrefabInstance:
     - target: {fileID: 8731072745590722247, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
       propertyPath: manageUI
       value: 
+      objectReference: {fileID: 1814441699}
+    - target: {fileID: 8731072745590722247, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+      propertyPath: playerController
+      value: 
+      objectReference: {fileID: 4958918896838999208}
+    - target: {fileID: 8731072745590722247, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+      propertyPath: UIElements.Array.size
+      value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 8731072745590722247, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+      propertyPath: 'UIElements.Array.data[0]'
+      value: 
+      objectReference: {fileID: 9213279206739856283}
+    - target: {fileID: 8731072745590722247, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+      propertyPath: 'UIElements.Array.data[1]'
+      value: 
+      objectReference: {fileID: 5165650135759931800}
+    - target: {fileID: 8731072745590722247, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+      propertyPath: 'UIElements.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2690875921140425213}
+    - target: {fileID: 8731072745590722247, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+      propertyPath: 'UIElements.Array.data[3]'
+      value: 
+      objectReference: {fileID: 2080128955}
+    - target: {fileID: 8731072745590722247, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+      propertyPath: 'UIElements.Array.data[4]'
+      value: 
+      objectReference: {fileID: 388112533}
+    - target: {fileID: 8731072745590722247, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+      propertyPath: 'UIElements.Array.data[5]'
+      value: 
+      objectReference: {fileID: 1917339713}
     - target: {fileID: 8841801935126978678, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
       propertyPath: audioSource
       value: 
       objectReference: {fileID: 49631521}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6492344288614412339, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
+      insertIndex: 0
+      addedObject: {fileID: 995340514}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f7c72d59c53c8e245baf5d81d8485f50, type: 3}
 --- !u!1 &9035160185161163584
@@ -90808,6 +90922,7 @@ MonoBehaviour:
   sitTargetPosition: {fileID: 1773395941}
   lookAtTarget: {fileID: 0}
   standUpPosition: {fileID: 897692187}
+  posePromptUI: {fileID: 0}
   sitPrompt: Sit Down
   standPrompt: Stand Up
   fadeDuration: 0.4
@@ -91045,21 +91160,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!4 &9144669656166967575
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1303703769166832613}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6181527346713148763}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &9149311574250716387
 RectTransform:
   m_ObjectHideFlags: 0

@@ -6,13 +6,12 @@ public class PauseManager : MonoBehaviour
     public static bool IsGamePaused { get; private set; }
 
     [Header("References")]
-    [Space(5)]
     [SerializeField] private ManageUI manageUI;
     [SerializeField] private TabController tabController;
     [SerializeField] private FPSController playerController;
+    private PlayerInteraction playerInteraction;
 
     [Header("UI Components")]
-    [Space(5)]
     public GameObject PauseCanvas;
 
     private PlayerControls playerControls;
@@ -36,6 +35,11 @@ public class PauseManager : MonoBehaviour
         if (playerController == null)
         {
             playerController = FindFirstObjectByType<FPSController>();
+        }
+
+        if (playerController != null)
+        {
+            playerInteraction = playerController.GetComponent<PlayerInteraction>();
         }
 
         if (tabController == null)
@@ -127,9 +131,9 @@ public class PauseManager : MonoBehaviour
             VolumeBlurController.Instance.SetMenuBlurState(true);
         }
 
-        if (playerController != null)
+        if (playerInteraction != null)
         {
-            playerController.EvaluateHUDState();
+            playerInteraction.EvaluateHUDState();
         }
 
         Cursor.visible = true;
@@ -154,9 +158,9 @@ public class PauseManager : MonoBehaviour
             VolumeBlurController.Instance.SetMenuBlurState(false);
         }
 
-        if (playerController != null)
+        if (playerInteraction != null)
         {
-            playerController.EvaluateHUDState();
+            playerInteraction.EvaluateHUDState();
         }
 
         Cursor.visible = false;
