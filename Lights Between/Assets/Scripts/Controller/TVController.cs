@@ -71,7 +71,6 @@ public class TVController : MonoBehaviour, IInteractable
     {
         IsTVOn = turnOn;
 
-        // 1. Swap screen material
         if (tvScreenRenderer != null && tvOffMaterial != null && tvOnMaterial != null)
         {
             Material[] mats = tvScreenRenderer.materials;
@@ -82,10 +81,8 @@ public class TVController : MonoBehaviour, IInteractable
             }
         }
 
-        // 2. Update Emission (Red Light)
         UpdateEmissionState(IsTVOn);
 
-        // 3. Manage Audio
         if (tvAudioSource != null)
         {
             tvAudioSource.Stop();

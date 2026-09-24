@@ -9641,6 +9641,8 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  delaySpeech: 0
+  delayTime: 0
 --- !u!114 &474935633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10452,6 +10454,8 @@ MonoBehaviour:
   onTriggered:
     m_PersistentCalls:
       m_Calls: []
+  delaySpeech: 0
+  delayTime: 0
 --- !u!65 &525595865
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -17221,7 +17225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1189fe79916f4694293412dc2dcd1cfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TVController
-  connectedBreaker: {fileID: 0}
+  connectedBreaker: {fileID: 8259243183186895163}
   tvScreenRenderer: {fileID: 1886024553}
   screenMaterialIndex: 1
   tvOffMaterial: {fileID: 2100000, guid: 64612c592b441b440a6e7fb0cafc90a6, type: 2}
@@ -19780,6 +19784,8 @@ MonoBehaviour:
   onTriggered:
     m_PersistentCalls:
       m_Calls: []
+  delaySpeech: 0
+  delayTime: 0
 --- !u!65 &954725324
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -29598,6 +29604,8 @@ MonoBehaviour:
   onTriggered:
     m_PersistentCalls:
       m_Calls: []
+  delaySpeech: 1
+  delayTime: 3
 --- !u!65 &1491227750
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -57052,7 +57060,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2694395333343906567
 Transform:
   m_ObjectHideFlags: 0
@@ -67237,6 +67245,8 @@ MonoBehaviour:
   BottomClamp: -75
   HeldObjectTopClamp: 30
   HeldObjectBottomClamp: -30
+  dialogueHorizontalClamp: 45
+  seatedHorizontalClamp: 45
   playingFootsteps: 0
   walkFootstepSpeed: 0.5
   sprintFootstepSpeed: 0.3

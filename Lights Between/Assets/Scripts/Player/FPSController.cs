@@ -55,6 +55,12 @@ public class FPSController : MonoBehaviour
     [Tooltip("How restricted the up/down look angle is when holding a heavy object")]
     public float HeldObjectBottomClamp = -30.0f;
 
+    [Header("Horizontal Clamp Settings")]
+    [Tooltip("Horizontal look restriction angle (left/right limit) when in Dialogue")]
+    public float dialogueHorizontalClamp = 45.0f;
+    [Tooltip("Horizontal look restriction angle (left/right limit) when Seated/Sleeping")]
+    public float seatedHorizontalClamp = 60.0f;
+
     [Header("Movement SFX")]
     [Space(5)]
 
@@ -184,6 +190,9 @@ public class FPSController : MonoBehaviour
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
+    private float _baseYaw;
+    private float _currentRelativeYaw;
+
     public InputHandler InputHandler => _input;
     public CharacterController Controller => _controller;
 
@@ -232,12 +241,11 @@ public class FPSController : MonoBehaviour
         _fallTimeoutDelta = FallTimeout;
     }
 
-    
-
     private void Update()
     {
         UpdateSensitivityMultiplier();
 
+        // ADDED isDialogueActive to the early return check below
         if (isInMiniGame || isInspecting || isJumpscareActive || isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
 
         if (isSeated)
@@ -285,14 +293,18 @@ public class FPSController : MonoBehaviour
         isSeated = seated;
         CurrentPoseAnchor = seated ? anchor : null;
 
-        if (seated && seatPoint != null)
+        if (seated)
         {
-            Teleport(seatPoint.position, seatPoint.rotation);
-
-            if (lookAtTarget != null)
+            if (seatPoint != null)
             {
-                ForceLookAt(lookAtTarget.position);
+                Teleport(seatPoint.position, seatPoint.rotation);
+
+                if (lookAtTarget != null)
+                {
+                    ForceLookAt(lookAtTarget.position);
+                }
             }
+            CacheAnchorYaw();
         }
 
         if (_input != null)
@@ -353,8 +365,26 @@ public class FPSController : MonoBehaviour
             _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, minPitch, maxPitch);
             CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
 
-            transform.Rotate(Vector3.up * _rotationVelocity);
+            if (isDialogueActive || isSeated)
+            {
+                float allowedClamp = isSeated ? seatedHorizontalClamp : dialogueHorizontalClamp;
+
+                _currentRelativeYaw += _rotationVelocity;
+                _currentRelativeYaw = Mathf.Clamp(_currentRelativeYaw, -allowedClamp, allowedClamp);
+
+                transform.rotation = Quaternion.Euler(0.0f, _baseYaw + _currentRelativeYaw, 0.0f);
+            }
+            else
+            {
+                transform.Rotate(Vector3.up * _rotationVelocity);
+            }
         }
+    }
+
+    private void CacheAnchorYaw()
+    {
+        _baseYaw = transform.eulerAngles.y;
+        _currentRelativeYaw = 0.0f;
     }
 
     public void ForceLookAt(Vector3 targetPosition)
@@ -366,6 +396,8 @@ public class FPSController : MonoBehaviour
         {
             transform.rotation = Quaternion.LookRotation(forwardDir);
         }
+
+        CacheAnchorYaw();
 
         if (_mainCamera != null)
         {
@@ -486,7 +518,7 @@ public class FPSController : MonoBehaviour
             }
         }
 
-        return isSprinting ? defaultRunFootstepClips : defaultWalkFootstepClips;
+        return isSprinting ? defaultRunFootstepClips : defaultRunFootstepClips;
     }
 
     private void ApplyGravity()
@@ -820,7 +852,6 @@ public class FPSController : MonoBehaviour
         {
             dropUI.SetActive(true);
         }
-
     }
 
     public void ClearCurrentGrabbableForSnap(Transform snapTarget, bool destroyOnSnap)
@@ -929,18 +960,18 @@ public class FPSController : MonoBehaviour
     {
         isDialogueActive = dialogue;
 
+        if (dialogue)
+        {
+            CacheAnchorYaw();
+        }
+
         currentInteractable = null;
         isInteractable = false;
 
-        if(CurrentGrabbable != null)
+        if (CurrentGrabbable != null && dropUI != null)
         {
-            if (dropUI != null)
-            {
-                dropUI.SetActive(!dialogue);
-            }
+            dropUI.SetActive(!dialogue);
         }
-
-        
 
         if (_currentWorldUI != null)
         {
