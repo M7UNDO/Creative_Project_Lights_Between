@@ -6,9 +6,8 @@ using UnityEngine.InputSystem;
 public class FlashlightScript : MonoBehaviour, IToolPower
 {
     [Header("References")]
-    [SerializeField] private GameObject torchLightPrefab;
+    [SerializeField] private GameObject TorchLight;
     [SerializeField] private AudioSource torchClickSFX;
-    [SerializeField] private GameObject playerLightZonePrefab;
     [SerializeField] private FPSController fpsController;
 
     [Header("Visuals")]
@@ -69,8 +68,6 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     private Transform flashlightAnchor;
     private Light torchLight;
-    private GameObject spawnedLightObject;
-    private GameObject spawnedPlayerLightZone;
     public GameObject torchLightZone;
 
     private FlashlightUIScript flashlightUI;
@@ -134,8 +131,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         isOn = true;
 
         SetupFlashlightAnchor();
-        SpawnTorchLight();
-        SpawnPlayerLightZone();
+        SetupLiveLights();
 
         if (glassRenderer != null)
         {
@@ -174,36 +170,22 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         }
     }
 
-    private void SpawnTorchLight()
+    private void SetupLiveLights()
     {
-        if (torchLightPrefab == null || flashlightAnchor == null) return;
-
-        spawnedLightObject = Instantiate(torchLightPrefab, flashlightAnchor.position, flashlightAnchor.rotation);
-        torchLight = spawnedLightObject.GetComponentInChildren<Light>();
-
-        if (torchLight == null)
+        if (TorchLight != null)
         {
-            Debug.LogWarning("Torch Light Prefab does not contain a Light component.");
-            return;
+            torchLight = TorchLight.GetComponent<Light>();
+
+            if (torchLight != null)
+            {
+                baseLightIntensity = torchLight.intensity;
+
+                if (lightCookie != null)
+                {
+                    torchLight.cookie = lightCookie;
+                }
+            }
         }
-
-        baseLightIntensity = torchLight.intensity;
-
-        if (lightCookie != null)
-        {
-            torchLight.cookie = lightCookie;
-        }
-    }
-
-    private void SpawnPlayerLightZone()
-    {
-        if (playerLightZonePrefab == null || flashlightAnchor == null) return;
-
-        Transform playerTransform = flashlightAnchor.root;
-
-        spawnedPlayerLightZone = Instantiate(playerLightZonePrefab, playerTransform);
-        spawnedPlayerLightZone.transform.localPosition = new Vector3(0f, 1f, 0f);
-        spawnedPlayerLightZone.transform.localRotation = Quaternion.identity;
     }
 
     private void StartTutorialSequence()
@@ -451,10 +433,10 @@ public class FlashlightScript : MonoBehaviour, IToolPower
             torchLightZone.SetActive(active);
         }
 
-        if (spawnedPlayerLightZone != null)
+        /*if (livePlayerLightZone != null)
         {
-            spawnedPlayerLightZone.SetActive(active);
-        }
+            livePlayerLightZone.SetActive(active);
+        }*/
     }
 
     private void CheckFlickerState()
@@ -582,19 +564,19 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     private void LateUpdate()
     {
-        if (spawnedLightObject == null || flashlightAnchor == null) return;
+        if (TorchLight == null || flashlightAnchor == null) return;
 
         Vector3 targetPosition = flashlightAnchor.position + CalculateBobOffset();
         Quaternion targetRotation = flashlightAnchor.rotation * CalculateSwayRotation();
 
-        spawnedLightObject.transform.position = Vector3.Lerp(
-            spawnedLightObject.transform.position,
+        TorchLight.transform.position = Vector3.Lerp(
+            TorchLight.transform.position,
             targetPosition,
             Time.deltaTime * positionLagSpeed
         );
 
-        spawnedLightObject.transform.rotation = Quaternion.Slerp(
-            spawnedLightObject.transform.rotation,
+        TorchLight.transform.rotation = Quaternion.Slerp(
+            TorchLight.transform.rotation,
             targetRotation,
             Time.deltaTime * rotationLagSpeed
         );
@@ -666,16 +648,6 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     private void OnDestroy()
     {
         UnsubscribeDeviceDetector();
-
-        if (spawnedLightObject != null)
-        {
-            Destroy(spawnedLightObject);
-        }
-
-        if (spawnedPlayerLightZone != null)
-        {
-            Destroy(spawnedPlayerLightZone);
-        }
     }
 
     private void UnsubscribeDeviceDetector()

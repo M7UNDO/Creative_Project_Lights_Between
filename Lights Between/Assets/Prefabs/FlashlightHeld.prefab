@@ -48,7 +48,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -97,7 +97,8 @@ Transform:
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 4516628548974028961}
   m_Father: {fileID: 4248545210178462010}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &9036754275742579552
@@ -130,7 +131,7 @@ MeshRenderer:
   m_SmallMeshCulling: 1
   m_ForceMeshLod: -1
   m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 2
+  m_RenderingLayerMask: 3
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 710d4d9447ac4b548b23dc0159a9c6c9, type: 2}
@@ -204,12 +205,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbbe25d3a071a1e4eb24be04df69f0d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlashlightScript
-  torchLightPrefab: {fileID: 1393793932016116575, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+  TorchLight: {fileID: 6992420127462764394}
   torchClickSFX: {fileID: 5937618049106195511}
-  playerLightZonePrefab: {fileID: 7618191554692271199, guid: 703767aa006f8184782d98c9005d4209, type: 3}
   fpsController: {fileID: 0}
   lightCookie: {fileID: 2800000, guid: adfa0ebfcb79c7042be5b04397144b3e, type: 3}
   glassRenderer: {fileID: 3583905205337786264}
+  batteryChangeSFX: {fileID: 0}
   positionLagSpeed: 12
   rotationLagSpeed: 8
   swayAmount: 1.5
@@ -228,6 +229,17 @@ MonoBehaviour:
   keyboardTogglePrompt: '[F] to toggle On/Off'
   xboxTogglePrompt: Press <sprite name="Right Bumper"> to toggle On/Off
   playStationTogglePrompt: Press <sprite name="R1"> to toggle On/Off
+  keyboardWheelPrompt: 'Hold [TAB] + Move [Mouse]
+
+    Release [TAB] to equip item'
+  xboxWheelPrompt: 'Hold <sprite name="Left Bumper"> + Move <sprite name="Right Stick">
+
+    Release
+    <sprite name="Left Bumper"> to equip item'
+  playStationWheelPrompt: 'Hold <sprite name="L1"> + Move <sprite name="_Right Stick">
+
+    Release
+    <sprite name="L1"> to equip item'
   torchLightZone: {fileID: 2197618662182222458}
 --- !u!82 &5937618049106195511
 AudioSource:
@@ -326,3 +338,74 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1001 &8240972951845850165
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 6120016330032105467}
+    m_Modifications:
+    - target: {fileID: 1393793932016116575, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_Name
+      value: Torch Light
+      objectReference: {fileID: 0}
+    - target: {fileID: 2907339925633670285, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 1527
+      objectReference: {fileID: 0}
+    - target: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.292
+      objectReference: {fileID: 0}
+    - target: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+--- !u!4 &4516628548974028961 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+  m_PrefabInstance: {fileID: 8240972951845850165}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6992420127462764394 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1393793932016116575, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+  m_PrefabInstance: {fileID: 8240972951845850165}
+  m_PrefabAsset: {fileID: 0}

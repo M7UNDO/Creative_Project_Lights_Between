@@ -52,11 +52,31 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
-        if (_fpsController.isInMiniGame || _fpsController.isInspecting || _fpsController.isJumpscareActive || _fpsController.isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
+        if (_fpsController.isInMiniGame || _fpsController.isInspecting || _fpsController.isJumpscareActive || _fpsController.isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen)
+        {
+            // Forces World Space Prompts and Interaction Crosshairs to hide while busy
+            HideActiveWorldUI();
+            return;
+        }
 
         DetectInteractable();
         UpdateCrosshair();
         Interact();
+    }
+
+    private void HideActiveWorldUI()
+    {
+        if (_currentWorldUI != null)
+        {
+            _currentWorldUI.HidePrompt();
+            _currentWorldUI = null;
+        }
+
+        if (isInteractable)
+        {
+            isInteractable = false;
+            UpdateCrosshair();
+        }
     }
 
     private void DetectInteractable()

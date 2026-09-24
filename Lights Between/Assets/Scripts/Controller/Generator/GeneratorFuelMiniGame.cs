@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,17 @@ public class GeneratorFuelMiniGame : MonoBehaviour
     [SerializeField] private RectTransform fillZone;
     [SerializeField] private RectTransform movingMarker;
     [SerializeField] private Image fuelProgressImage;
+    [SerializeField] private Image buttonIconImage;
+
+    [Header("Feedback Settings")]
+    [SerializeField] private Color successColor = Color.green;
+    [SerializeField] private Color failureColor = Color.red;
+    [SerializeField] private float flashDuration = 0.2f;
+
+    [Header("Progress bar Colour")]
+    [SerializeField] private Color low = Color.red;
+    [SerializeField] private Color mid = Color.yellow;
+    [SerializeField] private Color high = Color.green;
 
     [Header("Marker Settings")]
     [SerializeField] private float markerSpeed = 450f;
@@ -30,13 +42,15 @@ public class GeneratorFuelMiniGame : MonoBehaviour
     private bool isMiniGameActive;
     private bool confirmWasPressed;
 
-    [Header("SFX")]
+    private Color originalIconColor = Color.white;
+    private Coroutine iconFlashCoroutine;
+    private Coroutine progressFlashCoroutine;
 
+    [Header("SFX")]
     public AudioSource audioSource;
     public AudioClip pourSFX;
 
     [SerializeField] private Animator animator;
-
 
     private void Start()
     {
@@ -44,6 +58,8 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         {
             miniGamePanel.SetActive(false);
         }
+
+        if (buttonIconImage != null) originalIconColor = buttonIconImage.color;
 
         UpdateFuelProgressUI();
     }
@@ -62,8 +78,7 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         isMiniGameActive = true;
         markerDirection = 1f;
         confirmWasPressed = false;
-
-        VolumeBlurController.Instance.SetMenuBlurState(true);
+        fuelProgress = 0f;
 
         if (input != null)
         {
@@ -85,6 +100,7 @@ public class GeneratorFuelMiniGame : MonoBehaviour
             movingMarker.anchoredPosition = Vector2.zero;
         }
 
+        ResetUIColors();
         UpdateFuelProgressUI();
     }
 
@@ -119,7 +135,6 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         {
             TryFuelClick();
             confirmWasPressed = true;
-            print("pressed");
         }
 
         if (!input.timedAction)
@@ -144,8 +159,9 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         if (IsMarkerInsideFillZone())
         {
             fuelProgress += progressGain;
+            TriggerIconFlash(successColor);
 
-            if (audioSource != null)
+            if (audioSource != null && pourSFX != null)
             {
                 audioSource.clip = pourSFX;
                 audioSource.Play();
@@ -154,6 +170,8 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         else
         {
             fuelProgress -= progressLoss;
+            TriggerIconFlash(failureColor);
+            TriggerProgressFlash(failureColor);
         }
 
         fuelProgress = Mathf.Clamp01(fuelProgress);
@@ -170,7 +188,6 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         if (movingMarker == null || fillZone == null) return false;
 
         float markerX = movingMarker.anchoredPosition.x;
-
         float fillZoneCenterX = fillZone.anchoredPosition.x;
         float fillZoneHalfWidth = fillZone.rect.width / 2f;
 
@@ -180,42 +197,71 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         return markerX >= fillZoneLeft && markerX <= fillZoneRight;
     }
 
+
+    private Color GetCurrentProgressColor()
+    {
+        if (fuelProgress < 0.5f)
+        {
+
+            return Color.Lerp(low, mid, fuelProgress * 2f);
+        }
+        else
+        {
+            return Color.Lerp(mid,high, (fuelProgress - 0.5f) * 2f);
+        }
+    }
+
     private void UpdateFuelProgressUI()
     {
         if (fuelProgressImage != null)
         {
             fuelProgressImage.fillAmount = fuelProgress;
+            if (progressFlashCoroutine == null)
+            {
+                fuelProgressImage.color = GetCurrentProgressColor();
+            }
         }
+    }
+
+    private void TriggerIconFlash(Color flashColor)
+    {
+        if (buttonIconImage == null) return;
+        if (iconFlashCoroutine != null) StopCoroutine(iconFlashCoroutine);
+        iconFlashCoroutine = StartCoroutine(FlashIconCoroutine(flashColor));
+    }
+
+    private void TriggerProgressFlash(Color flashColor)
+    {
+        if (fuelProgressImage == null) return;
+        if (progressFlashCoroutine != null) StopCoroutine(progressFlashCoroutine);
+        progressFlashCoroutine = StartCoroutine(FlashProgressCoroutine(flashColor));
+    }
+
+    private IEnumerator FlashIconCoroutine(Color flashColor)
+    {
+        buttonIconImage.color = flashColor;
+        yield return new WaitForSeconds(flashDuration);
+        buttonIconImage.color = originalIconColor;
+        iconFlashCoroutine = null;
+    }
+
+    private IEnumerator FlashProgressCoroutine(Color flashColor)
+    {
+        fuelProgressImage.color = flashColor;
+        yield return new WaitForSeconds(flashDuration);
+        fuelProgressImage.color = GetCurrentProgressColor(); // Restore to lerped color, not white
+        progressFlashCoroutine = null;
+    }
+
+    private void ResetUIColors()
+    {
+        if (buttonIconImage != null) buttonIconImage.color = originalIconColor;
+        if (fuelProgressImage != null) fuelProgressImage.color = GetCurrentProgressColor();
     }
 
     private void CompleteMiniGame()
     {
         isMiniGameActive = false;
-        VolumeBlurController.Instance.SetMenuBlurState(false);
-
-        if (miniGamePanel != null)
-        {
-            miniGamePanel.SetActive(false);
-        }
-
-        if (input != null)
-        {
-            input.timedAction = false;  
-            input.close = false;
-        }
-
-        if (playerController != null)
-        {
-            playerController.SetMiniGameMode(false);
-        }
-
-        OnFuelMiniGameCompleted?.Invoke();
-    }
-
-    public void CancelMiniGame()
-    {
-        isMiniGameActive = false;
-        VolumeBlurController.Instance.SetMenuBlurState(false);
 
         if (miniGamePanel != null)
         {
@@ -232,5 +278,31 @@ public class GeneratorFuelMiniGame : MonoBehaviour
         {
             playerController.SetMiniGameMode(false);
         }
+
+        ResetUIColors();
+        OnFuelMiniGameCompleted?.Invoke();
+    }
+
+    public void CancelMiniGame()
+    {
+        isMiniGameActive = false;
+
+        if (miniGamePanel != null)
+        {
+            miniGamePanel.SetActive(false);
+        }
+
+        if (input != null)
+        {
+            input.timedAction = false;
+            input.close = false;
+        }
+
+        if (playerController != null)
+        {
+            playerController.SetMiniGameMode(false);
+        }
+
+        ResetUIColors();
     }
 }

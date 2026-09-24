@@ -13,11 +13,7 @@ public class ObjectGrabbable : MonoBehaviour
 
     private Rigidbody objectRigidbody;
     private Transform objectGrabPointTransform;
-
     private RigidbodyConstraints originalConstraints;
-
-    private Vector3 defaultHoldPointPosition;
-    private Quaternion defaultHoldPointRotation;
 
     private int originalLayer;
     private Collider[] objectColliders;
@@ -47,18 +43,6 @@ public class ObjectGrabbable : MonoBehaviour
             AudioSource.PlayClipAtPoint(pickUpSFX, transform.position);
         }
 
-        if (this.objectGrabPointTransform != null)
-        {
-            defaultHoldPointPosition = this.objectGrabPointTransform.localPosition;
-            defaultHoldPointRotation = this.objectGrabPointTransform.localRotation;
-
-            if (useCustomGrabOffset)
-            {
-                this.objectGrabPointTransform.localPosition = grabPositionOffset;
-                this.objectGrabPointTransform.localRotation = Quaternion.Euler(grabRotationOffset);
-            }
-        }
-
         objectRigidbody.isKinematic = true;
         objectRigidbody.useGravity = false;
 
@@ -70,9 +54,20 @@ public class ObjectGrabbable : MonoBehaviour
             }
         }
 
+        // Parent the item to the player's anchor
         transform.SetParent(this.objectGrabPointTransform);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
+
+        // CLEAN ARCHITECTURE: Apply the offset to the item itself, NOT the player's anchor.
+        if (useCustomGrabOffset)
+        {
+            transform.localPosition = grabPositionOffset;
+            transform.localRotation = Quaternion.Euler(grabRotationOffset);
+        }
+        else
+        {
+            transform.localPosition = Vector3.zero;
+            transform.localRotation = Quaternion.identity;
+        }
 
         lastPosition = transform.position;
     }
@@ -80,15 +75,7 @@ public class ObjectGrabbable : MonoBehaviour
     public void SnapToTarget(Transform snapTransform, bool destroyOnSnap = false)
     {
         transform.SetParent(null);
-
         SetLayerRecursively(gameObject, originalLayer);
-
-        if (objectGrabPointTransform != null)
-        {
-            objectGrabPointTransform.localPosition = defaultHoldPointPosition;
-            objectGrabPointTransform.localRotation = defaultHoldPointRotation;
-        }
-
         objectGrabPointTransform = null;
 
         if (destroyOnSnap)
@@ -115,15 +102,7 @@ public class ObjectGrabbable : MonoBehaviour
     public void Drop()
     {
         transform.SetParent(null);
-
         SetLayerRecursively(gameObject, originalLayer);
-
-        if (objectGrabPointTransform != null)
-        {
-            objectGrabPointTransform.localPosition = defaultHoldPointPosition;
-            objectGrabPointTransform.localRotation = defaultHoldPointRotation;
-        }
-
         objectGrabPointTransform = null;
 
         foreach (Collider col in objectColliders)
