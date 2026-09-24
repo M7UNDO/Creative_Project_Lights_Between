@@ -131,11 +131,6 @@ public class PauseManager : MonoBehaviour
             VolumeBlurController.Instance.SetMenuBlurState(true);
         }
 
-        if (playerInteraction != null)
-        {
-            playerInteraction.EvaluateHUDState();
-        }
-
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
 
@@ -156,11 +151,6 @@ public class PauseManager : MonoBehaviour
         if (VolumeBlurController.Instance != null)
         {
             VolumeBlurController.Instance.SetMenuBlurState(false);
-        }
-
-        if (playerInteraction != null)
-        {
-            playerInteraction.EvaluateHUDState();
         }
 
         Cursor.visible = false;
