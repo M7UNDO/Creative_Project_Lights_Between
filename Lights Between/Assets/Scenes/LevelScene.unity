@@ -17639,9 +17639,7 @@ MonoBehaviour:
   bedPoseAnchor: {fileID: 852308230}
   targetGenerator: {fileID: 8378328527651922333}
   postProcessingVolume: {fileID: 624271394}
-  objectsToDeactivate:
-  - {fileID: 103322062}
-  - {fileID: 897441154}
+  objectsToDeactivate: []
   sleepDelay: 1.5
   eyelidCloseDuration: 3
   blackoutDuration: 2
@@ -29604,8 +29602,8 @@ MonoBehaviour:
   onTriggered:
     m_PersistentCalls:
       m_Calls: []
-  delaySpeech: 1
-  delayTime: 3
+  delaySpeech: 0
+  delayTime: 0
 --- !u!65 &1491227750
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -31803,7 +31801,7 @@ MonoBehaviour:
   priority: 1
   blendDistance: 0
   weight: 0
-  sharedProfile: {fileID: 11400000, guid: 17ea4030a4a871a438eaaf1ff3577282, type: 2}
+  sharedProfile: {fileID: 11400000, guid: a7f798bf6ce38594e901a2eb360b1045, type: 2}
 --- !u!1 &1631075479
 GameObject:
   m_ObjectHideFlags: 0
@@ -32688,19 +32686,7 @@ MonoBehaviour:
   snapSFX: {fileID: 0}
   onSnapComplete:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1898158056}
-        m_TargetAssemblyTypeName: ToBeContinuedSequence, Assembly-CSharp
-        m_MethodName: StartSequence
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   invalidItemID: UncookedPizza
   invalidItemDialogue: {fileID: 0}
   postSnapDialogue: {fileID: 11400000, guid: 86b942efaebf5b54d9bfbbe73ac55589, type: 2}
@@ -67246,7 +67232,7 @@ MonoBehaviour:
   HeldObjectTopClamp: 30
   HeldObjectBottomClamp: -30
   dialogueHorizontalClamp: 45
-  seatedHorizontalClamp: 45
+  seatedHorizontalClamp: 60
   playingFootsteps: 0
   walkFootstepSpeed: 0.5
   sprintFootstepSpeed: 0.3
@@ -86533,7 +86519,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DialogueManager
   playerController: {fileID: 4958918896838999208}
   advanceDialogueAction: {fileID: 6880856943361457348, guid: b28cb1f9c25d5ed4c8f044a0ec6e47a1, type: 3}
-  dialoguePanel: {fileID: 388112533}
+  dialoguePanel: {fileID: 0}
   dialogueCanvasGroup: {fileID: 1638081355}
   dialogueText: {fileID: 1854847612}
   ellipsisText: {fileID: 1854847611}
