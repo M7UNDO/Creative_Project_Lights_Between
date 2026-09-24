@@ -3,6 +3,7 @@ using UnityEngine;
 public class KeyPickUp : MonoBehaviour, IInteractable
 {
     public string KeyID = "Garage Key";
+    public ObjectiveSO objectiveSO;
 
     [Header("SFX")]
 
@@ -23,6 +24,14 @@ public class KeyPickUp : MonoBehaviour, IInteractable
             if (pickUpSFX != null)
             {
                 AudioSource.PlayClipAtPoint(pickUpSFX, transform.position);
+            }
+
+            if (objectiveSO != null)
+            {
+                if(ObjectiveManager.Instance != null)
+                {
+                    ObjectiveManager.Instance.CompleteObjective(objectiveSO.ID);
+                }
             }
 
             Destroy(gameObject);
