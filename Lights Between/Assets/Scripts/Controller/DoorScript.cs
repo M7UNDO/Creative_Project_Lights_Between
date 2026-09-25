@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(AudioSource))]
@@ -35,7 +34,6 @@ public class DoorScript : MonoBehaviour, IInteractable
     private Coroutine rotationCoroutine;
     private Coroutine shakeCoroutine;
     private Coroutine handleCoroutine;
-    private NavMeshObstacle navObstacle;
 
     private HoldInteraction holdInteraction;
     private IKeyInventory currentInventoryHolding;
@@ -46,12 +44,6 @@ public class DoorScript : MonoBehaviour, IInteractable
     private void Start()
     {
         asource = GetComponent<AudioSource>();
-        navObstacle = GetComponent<NavMeshObstacle>();
-
-        if (navObstacle == null)
-        {
-            navObstacle = GetComponentInChildren<NavMeshObstacle>();
-        }
 
         if (doorMeshTransform == null)
         {
@@ -65,15 +57,6 @@ public class DoorScript : MonoBehaviour, IInteractable
         }
 
         UpdatePromptMessage(null);
-        UpdateNavObstacleState();
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!open && other.CompareTag("Creature"))
-        {
-            ForceOpen();
-        }
     }
 
     public bool CanInteract(IKeyInventory playerInventory = null)
@@ -258,8 +241,6 @@ public class DoorScript : MonoBehaviour, IInteractable
         open = true;
         UpdatePromptMessage(null);
 
-        UpdateNavObstacleState();
-
         if (asource != null && openDoor != null)
         {
             asource.clip = openDoor;
@@ -293,28 +274,11 @@ public class DoorScript : MonoBehaviour, IInteractable
     public void OpenDoor()
     {
         open = !open;
-        UpdateNavObstacleState();
 
         if (asource != null)
         {
             asource.clip = open ? openDoor : closeDoor;
             asource.Play();
-        }
-    }
-
-    private void UpdateNavObstacleState()
-    {
-        if (navObstacle == null) return;
-
-        if (open)
-        {
-            navObstacle.carving = false;
-            navObstacle.enabled = false;
-        }
-        else
-        {
-            navObstacle.enabled = true;
-            navObstacle.carving = true;
         }
     }
 }

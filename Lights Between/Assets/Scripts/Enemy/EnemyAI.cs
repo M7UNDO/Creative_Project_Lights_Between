@@ -48,17 +48,18 @@ public class EnemyAI : MonoBehaviour
     public float lookAroundAngle = 60f;
     public float lookSpeed = 3f;
 
-    /*[Header("UI")]
-    public GameObject uiPrefab;
-    public Transform uiParent;*/
-
     public AudioSource alertSFX;
+
+    [Header("Door Interaction")]
+    [SerializeField] private LayerMask doorLayer;
+    [SerializeField] private float doorInteractionDistance = 2f;
+    [SerializeField] private float doorCheckHeightOffset = 1f;
+    [SerializeField] private float doorSphereCastRadius = 0.5f;
 
     [Header("Ground Detection")]
     [SerializeField] private LayerMask groundLayers;
     [SerializeField] private float groundRayDistance = 1.5f;
     [SerializeField] private float groundCheckHeightOffset = 0.5f;
-
 
     [Header("Wood Footsteps")]
     [SerializeField] private AudioClip[] woodWalkFootstepClips;
@@ -79,7 +80,6 @@ public class EnemyAI : MonoBehaviour
     [Header("Default Footsteps")]
     [SerializeField] private AudioClip[] defaultWalkFootstepClips;
     [SerializeField] private AudioClip[] defaultRunFootstepClips;
-
 
     [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
@@ -149,19 +149,17 @@ public class EnemyAI : MonoBehaviour
 
             if (detected != null)
             {
-                // Player is visible
                 currentTarget = detected;
                 lastKnownPlayerPosition = currentTarget.position;
-                loseSightTimer = loseSightDelay; // Reset memory timer
+                loseSightTimer = loseSightDelay;
             }
             else
             {
-                // Player not visible
                 loseSightTimer -= Time.deltaTime;
 
                 if (loseSightTimer <= 0)
                 {
-                    currentTarget = null; // Forget player only after delay
+                    currentTarget = null;
                 }
             }
         }
@@ -184,7 +182,6 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-
         if (!isCatching)
         {
             if (distanceToPlayer <= catchRange && currentState == State.Chase)
@@ -197,7 +194,6 @@ public class EnemyAI : MonoBehaviour
             }
             else
             {
-
                 State newState;
 
                 if (suspicion >= suspicionThreshold)
@@ -237,7 +233,6 @@ public class EnemyAI : MonoBehaviour
                 break;
         }
 
-
         if (currentState == State.Chase)
         {
             targetSpeedPercent = 1f;
@@ -252,36 +247,48 @@ public class EnemyAI : MonoBehaviour
         }
 
         UpdateAnimation(targetSpeedPercent);
+        CheckForDoors();
 
         if (!isCatching && !isAlerting)
             RotateTowardsMovementDirection();
     }
 
+    private void CheckForDoors()
+    {
+        if (agent.velocity.sqrMagnitude < 0.1f) return;
+
+        Vector3 origin = transform.position + Vector3.up * doorCheckHeightOffset;
+        Vector3 direction = agent.velocity.normalized;
+
+        if (Physics.SphereCast(origin, doorSphereCastRadius, direction, out RaycastHit hit, doorInteractionDistance, doorLayer))
+        {
+            DoorScript door = hit.collider.GetComponentInParent<DoorScript>();
+            if (door != null && !door.open)
+            {
+                door.ForceOpen();
+            }
+        }
+    }
+
     void UpdateAnimation(float targetSpeed)
     {
-
         currentSpeedPercent = Mathf.MoveTowards(currentSpeedPercent, targetSpeed,
             acceleration * Time.deltaTime);
 
-
         animator.SetFloat("Speed", currentSpeedPercent);
-
 
         if (currentState == State.Chase)
         {
-
             animator.speed = runAnimationSpeed;
             agent.speed = runSpeed;
         }
         else if (agent.velocity.magnitude > 0.1f)
         {
-
             animator.speed = walkAnimationSpeed;
             agent.speed = walkSpeed;
         }
         else
         {
-
             animator.speed = 1f;
         }
     }
@@ -298,32 +305,21 @@ public class EnemyAI : MonoBehaviour
     {
         if (currentState == newState) return;
 
-
-        Debug.Log($"Changing state from {currentState} to {newState}");
-
         isIdle = false;
         currentState = newState;
-
 
         switch (newState)
         {
             case State.Chase:
                 agent.isStopped = false;
-
                 break;
-
             case State.Patrol:
             case State.Suspicious:
             case State.Returning:
-
                 agent.isStopped = false;
-
                 break;
-
             case State.Catch:
-
                 agent.isStopped = true;
-
                 break;
         }
     }
@@ -333,7 +329,6 @@ public class EnemyAI : MonoBehaviour
         isAlerting = true;
         hasAlerted = true;
 
-
         agent.isStopped = true;
         agent.ResetPath();
         agent.velocity = Vector3.zero;
@@ -341,14 +336,12 @@ public class EnemyAI : MonoBehaviour
         UpdateAnimation(0f);
         UpdateHeadAim(1f);
 
-
         animator.SetTrigger("Alert");
 
         if (alertSFX != null)
             alertSFX.Play();
 
         yield return new WaitForSeconds(alertDuration);
-
 
         agent.isStopped = false;
         ChangeState(State.Chase);
@@ -381,12 +374,10 @@ public class EnemyAI : MonoBehaviour
     {
         if (currentTarget != null)
         {
-
             suspicion += suspicionIncreaseRate * Time.deltaTime;
         }
         else
         {
-
             suspicion -= suspicionDecreaseRate * Time.deltaTime;
         }
 
@@ -515,15 +506,7 @@ public class EnemyAI : MonoBehaviour
             follow.AvoidObstacles.Enabled = false;
         }
 
-        //DisableMovement
-        //ThirdPersonController.SetMovement(false);
-
         animator.SetTrigger("Attack");
-
-        /*if (musicManager != null && musicManager.missionFailedSFX != null)
-        {
-            musicManager.PlayCaughtBackgroundMusic();
-        }*/
 
         StartCoroutine(RestartGame());
     }
@@ -531,11 +514,6 @@ public class EnemyAI : MonoBehaviour
     IEnumerator RestartGame()
     {
         yield return new WaitForSeconds(restartDelay);
-
-        /*if (gameOverUI != null)
-        {
-            gameOverUI.ShowGameOver();
-        }*/
     }
 
     void StartIdle()
@@ -586,9 +564,7 @@ public class EnemyAI : MonoBehaviour
             {
                 return isRunning ? concreteRunFootstepClips : concreteWalkFootstepClips;
             }
-
         }
-
 
         return isRunning ? defaultRunFootstepClips : defaultWalkFootstepClips;
     }
