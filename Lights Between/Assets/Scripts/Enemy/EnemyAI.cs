@@ -48,6 +48,9 @@ public class EnemyAI : MonoBehaviour
     public float lookAroundAngle = 60f;
     public float lookSpeed = 3f;
 
+    [Header("Retreat Settings")]
+    [SerializeField] private float retreatRecoupTime = 4f;
+
     public AudioSource alertSFX;
 
     [Header("Door Interaction")]
@@ -101,8 +104,11 @@ public class EnemyAI : MonoBehaviour
     private float currentSpeedPercent;
     private float targetSpeedPercent;
 
-    private enum State { Patrol, Suspicious, Chase, Catch, Returning }
+    private enum State { Patrol, Suspicious, Chase, Catch, Returning, Retreat }
     private State currentState;
+
+    private bool isRetreating;
+    private Camera mainCamera;
 
     public BackgroundMusicManager musicManager;
     public MultiAimConstraint headAim;
@@ -111,6 +117,7 @@ public class EnemyAI : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        mainCamera = Camera.main;
 
         agent.acceleration = 8f;
         agent.angularSpeed = 360f;
@@ -143,7 +150,7 @@ public class EnemyAI : MonoBehaviour
         if (gameOver)
             return;
 
-        if (currentState != State.Returning && currentState != State.Catch)
+        if (currentState != State.Returning && currentState != State.Catch && currentState != State.Retreat)
         {
             Transform detected = DetectPlayer();
 
@@ -162,6 +169,10 @@ public class EnemyAI : MonoBehaviour
                     currentTarget = null;
                 }
             }
+        }
+        else if (currentState == State.Retreat)
+        {
+            currentTarget = null;
         }
         else
         {
@@ -182,7 +193,7 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        if (!isCatching)
+        if (!isCatching && currentState != State.Retreat)
         {
             if (distanceToPlayer <= catchRange && currentState == State.Chase)
             {
@@ -231,9 +242,11 @@ public class EnemyAI : MonoBehaviour
             case State.Returning:
                 ReturnToPatrol();
                 break;
+            case State.Retreat:
+                break;
         }
 
-        if (currentState == State.Chase)
+        if (currentState == State.Chase || currentState == State.Retreat)
         {
             targetSpeedPercent = 1f;
         }
@@ -251,6 +264,93 @@ public class EnemyAI : MonoBehaviour
 
         if (!isCatching && !isAlerting)
             RotateTowardsMovementDirection();
+    }
+
+    public void TriggerRetreat()
+    {
+        if (currentState == State.Catch || isRetreating) return;
+        StartCoroutine(RetreatRoutine());
+    }
+
+    private IEnumerator RetreatRoutine()
+    {
+        isRetreating = true;
+        ChangeState(State.Retreat);
+
+        suspicion = 0f;
+        hasAlerted = false;
+        UpdateHeadAim(0f);
+
+        Transform bestWaypoint = GetFurthestHiddenWaypoint();
+        if (bestWaypoint != null)
+        {
+            agent.SetDestination(bestWaypoint.position);
+        }
+
+        while (agent.pathPending || agent.remainingDistance > 0.5f)
+        {
+            yield return null;
+        }
+
+        UpdateAnimation(0f);
+        yield return new WaitForSeconds(retreatRecoupTime);
+
+        isRetreating = false;
+        ChangeState(State.Patrol);
+        GoToNextWaypoint();
+    }
+
+    private Transform GetFurthestHiddenWaypoint()
+    {
+        if (waypoints == null || waypoints.Length == 0) return null;
+
+        Transform bestPoint = null;
+        float maxDistance = -1f;
+
+        if (mainCamera == null) mainCamera = Camera.main;
+
+        foreach (Transform wp in waypoints)
+        {
+            float dist = Vector3.Distance(transform.position, wp.position);
+
+            bool isVisibleToPlayer = false;
+            if (mainCamera != null)
+            {
+                Vector3 screenPoint = mainCamera.WorldToViewportPoint(wp.position);
+                bool inFrustum = screenPoint.z > 0 && screenPoint.x >= 0 && screenPoint.x <= 1 && screenPoint.y >= 0 && screenPoint.y <= 1;
+
+                if (inFrustum)
+                {
+                    Vector3 dir = (wp.position - mainCamera.transform.position).normalized;
+                    float checkDist = Vector3.Distance(mainCamera.transform.position, wp.position);
+                    if (!Physics.Raycast(mainCamera.transform.position, dir, checkDist, groundLayers))
+                    {
+                        isVisibleToPlayer = true;
+                    }
+                }
+            }
+
+            if (!isVisibleToPlayer && dist > maxDistance)
+            {
+                maxDistance = dist;
+                bestPoint = wp;
+            }
+        }
+
+        if (bestPoint == null)
+        {
+            foreach (Transform wp in waypoints)
+            {
+                float dist = Vector3.Distance(transform.position, wp.position);
+                if (dist > maxDistance)
+                {
+                    maxDistance = dist;
+                    bestPoint = wp;
+                }
+            }
+        }
+
+        return bestPoint;
     }
 
     private void CheckForDoors()
@@ -277,7 +377,7 @@ public class EnemyAI : MonoBehaviour
 
         animator.SetFloat("Speed", currentSpeedPercent);
 
-        if (currentState == State.Chase)
+        if (currentState == State.Chase || currentState == State.Retreat)
         {
             animator.speed = runAnimationSpeed;
             agent.speed = runSpeed;
@@ -311,6 +411,7 @@ public class EnemyAI : MonoBehaviour
         switch (newState)
         {
             case State.Chase:
+            case State.Retreat:
                 agent.isStopped = false;
                 break;
             case State.Patrol:
@@ -579,7 +680,7 @@ public class EnemyAI : MonoBehaviour
 
     private void PlayFootstep()
     {
-        bool isRunning = currentState == State.Chase;
+        bool isRunning = currentState == State.Chase || currentState == State.Retreat;
         AudioClip[] clips = GetFootstepClips(isRunning);
 
         if (clips != null && clips.Length > 0)

@@ -208,6 +208,7 @@ MonoBehaviour:
   TorchLight: {fileID: 6992420127462764394}
   torchClickSFX: {fileID: 5937618049106195511}
   fpsController: {fileID: 0}
+  holdInteraction: {fileID: 0}
   lightCookie: {fileID: 2800000, guid: adfa0ebfcb79c7042be5b04397144b3e, type: 3}
   glassRenderer: {fileID: 3583905205337786264}
   batteryChangeSFX: {fileID: 0}
@@ -219,7 +220,7 @@ MonoBehaviour:
   walkBobSpeed: 10
   walkBobAmountX: 0.025
   walkBobAmountY: 0.025
-  drainRate: 0.33
+  drainRate: 0.5
   flickerThresholdPercent: 0.1
   baseLightIntensity: 1.5
   flickerSpeed: 8
@@ -240,6 +241,7 @@ MonoBehaviour:
 
     Release
     <sprite name="L1"> to equip item'
+  requiresBatteryChange: 0
   torchLightZone: {fileID: 2197618662182222458}
 --- !u!82 &5937618049106195511
 AudioSource:

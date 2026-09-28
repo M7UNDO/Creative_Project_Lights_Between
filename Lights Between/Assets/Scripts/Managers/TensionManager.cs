@@ -3,6 +3,17 @@ using UnityEngine.UI;
 
 public class TensionManager : MonoBehaviour
 {
+    [Header("References")]
+    [SerializeField] private GameObject shadowProwler;
+
+    public void ActivateCreature()
+    {
+        if(shadowProwler != null)
+        {
+            shadowProwler.SetActive(true);
+        }
+        
+    }
     /*[Header("References")]
     [SerializeField] private PlayerLightStatus playerLightStatus;
     [SerializeField] private CreatureAI creatureAI;

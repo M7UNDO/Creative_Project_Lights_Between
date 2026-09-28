@@ -9,6 +9,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     [SerializeField] private GameObject TorchLight;
     [SerializeField] private AudioSource torchClickSFX;
     [SerializeField] private FPSController fpsController;
+    [SerializeField] private HoldInteraction holdInteraction;
 
     [Header("Visuals")]
     [SerializeField] private Texture lightCookie;
@@ -16,6 +17,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     [Header("Audio")]
     [SerializeField] private AudioSource batteryChangeSFX;
+    [SerializeField] private AudioSource batteryEmptySFX;
 
     [Header("Lag & Tracking")]
     [SerializeField] private float positionLagSpeed = 12f;
@@ -64,7 +66,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     private float currentBatteryPower;
     private float singleBatteryMaxPower;
 
-    private bool requiresBatteryChange;
+    public bool requiresBatteryChange;
 
     private Transform flashlightAnchor;
     private Light torchLight;
@@ -93,6 +95,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     private InputDeviceType currentDevice = InputDeviceType.KeyboardMouse;
     private bool isShowingTogglePrompt;
     private bool isShowingWheelPrompt;
+    private bool wasAttemptingBatteryChange;
 
     public float CurrentPower => (batteryCount > 0 ? currentBatteryPower : 0f) + (Mathf.Max(0, batteryCount - 1) * singleBatteryMaxPower);
     public float MaxPower => maxPower;
@@ -114,6 +117,21 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         {
             promptTextUI = flashlightUI.TutorialPromptText;
             promptCanvasGroup = flashlightUI.TutorialPromptCanvasGroup;
+
+            if (holdInteraction != flashlightUI.HoldInteraction)
+            {
+                if (holdInteraction != null)
+                {
+                    holdInteraction.onHoldCompleted.RemoveListener(OnHoldBatteryChangeComplete);
+                }
+
+                holdInteraction = flashlightUI.HoldInteraction;
+
+                if (holdInteraction != null)
+                {
+                    holdInteraction.onHoldCompleted.AddListener(OnHoldBatteryChangeComplete);
+                }
+            }
         }
     }
 
@@ -336,7 +354,13 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     {
         if (flashlightUI != null)
         {
+            float powerPercent = singleBatteryMaxPower > 0f ? (currentBatteryPower / singleBatteryMaxPower) : 0f;
+            bool isLowPower = powerPercent <= flickerThresholdPercent;
+            bool hasSpareBattery = batteryCount > 1;
+            bool shouldShowPrompt = isEquipped && (requiresBatteryChange || isLowPower);
+
             flashlightUI.UpdateBatteryUI(batteryCount, currentBatteryPower <= 0f);
+            flashlightUI.SetBatteryPromptState(shouldShowPrompt, hasSpareBattery);
         }
     }
 
@@ -386,7 +410,22 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     public void Toggle()
     {
         if (!isEquipped) return;
-        if (currentBatteryPower <= 0f && requiresBatteryChange) return;
+
+        if (currentBatteryPower <= 0f && requiresBatteryChange)
+        {
+            if (batteryEmptySFX != null)
+            {
+                batteryEmptySFX.Play();
+            }
+
+            if (flashlightUI != null)
+            {
+                flashlightUI.TriggerEmptyFlash();
+            }
+
+            return;
+        }
+
         if (torchLight == null) return;
 
         isOn = !isOn;
@@ -404,6 +443,16 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         {
             TurnOffLightState();
         }
+    }
+
+    private void OnHoldBatteryChangeComplete()
+    {
+        if (inputHandler != null)
+        {
+            inputHandler.changeBattery = false;
+        }
+
+        ChangeBattery();
     }
 
     private void TurnOnLightState()
@@ -432,11 +481,6 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         {
             torchLightZone.SetActive(active);
         }
-
-        /*if (livePlayerLightZone != null)
-        {
-            livePlayerLightZone.SetActive(active);
-        }*/
     }
 
     private void CheckFlickerState()
@@ -536,16 +580,46 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     {
         if (!isEquipped) return;
 
-        if (inputHandler != null && inputHandler.changeBattery)
+        if (holdInteraction != null && inputHandler != null)
         {
-            inputHandler.changeBattery = false;
-            ChangeBattery();
+            bool hasSpareBattery = batteryCount > 1;
+
+            if (inputHandler.changeBattery)
+            {
+                if (hasSpareBattery)
+                {
+                    holdInteraction.BeginHold();
+                }
+                else if (!wasAttemptingBatteryChange)
+                {
+                    if (batteryEmptySFX != null)
+                    {
+                        batteryEmptySFX.Play();
+                    }
+
+                    if (flashlightUI != null)
+                    {
+                        flashlightUI.TriggerEmptyFlash();
+                    }
+                }
+                wasAttemptingBatteryChange = true;
+            }
+            else
+            {
+                if (holdInteraction.IsHolding)
+                {
+                    holdInteraction.CancelHold();
+                }
+                wasAttemptingBatteryChange = false;
+            }
         }
 
         if (!isOn || requiresBatteryChange) return;
 
         currentBatteryPower -= drainRate * Time.deltaTime;
         currentBatteryPower = Mathf.Clamp(currentBatteryPower, 0f, singleBatteryMaxPower);
+
+        UpdateBatteryUI();
 
         if (flickerCoroutine == null)
         {
@@ -647,6 +721,10 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     private void OnDestroy()
     {
+        if (holdInteraction != null)
+        {
+            holdInteraction.onHoldCompleted.RemoveListener(OnHoldBatteryChangeComplete);
+        }
         UnsubscribeDeviceDetector();
     }
 
