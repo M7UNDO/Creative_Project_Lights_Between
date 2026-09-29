@@ -33,7 +33,6 @@ public class FlashlightUIScript : MonoBehaviour
     private void Awake()
     {
         SetUIVisibility(false);
-        SetBatteryPromptState(false, false);
 
         if (tutorialPromptCanvasGroup != null)
         {
@@ -44,6 +43,11 @@ public class FlashlightUIScript : MonoBehaviour
         {
             tutorialPromptText.text = "";
         }
+    }
+
+    private void Start()
+    {
+        SetBatteryPromptState(false, false);
     }
 
     public void SetUIVisibility(bool visible)

@@ -44,9 +44,11 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     [Range(0f, 1f)]
     [SerializeField] private float dropToBlackChance = 0.35f;
 
-    [Header("Prompt Timings")]
+    [Header("Prompt Timings & Anti-Spam")]
     [SerializeField] private float promptDuration = 4f;
     [SerializeField] private float fadeDuration = 0.5f;
+    [SerializeField] private float toggleCooldown = 0.25f;
+    [SerializeField] private float emptyPromptCooldown = 0.8f;
 
     [Header("Toggle On/Off Prompts")]
     [TextArea][SerializeField] private string keyboardTogglePrompt = "[F] to toggle On/Off";
@@ -96,6 +98,10 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     private bool isShowingTogglePrompt;
     private bool isShowingWheelPrompt;
     private bool wasAttemptingBatteryChange;
+    private bool wasLowPowerState;
+
+    private float lastToggleTime = -999f;
+    private float lastEmptyPromptTime = -999f;
 
     public float CurrentPower => (batteryCount > 0 ? currentBatteryPower : 0f) + (Mathf.Max(0, batteryCount - 1) * singleBatteryMaxPower);
     public float MaxPower => maxPower;
@@ -144,6 +150,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         currentBatteryPower = singleBatteryMaxPower;
         batteryCount = 1;
         requiresBatteryChange = false;
+        wasLowPowerState = false;
 
         isEquipped = true;
         isOn = true;
@@ -357,7 +364,25 @@ public class FlashlightScript : MonoBehaviour, IToolPower
             float powerPercent = singleBatteryMaxPower > 0f ? (currentBatteryPower / singleBatteryMaxPower) : 0f;
             bool isLowPower = powerPercent <= flickerThresholdPercent;
             bool hasSpareBattery = batteryCount > 1;
-            bool shouldShowPrompt = isEquipped && (requiresBatteryChange || isLowPower);
+            bool isLowOrDepleted = requiresBatteryChange || isLowPower;
+            bool shouldShowPrompt = isEquipped && isLowOrDepleted;
+
+            if (shouldShowPrompt && !wasLowPowerState)
+            {
+                if (!hasSpareBattery && Time.time >= lastEmptyPromptTime + emptyPromptCooldown)
+                {
+                    lastEmptyPromptTime = Time.time;
+
+                    if (batteryEmptySFX != null)
+                    {
+                        batteryEmptySFX.Play();
+                    }
+
+                    flashlightUI.TriggerEmptyFlash();
+                }
+            }
+
+            wasLowPowerState = shouldShowPrompt;
 
             flashlightUI.UpdateBatteryUI(batteryCount, currentBatteryPower <= 0f);
             flashlightUI.SetBatteryPromptState(shouldShowPrompt, hasSpareBattery);
@@ -392,6 +417,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         {
             currentBatteryPower = singleBatteryMaxPower;
             requiresBatteryChange = false;
+            wasLowPowerState = false;
 
             if (batteryChangeSFX != null)
             {
@@ -410,17 +436,25 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     public void Toggle()
     {
         if (!isEquipped) return;
+        if (Time.time < lastToggleTime + toggleCooldown) return;
+
+        lastToggleTime = Time.time;
 
         if (currentBatteryPower <= 0f && requiresBatteryChange)
         {
-            if (batteryEmptySFX != null)
+            if (Time.time >= lastEmptyPromptTime + emptyPromptCooldown)
             {
-                batteryEmptySFX.Play();
-            }
+                lastEmptyPromptTime = Time.time;
 
-            if (flashlightUI != null)
-            {
-                flashlightUI.TriggerEmptyFlash();
+                if (batteryEmptySFX != null)
+                {
+                    batteryEmptySFX.Play();
+                }
+
+                if (flashlightUI != null)
+                {
+                    flashlightUI.TriggerEmptyFlash();
+                }
             }
 
             return;
@@ -583,6 +617,9 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         if (holdInteraction != null && inputHandler != null)
         {
             bool hasSpareBattery = batteryCount > 1;
+            float powerPercent = singleBatteryMaxPower > 0f ? (currentBatteryPower / singleBatteryMaxPower) : 0f;
+            bool isLowPower = powerPercent <= flickerThresholdPercent;
+            bool needsBattery = requiresBatteryChange || isLowPower;
 
             if (inputHandler.changeBattery)
             {
@@ -592,14 +629,19 @@ public class FlashlightScript : MonoBehaviour, IToolPower
                 }
                 else if (!wasAttemptingBatteryChange)
                 {
-                    if (batteryEmptySFX != null)
+                    if (needsBattery && Time.time >= lastEmptyPromptTime + emptyPromptCooldown)
                     {
-                        batteryEmptySFX.Play();
-                    }
+                        lastEmptyPromptTime = Time.time;
 
-                    if (flashlightUI != null)
-                    {
-                        flashlightUI.TriggerEmptyFlash();
+                        if (batteryEmptySFX != null)
+                        {
+                            batteryEmptySFX.Play();
+                        }
+
+                        if (flashlightUI != null)
+                        {
+                            flashlightUI.TriggerEmptyFlash();
+                        }
                     }
                 }
                 wasAttemptingBatteryChange = true;

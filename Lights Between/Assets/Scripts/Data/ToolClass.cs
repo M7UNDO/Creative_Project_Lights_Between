@@ -4,6 +4,7 @@ public enum ToolType
 {
     Flashlight,
     ParaffinLamp,
+    Lighter,
     GeneratorFuel,
     Keys,
     None
