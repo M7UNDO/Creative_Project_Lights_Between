@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInteraction))]
@@ -346,6 +347,63 @@ public class FPSController : MonoBehaviour
         }
     }
 
+    public IEnumerator SmoothLookAt(Vector3 targetPosition, float duration)
+    {
+        Vector3 direction = targetPosition - transform.position;
+
+        if (direction.sqrMagnitude <= 0.01f)
+            yield break;
+
+        float targetYaw = Quaternion.LookRotation(new Vector3(direction.x, 0f, direction.z)).eulerAngles.y;
+        Quaternion targetPlayerRotation = Quaternion.Euler(0f, targetYaw, 0f);
+
+        Vector3 cameraDirection = targetPosition - _mainCamera.transform.position;
+        Quaternion targetCameraRotation = Quaternion.LookRotation(cameraDirection);
+
+        float targetPitch = targetCameraRotation.eulerAngles.x;
+
+        if (targetPitch > 180f)
+            targetPitch -= 360f;
+
+        targetPitch = Mathf.Clamp(targetPitch, BottomClamp, TopClamp);
+
+        float startYaw = transform.eulerAngles.y;
+        float startPitch = _cinemachineTargetPitch;
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = Mathf.Clamp01(elapsed / duration);
+            t = Mathf.SmoothStep(0f, 1f, t);
+
+            float yaw = Mathf.LerpAngle(startYaw, targetYaw, t);
+            float pitch = Mathf.Lerp(startPitch, targetPitch, t);
+
+            transform.rotation = Quaternion.Euler(0f, yaw, 0f);
+            _cinemachineTargetPitch = pitch;
+
+            if (CinemachineCameraTarget != null)
+            {
+                CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(pitch, 0f, 0f);
+            }
+
+            yield return null;
+        }
+
+        transform.rotation = targetPlayerRotation;
+        _cinemachineTargetPitch = targetPitch;
+
+        if (CinemachineCameraTarget != null)
+        {
+            CinemachineCameraTarget.transform.localRotation = Quaternion.Euler(targetPitch, 0f, 0f);
+        }
+
+        CacheAnchorYaw();
+    }
+
     private void Move()
     {
         float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
@@ -446,9 +504,9 @@ public class FPSController : MonoBehaviour
         }
     }
 
-    public void SetJumpScareMode(bool inspecting)
+    public void SetJumpScareMode(bool active)
     {
-        isJumpscareActive = inspecting;
+        isJumpscareActive = active;
 
         if (_interaction != null) _interaction.ClearInteractionState();
 
@@ -459,11 +517,11 @@ public class FPSController : MonoBehaviour
             _input.sprint = false;
             _input.ClearLookInput();
 
-            _input.cursorInputForLook = !inspecting;
-            _input.blockLookInput = inspecting;
+            _input.cursorInputForLook = !active;
+            _input.blockLookInput = active;
         }
 
-        if (inspecting && _footsteps != null)
+        if (active && _footsteps != null)
         {
             _footsteps.StopFootsteps();
         }

@@ -28,6 +28,7 @@ public class StalkerJumpscareTrigger : MonoBehaviour
 
     [Header("Camera Focus Target")]
     [SerializeField] private Transform creatureLookTarget;
+    [SerializeField] private float cameraTransitionDuration = 0.3f;
 
     [Header("Audio SFX")]
     [SerializeField] private AudioSource audioSource;
@@ -35,12 +36,11 @@ public class StalkerJumpscareTrigger : MonoBehaviour
     [SerializeField] private AudioSource heartbeatAudioSource;
 
     [Header("Visual Effects")]
-   // [SerializeField] private PlayerFearFeedback playerFeedbackController;
+    [SerializeField] private PlayerFearFeedback playerFeedbackController;
     [SerializeField] private float maxAberrationIntensity = 0.85f;
     [SerializeField] private float aberrationPulseSpeed = 3.0f;
 
     [Header("Narrative Reaction")]
-    //[SerializeField] private DialogueSO policeCallReactionDialogue;
     [SerializeField] private WallTelephoneTrigger wallPhone;
 
     private BoxCollider triggerCollider;
@@ -136,6 +136,11 @@ public class StalkerJumpscareTrigger : MonoBehaviour
 
     private IEnumerator ExecuteStalkerSequence(FPSController fpsController)
     {
+        if (fpsController != null)
+        {
+            fpsController.SetJumpScareMode(true);
+        }
+
         if (creatureActor != null && creatureSpawnPoint != null)
         {
             creatureActor.SetActive(false);
@@ -149,16 +154,29 @@ public class StalkerJumpscareTrigger : MonoBehaviour
             }
         }
 
+        Vector3 lookPosition = creatureLookTarget != null
+            ? creatureLookTarget.position
+            : (creatureSpawnPoint != null ? creatureSpawnPoint.position : transform.position);
+
         if (fpsController != null)
         {
-            fpsController.SetJumpScareMode(true);
-
-            Vector3 lookPosition = creatureLookTarget != null
-                ? creatureLookTarget.position
-                : (creatureSpawnPoint != null ? creatureSpawnPoint.position : transform.position);
-
-            fpsController.ForceLookAt(lookPosition);
+            StartCoroutine(fpsController.SmoothLookAt(lookPosition, cameraTransitionDuration));
         }
+
+        float halfDuration = cameraTransitionDuration * 0.5f;
+
+        yield return new WaitForSeconds(halfDuration);
+
+        if (creatureActor != null)
+        {
+            creatureActor.SetActive(true);
+        }
+
+        yield return new WaitForSeconds(halfDuration);
+
+        SetCreatureHeadAimWeightDirect(1f);
+
+        yield return new WaitForSeconds(0.25f);
 
         if (audioSource != null && jumpscareSFX != null)
         {
@@ -170,23 +188,12 @@ public class StalkerJumpscareTrigger : MonoBehaviour
             heartbeatAudioSource.Play();
         }
 
-        /*if (playerFeedbackController != null)
+        if (playerFeedbackController != null)
         {
             playerFeedbackController.StartPulse(maxAberrationIntensity, aberrationPulseSpeed);
-        }*/
-
-        if (creatureActor != null)
-        {
-            creatureActor.SetActive(true);
-            SetCreatureHeadAimWeightDirect(1f);
         }
 
         yield return new WaitForSeconds(lookAtDuration);
-
-       if (fpsController != null)
-        {
-            fpsController.SetJumpScareMode(false);
-        }
 
         if (creatureActor != null && creatureRetreatPoint != null)
         {
@@ -233,20 +240,15 @@ public class StalkerJumpscareTrigger : MonoBehaviour
             heartbeatAudioSource.Stop();
         }
 
-        /*if (playerFeedbackController != null)
+        if (playerFeedbackController != null)
         {
             playerFeedbackController.StopPulse();
-        }*/
+        }
 
-        /*if (DialogueManager.Instance != null && policeCallReactionDialogue != null)
+        if (fpsController != null)
         {
-            DialogueManager.Instance.StartDialogue(policeCallReactionDialogue);
-
-            while (DialogueManager.Instance.IsDialogueActive)
-            {
-                yield return null;
-            }
-        }*/
+            fpsController.SetJumpScareMode(false);
+        }
 
         if (wallPhone != null)
         {

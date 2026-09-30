@@ -11402,7 +11402,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 7be1ccbfad2fab640903c3faead58f50, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -21452,19 +21452,21 @@ MonoBehaviour:
   creatureAnimator: {fileID: 1002618750}
   creatureSpawnPoint: {fileID: 170891899}
   creatureRetreatPoint: {fileID: 1731985091}
-  lookAtDuration: 1.5
+  lookAtDuration: 2
   moveSpeed: 4
   speedFloatName: Speed
-  walkSpeedPercent: 0.5
+  walkSpeedPercent: 1
   idleSpeedPercent: 0
   creatureHeadAim: {fileID: 527394531}
   rigLerpSpeed: 5
   creatureLookTarget: {fileID: 1664148251}
+  cameraTransitionDuration: 0.3
   audioSource: {fileID: 991799528}
-  jumpscareSFX: {fileID: 8300000, guid: b7f5e33b7a53d724796a9d50a0c95e57, type: 3}
+  jumpscareSFX: {fileID: 8300000, guid: 9b779ba5b1c4545478732a2e6e5919a7, type: 3}
   heartbeatAudioSource: {fileID: 539374101}
-  maxAberrationIntensity: 0.85
-  aberrationPulseSpeed: 3
+  playerFeedbackController: {fileID: 539374102}
+  maxAberrationIntensity: 0.15
+  aberrationPulseSpeed: 2
   wallPhone: {fileID: 8903491099227519256}
 --- !u!65 &991799525
 BoxCollider:
