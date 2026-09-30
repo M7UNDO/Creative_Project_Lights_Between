@@ -35,12 +35,12 @@ public class StalkerJumpscareTrigger : MonoBehaviour
     [SerializeField] private AudioSource heartbeatAudioSource;
 
     [Header("Visual Effects")]
-    [SerializeField] private PlayerFearFeedback playerFeedbackController;
+   // [SerializeField] private PlayerFearFeedback playerFeedbackController;
     [SerializeField] private float maxAberrationIntensity = 0.85f;
     [SerializeField] private float aberrationPulseSpeed = 3.0f;
 
     [Header("Narrative Reaction")]
-    [SerializeField] private DialogueSO policeCallReactionDialogue;
+    //[SerializeField] private DialogueSO policeCallReactionDialogue;
     [SerializeField] private WallTelephoneTrigger wallPhone;
 
     private BoxCollider triggerCollider;
@@ -170,10 +170,10 @@ public class StalkerJumpscareTrigger : MonoBehaviour
             heartbeatAudioSource.Play();
         }
 
-        if (playerFeedbackController != null)
+        /*if (playerFeedbackController != null)
         {
             playerFeedbackController.StartPulse(maxAberrationIntensity, aberrationPulseSpeed);
-        }
+        }*/
 
         if (creatureActor != null)
         {
@@ -183,7 +183,7 @@ public class StalkerJumpscareTrigger : MonoBehaviour
 
         yield return new WaitForSeconds(lookAtDuration);
 
-        if (fpsController != null)
+       if (fpsController != null)
         {
             fpsController.SetJumpScareMode(false);
         }
@@ -233,12 +233,12 @@ public class StalkerJumpscareTrigger : MonoBehaviour
             heartbeatAudioSource.Stop();
         }
 
-        if (playerFeedbackController != null)
+        /*if (playerFeedbackController != null)
         {
             playerFeedbackController.StopPulse();
-        }
+        }*/
 
-        if (DialogueManager.Instance != null && policeCallReactionDialogue != null)
+        /*if (DialogueManager.Instance != null && policeCallReactionDialogue != null)
         {
             DialogueManager.Instance.StartDialogue(policeCallReactionDialogue);
 
@@ -246,7 +246,7 @@ public class StalkerJumpscareTrigger : MonoBehaviour
             {
                 yield return null;
             }
-        }
+        }*/
 
         if (wallPhone != null)
         {

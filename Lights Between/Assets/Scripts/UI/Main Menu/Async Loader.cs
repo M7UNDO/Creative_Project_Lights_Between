@@ -22,12 +22,6 @@ public class AsyncLoader : MonoBehaviour
         StartCoroutine(LoadLevelAsync(levelIndex));
     }
 
-    public void OnSliderChanged(float value)
-    {
-        float localValue = value * 100;
-        percentageTxt.text = Mathf.Round(localValue).ToString() + "%";
-    }
-
     IEnumerator LoadLevelAsync(int levelIndex)
     {
         AsyncOperation loadOperation = SceneManager.LoadSceneAsync(levelIndex);
@@ -35,7 +29,10 @@ public class AsyncLoader : MonoBehaviour
         while (!loadOperation.isDone)
         {
             float progressValue = Mathf.Clamp01(loadOperation.progress / 0.9f);
+
             loadingSlider.value = progressValue;
+            percentageTxt.text = Mathf.RoundToInt(progressValue * 100f) + "%";
+
             yield return null;
         }
     }
