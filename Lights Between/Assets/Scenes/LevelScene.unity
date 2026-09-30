@@ -505,6 +505,37 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &13536735
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 13536736}
+  m_Layer: 0
+  m_Name: PeekPointB
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &13536736
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13536735}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -10.996, y: 1, z: 41.32}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &15543139
 GameObject:
   m_ObjectHideFlags: 0
@@ -6230,7 +6261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 277747353}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: WalkPointA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6244,13 +6275,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 277747352}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -1, z: -0, w: -0.00000026822087}
-  m_LocalPosition: {x: -5.496, y: 1.5, z: 42.82}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -6.496, y: 1, z: 44.32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 310401331}
-  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!65 &278196179
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6744,87 +6775,6 @@ Transform:
   m_Children:
   - {fileID: 742738835}
   m_Father: {fileID: 936297661}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &310401328
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 310401331}
-  - component: {fileID: 310401330}
-  - component: {fileID: 310401329}
-  m_Layer: 0
-  m_Name: HallTrigger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &310401329
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 310401328}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b54d0becd9ac30948bc6261b2b2f5bfd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DynamicStalkerScare
-  scareType: 0
-  requiredObjective: {fileID: 0}
-  stalkerActor: {fileID: 1002618743}
-  startPoint: {fileID: 277747353}
-  endPoint: {fileID: 1257665151}
-  moveSpeed: 3
-  originalObject: {fileID: 0}
-  displacedObject: {fileID: 0}
-  targetLights:
-  - {fileID: 2086920242}
-  flickerDuration: 2.5
-  scareAudioSource: {fileID: 0}
-  scareSFX: {fileID: 0}
---- !u!65 &310401330
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 310401328}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!4 &310401331
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 310401328}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 277747353}
-  - {fileID: 1257665151}
-  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &312347891
 GameObject:
@@ -10158,6 +10108,93 @@ Transform:
   - {fileID: 237821327}
   m_Father: {fileID: 788893015}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &463064889
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 463064892}
+  - component: {fileID: 463064891}
+  - component: {fileID: 463064890}
+  m_Layer: 0
+  m_Name: WalkPassedScare (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &463064890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463064889}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b54d0becd9ac30948bc6261b2b2f5bfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DynamicStalkerScare
+  scareType: 0
+  requiredObjective: {fileID: 0}
+  stalkerActor: {fileID: 1002618743}
+  startPoint: {fileID: 646272220}
+  endPoint: {fileID: 13536736}
+  moveSpeed: 4
+  stalkerAnimator: {fileID: 1002618750}
+  speedFloatName: Speed
+  idleSpeedPercent: 0
+  walkSpeedPercent: 0.5
+  runSpeedPercent: 1
+  detectionDotThreshold: 0.75
+  maxPeekDuration: 5
+  retreatSpeed: 5
+  originalObject: {fileID: 0}
+  displacedObject: {fileID: 0}
+  targetLights: []
+  flickerDuration: 1.5
+  blackoutDuration: 2
+  scareAudioSource: {fileID: 0}
+  scareSFX: {fileID: 0}
+--- !u!65 &463064891
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463064889}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &463064892
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463064889}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.39, y: 1.2644, z: 17.64962}
+  m_LocalScale: {x: 2.5, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &468621443
 GameObject:
   m_ObjectHideFlags: 0
@@ -12829,6 +12866,93 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 623762653450191944, guid: a16eae0af83edd24a9e7bdf1d02099e3, type: 3}
   m_PrefabInstance: {fileID: 9002341305177422020}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &589136347
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 589136351}
+  - component: {fileID: 589136348}
+  - component: {fileID: 589136352}
+  m_Layer: 0
+  m_Name: WalkPassedScare
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!65 &589136348
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 589136347}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!4 &589136351
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 589136347}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.39, y: 1.2644, z: 28.14962}
+  m_LocalScale: {x: 2.5, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &589136352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 589136347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b54d0becd9ac30948bc6261b2b2f5bfd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DynamicStalkerScare
+  scareType: 3
+  requiredObjective: {fileID: 0}
+  stalkerActor: {fileID: 1002618743}
+  startPoint: {fileID: 277747353}
+  endPoint: {fileID: 1257665151}
+  moveSpeed: 4
+  stalkerAnimator: {fileID: 1002618750}
+  speedFloatName: Speed
+  idleSpeedPercent: 0
+  walkSpeedPercent: 0.5
+  runSpeedPercent: 1
+  detectionDotThreshold: 0.75
+  maxPeekDuration: 5
+  retreatSpeed: 5
+  originalObject: {fileID: 0}
+  displacedObject: {fileID: 0}
+  targetLights: []
+  flickerDuration: 1.5
+  blackoutDuration: 2
+  scareAudioSource: {fileID: 0}
+  scareSFX: {fileID: 0}
 --- !u!65 &589310325
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -14002,6 +14126,37 @@ Transform:
   - {fileID: 1189544997}
   m_Father: {fileID: 1486738393}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &646272219
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 646272220}
+  m_Layer: 0
+  m_Name: PeekPointA
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &646272220
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 646272219}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.277, y: 1, z: 41.32}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &647818180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15055,62 +15210,6 @@ Transform:
   - {fileID: 2031509302}
   m_Father: {fileID: 1988395179}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &685991372
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 685991373}
-  - component: {fileID: 685991374}
-  m_Layer: 0
-  m_Name: DynamicStalkerScare_WindowPeek
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &685991373
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 685991372}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6181527346713148763}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &685991374
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 685991372}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b54d0becd9ac30948bc6261b2b2f5bfd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DynamicStalkerScare
-  scareType: 0
-  requiredObjective: {fileID: 11400000, guid: cade134e976b4d848a968c4e532c55ff, type: 2}
-  stalkerActor: {fileID: 0}
-  startPoint: {fileID: 0}
-  endPoint: {fileID: 0}
-  moveSpeed: 3
-  originalObject: {fileID: 0}
-  displacedObject: {fileID: 0}
-  targetLights: []
-  flickerDuration: 2.5
-  scareAudioSource: {fileID: 0}
-  scareSFX: {fileID: 0}
 --- !u!1 &686064871
 GameObject:
   m_ObjectHideFlags: 0
@@ -15129,7 +15228,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!154 &686064873
 TerrainCollider:
   m_ObjectHideFlags: 0
@@ -27345,7 +27444,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1257665151}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: WalkPointB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27359,13 +27458,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1257665150}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -1, z: -0, w: -0.00000026822087}
-  m_LocalPosition: {x: -3.4959998, y: 1.5, z: 42.82}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -2.4960005, y: 1, z: 44.32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 310401331}
-  m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1 &1258242523
 GameObject:
   m_ObjectHideFlags: 0
@@ -69850,7 +69949,7 @@ Transform:
   m_GameObject: {fileID: 3264200463996576517}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: -3.6875, z: 38}
+  m_LocalPosition: {x: 0, y: 2.8125, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -71096,7 +71195,7 @@ Transform:
   m_GameObject: {fileID: 1541411992301931478}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4, y: -5.75, z: 38}
+  m_LocalPosition: {x: 0, y: 0.75, z: 10}
   m_LocalScale: {x: 1, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -76152,7 +76251,6 @@ Transform:
   - {fileID: 8369497124159425117}
   - {fileID: 9204291935857880910}
   - {fileID: 1539274766}
-  - {fileID: 685991373}
   - {fileID: 1957800490}
   - {fileID: 1898158055}
   m_Father: {fileID: 0}
@@ -88268,8 +88366,8 @@ MonoBehaviour:
   objectiveToComplete: {fileID: 11400000, guid: f2697c6b9156d3140aa775544c9ca747, type: 2}
   objectiveToActivate: {fileID: 0}
   postRestoreDialogue: {fileID: 11400000, guid: b78db67095d24df4dbe9f31e8d556380, type: 2}
-  hasFuel: 0
-  isPoweredOn: 0
+  hasFuel: 1
+  isPoweredOn: 1
   enableFuelDrain: 0
   maxFuel: 100
   fuelDrainRate: 0.1
@@ -94446,5 +94544,10 @@ SceneRoots:
   - {fileID: 1280860378}
   - {fileID: 686064875}
   - {fileID: 1014394630}
-  - {fileID: 310401331}
+  - {fileID: 277747353}
+  - {fileID: 646272220}
+  - {fileID: 1257665151}
+  - {fileID: 13536736}
   - {fileID: 7440283004281636500}
+  - {fileID: 589136351}
+  - {fileID: 463064892}
