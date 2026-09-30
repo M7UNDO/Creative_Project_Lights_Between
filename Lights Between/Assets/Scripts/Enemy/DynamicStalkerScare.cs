@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 
 public enum ScareType
 {
@@ -28,9 +29,14 @@ public class DynamicStalkerScare : MonoBehaviour
     [SerializeField] private float walkSpeedPercent = 0.5f;
     [SerializeField] private float runSpeedPercent = 1.0f;
 
+    [Header("Creature Rigging")]
+    [SerializeField] private MultiAimConstraint creatureHeadAim;
+    [SerializeField] private float rigLerpSpeed = 5f;
+
     [Header("Peeking Setup")]
     [SerializeField] private float detectionDotThreshold = 0.75f;
     [SerializeField] private float maxPeekDuration = 5f;
+    [SerializeField] private float spottedReactionDelay = 1.2f; // Delay before bolting
     [SerializeField] private float retreatSpeed = 5f;
 
     [Header("Object Shift")]
@@ -48,10 +54,12 @@ public class DynamicStalkerScare : MonoBehaviour
 
     private bool hasTriggered;
     private Camera playerCamera;
+    private Coroutine headAimCoroutine;
 
     private void Awake()
     {
         playerCamera = Camera.main;
+        SetCreatureHeadAimWeightDirect(0f);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -93,6 +101,37 @@ public class DynamicStalkerScare : MonoBehaviour
         }
     }
 
+    private void SetCreatureHeadAimWeightDirect(float weight)
+    {
+        if (creatureHeadAim != null)
+        {
+            creatureHeadAim.weight = weight;
+        }
+    }
+
+    private void LerpCreatureHeadAimWeight(float targetWeight)
+    {
+        if (headAimCoroutine != null)
+        {
+            StopCoroutine(headAimCoroutine);
+        }
+        headAimCoroutine = StartCoroutine(LerpHeadAimRoutine(targetWeight));
+    }
+
+    private IEnumerator LerpHeadAimRoutine(float targetWeight)
+    {
+        if (creatureHeadAim == null) yield break;
+
+        while (Mathf.Abs(creatureHeadAim.weight - targetWeight) > 0.01f)
+        {
+            creatureHeadAim.weight = Mathf.Lerp(creatureHeadAim.weight, targetWeight, Time.deltaTime * rigLerpSpeed);
+            yield return null;
+        }
+
+        creatureHeadAim.weight = targetWeight;
+        headAimCoroutine = null;
+    }
+
     private IEnumerator ExecutePeekingScare()
     {
         if (scareAudioSource != null && scareSFX != null)
@@ -102,16 +141,23 @@ public class DynamicStalkerScare : MonoBehaviour
 
         if (stalkerActor != null)
         {
-            if (startPoint != null) stalkerActor.transform.position = startPoint.position;
+            if (startPoint != null)
+            {
+                // Match BOTH position and rotation of the start point for the peek
+                stalkerActor.transform.position = startPoint.position;
+                stalkerActor.transform.rotation = startPoint.rotation;
+            }
             stalkerActor.SetActive(true);
 
-            // Ensure clean animation state and set to IDLE while peeking
             if (stalkerAnimator != null)
             {
                 stalkerAnimator.Rebind();
                 stalkerAnimator.Update(0f);
                 stalkerAnimator.SetFloat(speedFloatName, idleSpeedPercent);
             }
+
+            // Look at the player while peeking
+            LerpCreatureHeadAimWeight(1f);
 
             float timer = 0f;
             bool playerNoticed = false;
@@ -126,7 +172,7 @@ public class DynamicStalkerScare : MonoBehaviour
                     if (dotProduct >= detectionDotThreshold)
                     {
                         playerNoticed = true;
-                        break;
+                        break; // Player spotted the creature, break the loop
                     }
                 }
 
@@ -134,16 +180,24 @@ public class DynamicStalkerScare : MonoBehaviour
                 yield return null;
             }
 
+            if (playerNoticed)
+            {
+                // Delay so the player actually registers the creature before it bolts
+                yield return new WaitForSeconds(spottedReactionDelay);
+            }
+
             if (endPoint != null)
             {
                 float currentRetreatSpeed = playerNoticed ? retreatSpeed : moveSpeed;
                 float currentAnimSpeed = playerNoticed ? runSpeedPercent : walkSpeedPercent;
 
-                // Update animation based on whether the player spotted it
                 if (stalkerAnimator != null)
                 {
                     stalkerAnimator.SetFloat(speedFloatName, currentAnimSpeed);
                 }
+
+                // Stop staring while running away
+                LerpCreatureHeadAimWeight(0f);
 
                 while (Vector3.Distance(stalkerActor.transform.position, endPoint.position) > 0.1f)
                 {
@@ -153,7 +207,7 @@ public class DynamicStalkerScare : MonoBehaviour
                         currentRetreatSpeed * Time.deltaTime
                     );
 
-                    // Optional: Make creature face retreat point while moving away
+                    // Face the retreat direction
                     Vector3 moveDir = (endPoint.position - stalkerActor.transform.position).normalized;
                     if (moveDir != Vector3.zero)
                     {
@@ -164,6 +218,7 @@ public class DynamicStalkerScare : MonoBehaviour
                 }
             }
 
+            SetCreatureHeadAimWeightDirect(0f);
             stalkerActor.SetActive(false);
         }
     }
@@ -177,9 +232,15 @@ public class DynamicStalkerScare : MonoBehaviour
 
         if (stalkerActor != null)
         {
-            if (startPoint != null) stalkerActor.transform.position = startPoint.position;
+            if (startPoint != null)
+            {
+                stalkerActor.transform.position = startPoint.position;
+                stalkerActor.transform.rotation = startPoint.rotation;
+            }
             stalkerActor.SetActive(true);
 
+            // Ensure creature does not track player while passing
+            SetCreatureHeadAimWeightDirect(0f);
 
             if (stalkerAnimator != null)
             {
@@ -198,7 +259,6 @@ public class DynamicStalkerScare : MonoBehaviour
                         moveSpeed * Time.deltaTime
                     );
 
-                    // Make creature face the direction it's walking
                     Vector3 moveDir = (endPoint.position - stalkerActor.transform.position).normalized;
                     if (moveDir != Vector3.zero)
                     {
