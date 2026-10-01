@@ -59,10 +59,11 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float doorCheckHeightOffset = 1f;
     [SerializeField] private float doorSphereCastRadius = 0.5f;
 
-    [Header("Ground Detection")]
+    [Header("Ground Detection & Surface Alignment")]
     [SerializeField] private LayerMask groundLayers;
-    [SerializeField] private float groundRayDistance = 1.5f;
+    [SerializeField] private float groundRayDistance = 2f;
     [SerializeField] private float groundCheckHeightOffset = 0.5f;
+    [SerializeField] private float surfaceAlignmentSpeed = 10f;
 
     [Header("Wood Footsteps")]
     [SerializeField] private AudioClip[] woodWalkFootstepClips;
@@ -124,6 +125,7 @@ public class EnemyAI : MonoBehaviour
 
         agent.acceleration = 8f;
         agent.angularSpeed = 360f;
+        agent.updateRotation = false;
 
         if (waypointGroup != null && waypointGroup.childCount > 0)
         {
@@ -173,6 +175,7 @@ public class EnemyAI : MonoBehaviour
             agent.velocity = Vector3.zero;
             agent.isStopped = true;
             UpdateAnimation(0f);
+            AlignToSurface(transform.forward);
             return;
         }
 
@@ -526,11 +529,8 @@ public class EnemyAI : MonoBehaviour
         {
             idleTimer -= Time.deltaTime;
 
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetLookRotation,
-                Time.deltaTime * lookSpeed
-            );
+            Vector3 idleForward = targetLookRotation * Vector3.forward;
+            AlignToSurface(idleForward);
 
             if (idleTimer <= 0f)
             {
@@ -566,7 +566,8 @@ public class EnemyAI : MonoBehaviour
             else
             {
                 idleTimer -= Time.deltaTime;
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetLookRotation, Time.deltaTime * lookSpeed);
+                Vector3 idleForward = targetLookRotation * Vector3.forward;
+                AlignToSurface(idleForward);
 
                 if (idleTimer <= 0f)
                 {
@@ -634,7 +635,7 @@ public class EnemyAI : MonoBehaviour
             currentTarget.position.z
         );
 
-        transform.rotation = Quaternion.LookRotation(lookPos - transform.position);
+        AlignToSurface((lookPos - transform.position).normalized);
 
         CinemachineThirdPersonFollow follow =
             currentTarget.gameObject.GetComponentInChildren<CinemachineThirdPersonFollow>();
@@ -665,13 +666,32 @@ public class EnemyAI : MonoBehaviour
 
     void RotateTowardsMovementDirection()
     {
-        if (agent.velocity.sqrMagnitude > 0.1f)
+        Vector3 forwardDirection = agent.velocity.sqrMagnitude > 0.1f
+            ? agent.velocity.normalized
+            : transform.forward;
+
+        AlignToSurface(forwardDirection);
+    }
+
+    private void AlignToSurface(Vector3 desiredForward)
+    {
+        Vector3 rayOrigin = transform.position + Vector3.up * groundCheckHeightOffset;
+        Vector3 groundNormal = Vector3.up;
+
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, groundRayDistance, groundLayers))
         {
-            Quaternion targetRotation = Quaternion.LookRotation(agent.velocity.normalized);
+            groundNormal = hit.normal;
+        }
+
+        Vector3 projectedForward = Vector3.ProjectOnPlane(desiredForward, groundNormal).normalized;
+
+        if (projectedForward != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(projectedForward, groundNormal);
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
                 targetRotation,
-                Time.deltaTime * rotationSpeed
+                Time.deltaTime * surfaceAlignmentSpeed
             );
         }
     }
