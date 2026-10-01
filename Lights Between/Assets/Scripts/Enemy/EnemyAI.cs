@@ -100,7 +100,10 @@ public class EnemyAI : MonoBehaviour
     private float idleTimer;
     private Quaternion targetLookRotation;
 
+    private bool canSeePlayer;
+    private bool hasDetectedPlayer;
     private Vector3 lastKnownPlayerPosition;
+
     private float currentSpeedPercent;
     private float targetSpeedPercent;
 
@@ -147,36 +150,16 @@ public class EnemyAI : MonoBehaviour
 
     void Update()
     {
-        if (gameOver)
-            return;
+        if (gameOver) return;
 
         if (currentState != State.Returning && currentState != State.Catch && currentState != State.Retreat)
         {
-            Transform detected = DetectPlayer();
-
-            if (detected != null)
-            {
-                currentTarget = detected;
-                lastKnownPlayerPosition = currentTarget.position;
-                loseSightTimer = loseSightDelay;
-            }
-            else
-            {
-                loseSightTimer -= Time.deltaTime;
-
-                if (loseSightTimer <= 0)
-                {
-                    currentTarget = null;
-                }
-            }
+            UpdatePerception();
         }
         else if (currentState == State.Retreat)
         {
             currentTarget = null;
-        }
-        else
-        {
-            currentTarget = null;
+            canSeePlayer = false;
         }
 
         float distanceToPlayer = currentTarget ?
@@ -264,6 +247,90 @@ public class EnemyAI : MonoBehaviour
 
         if (!isCatching && !isAlerting)
             RotateTowardsMovementDirection();
+    }
+
+    private void UpdatePerception()
+    {
+        Transform closest = GetClosestSensorTarget();
+
+        if (closest != null)
+        {
+            currentTarget = closest;
+            canSeePlayer = true;
+            hasDetectedPlayer = true;
+            lastKnownPlayerPosition = currentTarget.position;
+            loseSightTimer = loseSightDelay;
+        }
+        else
+        {
+            canSeePlayer = false;
+            loseSightTimer -= Time.deltaTime;
+
+            if (loseSightTimer <= 0)
+            {
+                hasDetectedPlayer = false;
+                currentTarget = null;
+            }
+        }
+    }
+
+    private Transform GetClosestSensorTarget()
+    {
+        if (sensor == null || sensor.Objects.Count == 0)
+            return null;
+
+        float closestDistance = Mathf.Infinity;
+        Transform closest = null;
+
+        foreach (GameObject obj in sensor.Objects)
+        {
+            float dist = Vector3.Distance(transform.position, obj.transform.position);
+            if (dist < closestDistance)
+            {
+                closestDistance = dist;
+                closest = obj.transform;
+            }
+        }
+
+        return closest;
+    }
+
+    private void HandleSuspicion()
+    {
+        if (canSeePlayer)
+        {
+            float lightModifier = GetTargetLightModifier();
+            suspicion += (suspicionIncreaseRate * lightModifier) * Time.deltaTime;
+        }
+        else if (hasDetectedPlayer)
+        {
+            suspicion += (suspicionIncreaseRate * 0.5f) * Time.deltaTime;
+        }
+        else
+        {
+            suspicion -= suspicionDecreaseRate * Time.deltaTime;
+        }
+
+        suspicion = Mathf.Clamp(suspicion, 0, suspicionThreshold);
+
+        if (suspicion <= suspicionThreshold * 0.25f)
+        {
+            hasAlerted = false;
+            UpdateHeadAim(0f);
+        }
+    }
+
+    private float GetTargetLightModifier()
+    {
+        return 1.0f;
+    }
+
+    public void ReactToLightExposure()
+    {
+        if (currentState != State.Catch && !isRetreating)
+        {
+            TriggerRetreat();
+        }
     }
 
     public void TriggerRetreat()
@@ -372,9 +439,7 @@ public class EnemyAI : MonoBehaviour
 
     void UpdateAnimation(float targetSpeed)
     {
-        currentSpeedPercent = Mathf.MoveTowards(currentSpeedPercent, targetSpeed,
-            acceleration * Time.deltaTime);
-
+        currentSpeedPercent = Mathf.MoveTowards(currentSpeedPercent, targetSpeed, acceleration * Time.deltaTime);
         animator.SetFloat("Speed", currentSpeedPercent);
 
         if (currentState == State.Chase || currentState == State.Retreat)
@@ -449,48 +514,6 @@ public class EnemyAI : MonoBehaviour
         isAlerting = false;
     }
 
-    Transform DetectPlayer()
-    {
-        if (sensor == null || sensor.Objects.Count == 0)
-            return null;
-
-        float closestDistance = Mathf.Infinity;
-        Transform closest = null;
-
-        foreach (GameObject obj in sensor.Objects)
-        {
-            float dist = Vector3.Distance(transform.position, obj.transform.position);
-
-            if (dist < closestDistance)
-            {
-                closestDistance = dist;
-                closest = obj.transform;
-            }
-        }
-
-        return closest;
-    }
-
-    void HandleSuspicion()
-    {
-        if (currentTarget != null)
-        {
-            suspicion += suspicionIncreaseRate * Time.deltaTime;
-        }
-        else
-        {
-            suspicion -= suspicionDecreaseRate * Time.deltaTime;
-        }
-
-        suspicion = Mathf.Clamp(suspicion, 0, suspicionThreshold);
-
-        if (suspicion <= suspicionThreshold * 0.25f)
-        {
-            hasAlerted = false;
-            UpdateHeadAim(0f);
-        }
-    }
-
     void Patrol()
     {
         if (waypoints == null || waypoints.Length == 0)
@@ -532,15 +555,30 @@ public class EnemyAI : MonoBehaviour
 
     void Suspicious()
     {
-        isIdle = false;
+        agent.SetDestination(lastKnownPlayerPosition);
 
-        if (currentTarget != null)
+        if (!agent.pathPending && agent.remainingDistance < 1f)
         {
-            agent.SetDestination(currentTarget.position);
+            if (!isIdle)
+            {
+                StartIdle();
+            }
+            else
+            {
+                idleTimer -= Time.deltaTime;
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetLookRotation, Time.deltaTime * lookSpeed);
+
+                if (idleTimer <= 0f)
+                {
+                    isIdle = false;
+                    suspicion = 0f;
+                    ChangeState(State.Patrol);
+                }
+            }
         }
         else
         {
-            agent.SetDestination(lastKnownPlayerPosition);
+            isIdle = false;
         }
     }
 
@@ -561,9 +599,8 @@ public class EnemyAI : MonoBehaviour
 
     void ChasePlayer()
     {
-        if (currentTarget)
+        if (canSeePlayer)
         {
-            lastKnownPlayerPosition = currentTarget.position;
             agent.SetDestination(currentTarget.position);
             UpdateHeadAim(1f);
         }
@@ -608,7 +645,6 @@ public class EnemyAI : MonoBehaviour
         }
 
         animator.SetTrigger("Attack");
-
         StartCoroutine(RestartGame());
     }
 
@@ -646,25 +682,10 @@ public class EnemyAI : MonoBehaviour
 
         if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, groundRayDistance, groundLayers))
         {
-            if (hit.collider.CompareTag("Wood"))
-            {
-                return isRunning ? woodRunFootstepClips : woodWalkFootstepClips;
-            }
-
-            if (hit.collider.CompareTag("Tile"))
-            {
-                return isRunning ? tileRunFootstepClips : tileWalkFootstepClips;
-            }
-
-            if (hit.collider.CompareTag("Carpet"))
-            {
-                return isRunning ? carpetRunFootstepClips : carpetWalkFootstepClips;
-            }
-
-            if (hit.collider.CompareTag("Concrete"))
-            {
-                return isRunning ? concreteRunFootstepClips : concreteWalkFootstepClips;
-            }
+            if (hit.collider.CompareTag("Wood")) return isRunning ? woodRunFootstepClips : woodWalkFootstepClips;
+            if (hit.collider.CompareTag("Tile")) return isRunning ? tileRunFootstepClips : tileWalkFootstepClips;
+            if (hit.collider.CompareTag("Carpet")) return isRunning ? carpetRunFootstepClips : carpetWalkFootstepClips;
+            if (hit.collider.CompareTag("Concrete")) return isRunning ? concreteRunFootstepClips : concreteWalkFootstepClips;
         }
 
         return isRunning ? defaultRunFootstepClips : defaultWalkFootstepClips;
