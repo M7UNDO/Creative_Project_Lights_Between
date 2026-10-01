@@ -51,6 +51,9 @@ public class EnemyAI : MonoBehaviour
     [Header("Retreat Settings")]
     [SerializeField] private float retreatRecoupTime = 4f;
 
+    [Header("Audio Sources")]
+    [SerializeField] private AudioSource crawlSource;
+    [SerializeField] private AudioSource voiceSource;
     public AudioSource alertSFX;
 
     [Header("Door Interaction")]
@@ -70,6 +73,10 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float minPitch = 0.85f;
     [SerializeField] private float maxPitch = 1.15f;
     [Range(0, 1)] public float crawlAudioVolume = 0.5f;
+
+    [Header("Voice Sound Settings")]
+    [SerializeField] private AudioClip[] breatheClips;
+    [Range(0, 1)] public float breatheAudioVolume = 0.5f;
 
     private NavMeshAgent agent;
     private Transform currentTarget;
@@ -646,6 +653,8 @@ public class EnemyAI : MonoBehaviour
 
         float randomAngle = Random.Range(-lookAroundAngle, lookAroundAngle);
         targetLookRotation = Quaternion.Euler(0, transform.eulerAngles.y + randomAngle, 0);
+
+        PlayBreatheSound();
     }
 
     void RotateTowardsMovementDirection()
@@ -690,23 +699,22 @@ public class EnemyAI : MonoBehaviour
 
     private void PlayCrawlSound()
     {
-        if (crawlClips != null && crawlClips.Length > 0)
+        if (crawlClips != null && crawlClips.Length > 0 && crawlSource != null)
         {
             int index = Random.Range(0, crawlClips.Length);
+            crawlSource.clip = crawlClips[index];
+            crawlSource.volume = crawlAudioVolume;
+            crawlSource.pitch = Random.Range(minPitch, maxPitch);
+            crawlSource.Play();
+        }
+    }
 
-            GameObject audioObject = new GameObject("TempCrawlAudio");
-            audioObject.transform.position = transform.position;
-
-            AudioSource audioSource = audioObject.AddComponent<AudioSource>();
-            audioSource.clip = crawlClips[index];
-            audioSource.volume = crawlAudioVolume;
-            audioSource.pitch = Random.Range(minPitch, maxPitch);
-            audioSource.spatialBlend = 1f;
-
-            audioSource.Play();
-
-            float clipLengthAdjusted = crawlClips[index].length / Mathf.Max(audioSource.pitch, 0.1f);
-            Destroy(audioObject, clipLengthAdjusted);
+    private void PlayBreatheSound()
+    {
+        if (breatheClips != null && breatheClips.Length > 0 && voiceSource != null)
+        {
+            int index = Random.Range(0, breatheClips.Length);
+            voiceSource.PlayOneShot(breatheClips[index], breatheAudioVolume);
         }
     }
 
