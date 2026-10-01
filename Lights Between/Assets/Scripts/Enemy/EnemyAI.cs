@@ -65,27 +65,11 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float groundCheckHeightOffset = 0.5f;
     [SerializeField] private float surfaceAlignmentSpeed = 10f;
 
-    [Header("Wood Footsteps")]
-    [SerializeField] private AudioClip[] woodWalkFootstepClips;
-    [SerializeField] private AudioClip[] woodRunFootstepClips;
-
-    [Header("Tile Footsteps")]
-    [SerializeField] private AudioClip[] tileWalkFootstepClips;
-    [SerializeField] private AudioClip[] tileRunFootstepClips;
-
-    [Header("Carpet Footsteps")]
-    [SerializeField] private AudioClip[] carpetWalkFootstepClips;
-    [SerializeField] private AudioClip[] carpetRunFootstepClips;
-
-    [Header("Concrete Footsteps")]
-    [SerializeField] private AudioClip[] concreteWalkFootstepClips;
-    [SerializeField] private AudioClip[] concreteRunFootstepClips;
-
-    [Header("Default Footsteps")]
-    [SerializeField] private AudioClip[] defaultWalkFootstepClips;
-    [SerializeField] private AudioClip[] defaultRunFootstepClips;
-
-    [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
+    [Header("Crawl Sound Settings")]
+    [SerializeField] private AudioClip[] crawlClips;
+    [SerializeField] private float minPitch = 0.85f;
+    [SerializeField] private float maxPitch = 1.15f;
+    [Range(0, 1)] public float crawlAudioVolume = 0.5f;
 
     private NavMeshAgent agent;
     private Transform currentTarget;
@@ -696,42 +680,33 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    private AudioClip[] GetFootstepClips(bool isRunning)
-    {
-        Vector3 rayOrigin = transform.position + Vector3.up * groundCheckHeightOffset;
-
-        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, groundRayDistance, groundLayers))
-        {
-            if (hit.collider.CompareTag("Wood")) return isRunning ? woodRunFootstepClips : woodWalkFootstepClips;
-            if (hit.collider.CompareTag("Tile")) return isRunning ? tileRunFootstepClips : tileWalkFootstepClips;
-            if (hit.collider.CompareTag("Carpet")) return isRunning ? carpetRunFootstepClips : carpetWalkFootstepClips;
-            if (hit.collider.CompareTag("Concrete")) return isRunning ? concreteRunFootstepClips : concreteWalkFootstepClips;
-        }
-
-        return isRunning ? defaultRunFootstepClips : defaultWalkFootstepClips;
-    }
-
-    private void OnFootstep(AnimationEvent animationEvent)
+    private void OnCrawl(AnimationEvent animationEvent)
     {
         if (animationEvent.animatorClipInfo.weight > 0.5f)
         {
-            PlayFootstep();
+            PlayCrawlSound();
         }
     }
 
-    private void PlayFootstep()
+    private void PlayCrawlSound()
     {
-        bool isRunning = currentState == State.Chase || currentState == State.Retreat;
-        AudioClip[] clips = GetFootstepClips(isRunning);
-
-        if (clips != null && clips.Length > 0)
+        if (crawlClips != null && crawlClips.Length > 0)
         {
-            int index = Random.Range(0, clips.Length);
-            AudioSource.PlayClipAtPoint(
-                clips[index],
-                transform.position,
-                FootstepAudioVolume
-            );
+            int index = Random.Range(0, crawlClips.Length);
+
+            GameObject audioObject = new GameObject("TempCrawlAudio");
+            audioObject.transform.position = transform.position;
+
+            AudioSource audioSource = audioObject.AddComponent<AudioSource>();
+            audioSource.clip = crawlClips[index];
+            audioSource.volume = crawlAudioVolume;
+            audioSource.pitch = Random.Range(minPitch, maxPitch);
+            audioSource.spatialBlend = 1f;
+
+            audioSource.Play();
+
+            float clipLengthAdjusted = crawlClips[index].length / Mathf.Max(audioSource.pitch, 0.1f);
+            Destroy(audioObject, clipLengthAdjusted);
         }
     }
 
