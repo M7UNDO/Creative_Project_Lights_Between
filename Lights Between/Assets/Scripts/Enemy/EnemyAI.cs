@@ -711,10 +711,15 @@ public class EnemyAI : MonoBehaviour
 
     private void PlayBreatheSound()
     {
-        if (breatheClips != null && breatheClips.Length > 0 && voiceSource != null)
+        if (breatheClips != null && breatheClips.Length > 0)
         {
             int index = Random.Range(0, breatheClips.Length);
-            voiceSource.PlayOneShot(breatheClips[index], breatheAudioVolume);
+
+            if (voiceSource != null)
+            {
+                voiceSource.spatialBlend = 1f; // Force 3D spatial blend
+                voiceSource.PlayOneShot(breatheClips[index], breatheAudioVolume);
+            }
         }
     }
 
