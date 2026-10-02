@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 
 public class PauseManager : MonoBehaviour
@@ -10,6 +11,11 @@ public class PauseManager : MonoBehaviour
     [SerializeField] private TabController tabController;
     [SerializeField] private FPSController playerController;
     private PlayerInteraction playerInteraction;
+
+    [Header("Audio Mixer Snapshots")]
+    [SerializeField] private AudioMixerSnapshot unpausedSnapshot;
+    [SerializeField] private AudioMixerSnapshot pausedSnapshot;
+    [SerializeField] private float snapshotTransitionDuration = 0.1f;
 
     [Header("UI Components")]
     public GameObject PauseCanvas;
@@ -121,6 +127,11 @@ public class PauseManager : MonoBehaviour
         IsGamePaused = true;
         Time.timeScale = 0f;
 
+        if (pausedSnapshot != null)
+        {
+            pausedSnapshot.TransitionTo(snapshotTransitionDuration);
+        }
+
         if (BackgroundMusicManager.Instance != null)
         {
             BackgroundMusicManager.Instance.PauseMusic();
@@ -147,6 +158,11 @@ public class PauseManager : MonoBehaviour
     {
         IsGamePaused = false;
         Time.timeScale = 1f;
+
+        if (unpausedSnapshot != null)
+        {
+            unpausedSnapshot.TransitionTo(snapshotTransitionDuration);
+        }
 
         if (BackgroundMusicManager.Instance != null)
         {
