@@ -1,9 +1,7 @@
-using System.Collections;
-using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class ManageUI : MonoBehaviour
 {
@@ -51,11 +49,6 @@ public class ManageUI : MonoBehaviour
         if (tabController == null)
         {
             tabController = GetComponentInChildren<TabController>(true);
-        }
-
-        if (musicManager == null)
-        {
-            musicManager = FindFirstObjectByType<BackgroundMusicManager>();
         }
 
         if (pausePanel != null && pausePanel.activeSelf)
@@ -117,20 +110,14 @@ public class ManageUI : MonoBehaviour
 
     public void OpenSettings()
     {
-        RememberCurrentSelection();
-
         if (pausePanel != null) pausePanel.SetActive(false);
         if (settingsPanel != null) settingsPanel.SetActive(true);
-
-        SetSelected(settingsFirstSelected);
     }
 
     public void CloseSettings()
     {
         if (settingsPanel != null) settingsPanel.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(true);
-
-        RestorePreviousSelection();
     }
 
     public void ConfirmQuitGame()
@@ -145,8 +132,6 @@ public class ManageUI : MonoBehaviour
 
     private void OpenConfirmationModal(string message, UnityEngine.Events.UnityAction onConfirmAction)
     {
-        RememberCurrentSelection();
-
         if (confirmationPanel != null)
         {
             if (pausePanel != null) pausePanel.SetActive(false);
@@ -169,8 +154,6 @@ public class ManageUI : MonoBehaviour
                 cancelButton.onClick.RemoveAllListeners();
                 cancelButton.onClick.AddListener(CancelConfirmation);
             }
-
-            SetSelected(confirmFirstSelected);
         }
     }
 
@@ -183,7 +166,6 @@ public class ManageUI : MonoBehaviour
         {
             confirmationPanel.SetActive(false);
             if (pausePanel != null) pausePanel.SetActive(true);
-            RestorePreviousSelection();
         }
     }
 
@@ -208,44 +190,6 @@ public class ManageUI : MonoBehaviour
             pauseScript.Resume();
         }
         SceneManager.LoadScene(levelIndex);
-    }
-
-    private void RememberCurrentSelection()
-    {
-        if (EventSystem.current == null) return;
-
-        GameObject current = EventSystem.current.currentSelectedGameObject;
-
-        if (current != null)
-            lastSelectedBeforeSubMenu = current;
-        else
-            lastSelectedBeforeSubMenu = pauseFirstSelected;
-    }
-
-    private void RestorePreviousSelection()
-    {
-        if (lastSelectedBeforeSubMenu != null)
-            SetSelected(lastSelectedBeforeSubMenu);
-        else
-            SetSelected(pauseFirstSelected);
-    }
-
-    private void SetSelected(GameObject obj)
-    {
-        if (obj == null || EventSystem.current == null) return;
-
-        if (selectCoroutine != null)
-            StopCoroutine(selectCoroutine);
-
-        selectCoroutine = StartCoroutine(SetSelectedNextFrame(obj));
-    }
-
-    private IEnumerator SetSelectedNextFrame(GameObject obj)
-    {
-        yield return null;
-        EventSystem.current.SetSelectedGameObject(null);
-        yield return null;
-        EventSystem.current.SetSelectedGameObject(obj);
     }
 
     public void SetPauseCanvasVisible(bool visible)
