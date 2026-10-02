@@ -85,6 +85,18 @@ public class BackgroundMusicManager : MonoBehaviour
         }
     }
 
+    public void PauseMusic()
+    {
+        if (audioSourceA != null && audioSourceA.isPlaying) audioSourceA.Pause();
+        if (audioSourceB != null && audioSourceB.isPlaying) audioSourceB.Pause();
+    }
+
+    public void ResumeMusic()
+    {
+        if (audioSourceA != null) audioSourceA.UnPause();
+        if (audioSourceB != null) audioSourceB.UnPause();
+    }
+
     public void TransitionToState(MusicState newState, float fadeDuration = -1f)
     {
         if (currentMusicState == newState && activeSource.isPlaying) return;
@@ -118,7 +130,7 @@ public class BackgroundMusicManager : MonoBehaviour
 
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             float t = elapsed / duration;
 
             activeSource.volume = Mathf.Lerp(activeStartVolume, 0f, t);
@@ -163,7 +175,7 @@ public class BackgroundMusicManager : MonoBehaviour
 
         while (elapsed < duration)
         {
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime;
             float t = elapsed / duration;
 
             audioSourceA.volume = Mathf.Lerp(startVolA, 0f, t);

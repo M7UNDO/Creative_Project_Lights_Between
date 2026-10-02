@@ -121,6 +121,11 @@ public class PauseManager : MonoBehaviour
         IsGamePaused = true;
         Time.timeScale = 0f;
 
+        if (BackgroundMusicManager.Instance != null)
+        {
+            BackgroundMusicManager.Instance.PauseMusic();
+        }
+
         if (PauseCanvas != null)
         {
             PauseCanvas.SetActive(true);
@@ -142,6 +147,11 @@ public class PauseManager : MonoBehaviour
     {
         IsGamePaused = false;
         Time.timeScale = 1f;
+
+        if (BackgroundMusicManager.Instance != null)
+        {
+            BackgroundMusicManager.Instance.ResumeMusic();
+        }
 
         if (PauseCanvas != null)
         {

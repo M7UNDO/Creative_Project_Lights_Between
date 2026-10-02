@@ -9,7 +9,6 @@ public class ManageUI : MonoBehaviour
     [Space(5)]
     [SerializeField] private PauseManager pauseScript;
     [SerializeField] private TabController tabController;
-    [SerializeField] private BackgroundMusicManager musicManager;
 
     [Header("UI Elements")]
     [Space(5)]
@@ -20,6 +19,11 @@ public class ManageUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI confirmationText;
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button cancelButton;
+
+    [Header("Audio")]
+    [Space(5)]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip closeSFX;
 
     [Header("First Selected Objects")]
     [Space(5)]
@@ -38,6 +42,14 @@ public class ManageUI : MonoBehaviour
     private GameObject lastSelectedBeforeSubMenu;
     private Coroutine selectCoroutine;
     private int lastProcessedFrame = -1;
+
+    private void Awake()
+    {
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+    }
 
     private void Start()
     {
@@ -60,7 +72,6 @@ public class ManageUI : MonoBehaviour
         }
 
         CloseSettings();
-
     }
 
     public void Back()
@@ -76,17 +87,13 @@ public class ManageUI : MonoBehaviour
 
         if (settingsPanel != null && settingsPanel.activeSelf)
         {
-            if (tabController != null && tabController.TryGoBackToTab())
-            {
-                return;
-            }
-
             CloseSettings();
             return;
         }
 
         if (pausePanel != null && pausePanel.activeSelf)
         {
+            PlayCloseSFX();
             if (pauseScript != null)
             {
                 pauseScript.Resume();
@@ -116,6 +123,7 @@ public class ManageUI : MonoBehaviour
 
     public void CloseSettings()
     {
+        PlayCloseSFX();
         if (settingsPanel != null) settingsPanel.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(true);
     }
@@ -159,6 +167,8 @@ public class ManageUI : MonoBehaviour
 
     public void CancelConfirmation()
     {
+        PlayCloseSFX();
+
         if (confirmButton != null) confirmButton.onClick.RemoveAllListeners();
         if (cancelButton != null) cancelButton.onClick.RemoveAllListeners();
 
@@ -199,5 +209,13 @@ public class ManageUI : MonoBehaviour
         pauseCanvasGroup.alpha = visible ? 1f : 0f;
         pauseCanvasGroup.interactable = visible;
         pauseCanvasGroup.blocksRaycasts = visible;
+    }
+
+    private void PlayCloseSFX()
+    {
+        if (audioSource != null && closeSFX != null)
+        {
+            audioSource.PlayOneShot(closeSFX);
+        }
     }
 }
