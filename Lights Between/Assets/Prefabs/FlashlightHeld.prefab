@@ -212,6 +212,7 @@ MonoBehaviour:
   lightCookie: {fileID: 2800000, guid: adfa0ebfcb79c7042be5b04397144b3e, type: 3}
   glassRenderer: {fileID: 3583905205337786264}
   batteryChangeSFX: {fileID: 0}
+  batteryEmptySFX: {fileID: 0}
   positionLagSpeed: 12
   rotationLagSpeed: 8
   swayAmount: 1.5
@@ -227,6 +228,8 @@ MonoBehaviour:
   dropToBlackChance: 0.35
   promptDuration: 4
   fadeDuration: 0.5
+  toggleCooldown: 0.25
+  emptyPromptCooldown: 0.8
   keyboardTogglePrompt: '[F] to toggle On/Off'
   xboxTogglePrompt: Press <sprite name="Right Bumper"> to toggle On/Off
   playStationTogglePrompt: Press <sprite name="R1"> to toggle On/Off
@@ -252,7 +255,7 @@ AudioSource:
   m_GameObject: {fileID: 8947998797594139777}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -1548041752613412317, guid: b8c2be9a28dd4aa479e3e3c867be82bd, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: f13e79efa34834b4a911c9acf61a7974, type: 3}
   m_PlayOnAwake: 0
