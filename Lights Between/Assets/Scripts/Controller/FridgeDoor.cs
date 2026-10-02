@@ -42,7 +42,19 @@ public class FridgeDoor : RotatingOpenable
     public override void Interact()
     {
         base.Interact();
-        RefreshFridgeLightState();
+
+        if (isOpen)
+        {
+            RefreshFridgeLightState();
+        }
+    }
+
+    private void Update()
+    {
+        if (animationCoroutine != null && !isOpen)
+        {
+            RefreshFridgeLightState();
+        }
     }
 
     private void HandlePowerGridStateChanged(bool isPowerActive)
@@ -56,7 +68,10 @@ public class FridgeDoor : RotatingOpenable
 
         if (interiorLight != null)
         {
-            interiorLight.enabled = isOpen && hasPower;
+            bool isMoving = animationCoroutine != null;
+            bool shouldBeOn = (isOpen || isMoving) && hasPower;
+
+            interiorLight.enabled = shouldBeOn;
         }
     }
 }

@@ -5,9 +5,8 @@ using TMPro;
 
 public class HighlightButton : MonoBehaviour,
     IPointerEnterHandler,
+    IPointerExitHandler,
     IPointerClickHandler,
-    ISelectHandler,
-    IDeselectHandler,
     ISubmitHandler
 {
     [Header("References")]
@@ -32,8 +31,6 @@ public class HighlightButton : MonoBehaviour,
     public bool hasInputIcon;
     public Image inputIcon;
 
-    private bool isSelected;
-
     private void Reset()
     {
         buttonImage = GetComponent<Image>();
@@ -57,22 +54,6 @@ public class HighlightButton : MonoBehaviour,
             audioSource = GetComponent<AudioSource>();
     }
 
-    private void OnEnable()
-    {
-        if (InputDeviceDetector.Instance != null)
-        {
-            InputDeviceDetector.Instance.OnDeviceChanged += HandleDeviceChanged;
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (InputDeviceDetector.Instance != null)
-        {
-            InputDeviceDetector.Instance.OnDeviceChanged -= HandleDeviceChanged;
-        }
-    }
-
     private void Start()
     {
         ApplyNormalColours();
@@ -88,48 +69,17 @@ public class HighlightButton : MonoBehaviour,
         if (selectable != null && !selectable.interactable)
             return;
 
-        if (EventSystem.current == null)
-            return;
-
-        if (EventSystem.current.currentSelectedGameObject != gameObject)
-        {
-            EventSystem.current.SetSelectedGameObject(gameObject);
-        }
-    }
-
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        PlaySFX(clickSFX);
-    }
-
-    public void OnSelect(BaseEventData eventData)
-    {
-        isSelected = true;
-
         ApplyHighlightColours();
         PlaySFX(hoverSFX);
 
         if (hasInputIcon && inputIcon != null)
         {
-            if (
-                InputDeviceDetector.Instance != null
-                && InputDeviceDetector.Instance.CurrentDevice
-                    != InputDeviceType.KeyboardMouse
-            )
-            {
-                inputIcon.gameObject.SetActive(true);
-            }
-            else
-            {
-                inputIcon.gameObject.SetActive(false);
-            }
+            inputIcon.gameObject.SetActive(true);
         }
     }
 
-    public void OnDeselect(BaseEventData eventData)
+    public void OnPointerExit(PointerEventData eventData)
     {
-        isSelected = false;
-
         ApplyNormalColours();
 
         if (hasInputIcon && inputIcon != null)
@@ -138,24 +88,20 @@ public class HighlightButton : MonoBehaviour,
         }
     }
 
-    public void OnSubmit(BaseEventData eventData)
+    public void OnPointerClick(PointerEventData eventData)
     {
+        if (selectable != null && !selectable.interactable)
+            return;
+
         PlaySFX(clickSFX);
     }
 
-    private void HandleDeviceChanged(InputDeviceType deviceType)
+    public void OnSubmit(BaseEventData eventData)
     {
-        if (!hasInputIcon || inputIcon == null)
+        if (selectable != null && !selectable.interactable)
             return;
 
-        if (deviceType == InputDeviceType.KeyboardMouse)
-        {
-            inputIcon.gameObject.SetActive(false);
-        }
-        else
-        {
-            inputIcon.gameObject.SetActive(isSelected);
-        }
+        PlaySFX(clickSFX);
     }
 
     private void ApplyNormalColours()

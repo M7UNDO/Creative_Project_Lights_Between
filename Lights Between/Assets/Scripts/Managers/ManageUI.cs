@@ -65,6 +65,9 @@ public class ManageUI : MonoBehaviour
                 pauseScript.Resume();
             }
         }
+
+        CloseSettings();
+
     }
 
     public void Back()

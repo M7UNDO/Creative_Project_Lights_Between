@@ -7,11 +7,13 @@ using UnityEngine.EventSystems;
 public class TabController : MonoBehaviour
 {
     [Header("Tabs & Pages")]
-    [SerializeField] private Selectable[] tabButtons;
+    [SerializeField] private Image[] tabButtons;
     [SerializeField] private GameObject[] pages;
 
-    [Header("Tab Text Colours")]
+    [Header("Tab Colours")]
+    [SerializeField] private Color selectedTabColour = Color.black;
     [SerializeField] private Color selectedTextColour = Color.white;
+    [SerializeField] private Color deselectedTabColour = Color.white;
     [SerializeField] private Color deselectedTextColour = Color.black;
 
     [Header("Settings")]
@@ -30,7 +32,7 @@ public class TabController : MonoBehaviour
     {
         if (tabButtons == null || tabButtons.Length == 0)
         {
-            tabButtons = GetComponentsInChildren<Selectable>(true);
+            tabButtons = GetComponentsInChildren<Image>(true);
         }
 
         tabTexts = new TextMeshProUGUI[tabButtons.Length];
@@ -40,8 +42,39 @@ public class TabController : MonoBehaviour
             if (tabButtons[i] != null)
             {
                 tabTexts[i] = tabButtons[i].GetComponentInChildren<TextMeshProUGUI>();
+
+                RegisterPointerClick(tabButtons[i].gameObject, i);
             }
         }
+    }
+
+    private void RegisterPointerClick(GameObject tabObject, int tabIndex)
+    {
+        EventTrigger trigger = tabObject.GetComponent<EventTrigger>();
+        if (trigger == null)
+        {
+            trigger = tabObject.AddComponent<EventTrigger>();
+        }
+
+        EventTrigger.Entry entry = new EventTrigger.Entry
+        {
+            eventID = EventTriggerType.PointerClick
+        };
+        entry.callback.AddListener((data) => { ActivateTab(tabIndex); });
+        trigger.triggers.Add(entry);
+    }
+
+    private void Start()
+    {
+        if (startWithActiveTab && tabButtons.Length > 0)
+        {
+            ActivateTab(0);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        UnsubscribeActions();
     }
 
     public void InitializeTabNavigation(InputAction previousTabAction, InputAction nextTabAction)
@@ -62,11 +95,6 @@ public class TabController : MonoBehaviour
         }
     }
 
-    private void OnDestroy()
-    {
-        UnsubscribeActions();
-    }
-
     private void UnsubscribeActions()
     {
         if (boundPreviousAction != null)
@@ -77,14 +105,6 @@ public class TabController : MonoBehaviour
         if (boundNextAction != null)
         {
             boundNextAction.performed -= OnNextTabPerformed;
-        }
-    }
-
-    private void Start()
-    {
-        if (startWithActiveTab && tabButtons.Length > 0)
-        {
-            ActivateTab(0);
         }
     }
 
@@ -109,10 +129,6 @@ public class TabController : MonoBehaviour
 
         if (tabButtons[nextTab] != null)
         {
-            if (EventSystem.current != null)
-            {
-                EventSystem.current.SetSelectedGameObject(tabButtons[nextTab].gameObject);
-            }
             ActivateTab(nextTab);
         }
     }
@@ -137,21 +153,14 @@ public class TabController : MonoBehaviour
                 pages[i].SetActive(isSelected);
             }
 
+            if (tabButtons[i] != null)
+            {
+                tabButtons[i].color = isSelected ? selectedTabColour : deselectedTabColour;
+            }
+
             if (tabTexts[i] != null)
             {
                 tabTexts[i].color = isSelected ? selectedTextColour : deselectedTextColour;
-            }
-
-            if (tabButtons[i] != null)
-            {
-                if (isSelected)
-                {
-                    ExecuteEvents.Execute(tabButtons[i].gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.selectHandler);
-                }
-                else
-                {
-                    ExecuteEvents.Execute(tabButtons[i].gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.deselectHandler);
-                }
             }
         }
 
@@ -163,7 +172,7 @@ public class TabController : MonoBehaviour
 
     public bool TryGoBackToTab()
     {
-        if (EventSystem.current == null || currentTab < 0 || currentTab >= tabButtons.Length)
+        if (EventSystem.current == null || !IsValidTab(currentTab))
             return false;
 
         GameObject currentSelected = EventSystem.current.currentSelectedGameObject;
@@ -179,7 +188,6 @@ public class TabController : MonoBehaviour
         if (tabButtons[currentTab] != null)
         {
             EventSystem.current.SetSelectedGameObject(tabButtons[currentTab].gameObject);
-            ExecuteEvents.Execute(tabButtons[currentTab].gameObject, new BaseEventData(EventSystem.current), ExecuteEvents.selectHandler);
             return true;
         }
 
