@@ -134,7 +134,7 @@ public class PauseManager : MonoBehaviour
 
         if (BackgroundMusicManager.Instance != null)
         {
-            BackgroundMusicManager.Instance.PauseMusic();
+            BackgroundMusicManager.Instance.PauseGameMusic();
         }
 
         if (PauseCanvas != null)
@@ -166,7 +166,7 @@ public class PauseManager : MonoBehaviour
 
         if (BackgroundMusicManager.Instance != null)
         {
-            BackgroundMusicManager.Instance.ResumeMusic();
+            BackgroundMusicManager.Instance.ResumeGameMusic();
         }
 
         if (PauseCanvas != null)

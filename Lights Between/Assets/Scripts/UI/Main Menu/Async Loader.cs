@@ -14,8 +14,15 @@ public class AsyncLoader : MonoBehaviour
     [SerializeField] private Slider loadingSlider;
     [SerializeField] private TextMeshProUGUI percentageTxt;
 
+    [SerializeField] MenuMusicManager menuMusicManager;
+
     public void LoadLevelButton(int levelIndex)
     {
+        if (menuMusicManager != null)
+        {
+            menuMusicManager.FadeOutAndStop(1f);
+        }
+
         mainMenu.SetActive(false);
         loadingScreen.SetActive(true);
 

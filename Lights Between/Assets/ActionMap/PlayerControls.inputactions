@@ -169,15 +169,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Start",
-                    "type": "Button",
-                    "id": "76a083e5-3be1-475c-8f58-d3c381e76548",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "Select",
                     "type": "Button",
                     "id": "10278e79-5592-49fe-8ea5-a4dab67720e8",
@@ -818,28 +809,6 @@
                 },
                 {
                     "name": "",
-                    "id": "aff2a004-c671-4602-be8f-60b091cba530",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";KeyboardMouse",
-                    "action": "Start",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "1926956e-0cef-4e86-bc52-7cbd81969981",
-                    "path": "<Gamepad>/start",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "Start",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "b90a5ed2-46fc-47b4-8029-a3c89a3a5aa2",
                     "path": "<Keyboard>/enter",
                     "interactions": "",
@@ -970,6 +939,15 @@
                     "type": "PassThrough",
                     "id": "3b562d8e-8f76-440d-aaa1-dcb02ec27f64",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Start",
+                    "type": "Button",
+                    "id": "07b4970c-82c3-4d07-84da-64bae8461363",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -1347,6 +1325,28 @@
                     "action": "Navigate",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "03da3e01-55c8-4301-877e-5a286417f8a9",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";KeyboardMouse",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cea88197-f27d-4768-a130-f8d8de027d24",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Start",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 },
                 {
                     "name": "",

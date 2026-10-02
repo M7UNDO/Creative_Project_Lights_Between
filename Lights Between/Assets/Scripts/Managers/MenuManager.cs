@@ -1,7 +1,6 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
@@ -27,13 +26,6 @@ public class MainManager : MonoBehaviour
     [Header("Menu Settings")]
     [Space(5)]
     [SerializeField] private float transitionDuration = 1f;
-
-    [Header("First Selected Objects")]
-    [Space(5)]
-    [SerializeField] private GameObject mainMenuFirstSelected;
-    [SerializeField] private GameObject creditsFirstSelected;
-    [SerializeField] private GameObject settingsFirstSelected;
-
     private GameObject lastSelectedBeforeSubMenu;
     private Coroutine selectCoroutine;
 
@@ -41,7 +33,6 @@ public class MainManager : MonoBehaviour
     [Space(5)]
     [SerializeField] private InputActionReference startInput;
     [SerializeField] private InputActionReference backInput;
-    [SerializeField] private InputActionReference selectInput;
 
     public TextMeshProUGUI startText;
     public float startFlashSpeed = 0.5f;
@@ -66,6 +57,8 @@ public class MainManager : MonoBehaviour
 
     private void Awake()
     {
+        playerControls = new PlayerControls();
+
         if (!hasSeenIntro)
         {
             if (menuCamera != null)
@@ -82,11 +75,6 @@ public class MainManager : MonoBehaviour
 
     private void Start()
     {
-        if (tabController == null)
-        {
-            tabController = GetComponentInChildren<TabController>(true);
-        }
-
         if (hasSeenIntro)
         {
             startGamePanel.SetActive(false);
@@ -95,7 +83,6 @@ public class MainManager : MonoBehaviour
             settingsPanel.SetActive(false);
 
             SetMenuCanvasVisible(true);
-            SetSelected(mainMenuFirstSelected);
 
             if (musicManager != null)
             {
@@ -107,12 +94,69 @@ public class MainManager : MonoBehaviour
             ShowStartGamePanel();
         }
 
+        if (tabController == null)
+        {
+            tabController = GetComponentInChildren<TabController>(true);
+        }
+
+        if (tabController != null && playerControls != null)
+        {
+            tabController.InitializeTabNavigation(
+                playerControls.UI.PreviousTab,
+                playerControls.UI.NextTab
+            );
+        }
+
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
 
+    private void OnEnable()
+    {
+        if (playerControls == null)
+        {
+            playerControls = new PlayerControls();
+        }
+
+        playerControls.UI.Enable();
+
+        if (startInput != null && startInput.action != null)
+        {
+            startInput.action.Enable();
+            startInput.action.performed += OnStartPressed;
+        }
+
+        if (backInput != null && backInput.action != null)
+        {
+            backInput.action.Enable();
+            backInput.action.performed += OnBackPressed;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (playerControls != null)
+        {
+            playerControls.UI.Disable();
+        }
+
+        if (startInput != null && startInput.action != null)
+        {
+            startInput.action.performed -= OnStartPressed;
+            startInput.action.Disable();
+        }
+
+        if (backInput != null && backInput.action != null)
+        {
+            backInput.action.performed -= OnBackPressed;
+            backInput.action.Disable();
+        }
+    }
+
     private IEnumerator FlashStart()
     {
+        if (startText == null) yield break;
+
         Color baseColor = startText.color;
 
         while (!hasStartedGame)
@@ -141,24 +185,6 @@ public class MainManager : MonoBehaviour
         startText.color = new Color(baseColor.r, baseColor.g, baseColor.b, 1f);
     }
 
-    private void OnEnable()
-    {
-        startInput.action.Enable();
-        startInput.action.performed += OnStartPressed;
-
-        backInput.action.Enable();
-        backInput.action.performed += OnBackPressed;
-    }
-
-    private void OnDisable()
-    {
-        startInput.action.performed -= OnStartPressed;
-        startInput.action.Disable();
-
-        backInput.action.performed -= OnBackPressed;
-        backInput.action.Disable();
-    }
-
     public void ResetMenuState()
     {
         mainMenuPanel.SetActive(true);
@@ -166,7 +192,6 @@ public class MainManager : MonoBehaviour
         settingsPanel.SetActive(false);
 
         SetMenuCanvasVisible(true);
-        SetSelected(mainMenuFirstSelected);
     }
 
     public void ShowStartGamePanel()
@@ -197,7 +222,10 @@ public class MainManager : MonoBehaviour
         if (flashCoroutine != null)
             StopCoroutine(flashCoroutine);
 
-        startText.color = new Color(startText.color.r, startText.color.g, startText.color.b, 1f);
+        if (startText != null)
+        {
+            startText.color = new Color(startText.color.r, startText.color.g, startText.color.b, 1f);
+        }
 
         if (musicManager != null)
         {
@@ -231,8 +259,6 @@ public class MainManager : MonoBehaviour
         mainMenuPanel.SetActive(true);
         creditsPanel.SetActive(false);
         settingsPanel.SetActive(false);
-
-        SetSelected(mainMenuFirstSelected);
     }
 
     private IEnumerator FadeStartCanvas(float targetAlpha)
@@ -292,11 +318,6 @@ public class MainManager : MonoBehaviour
     {
         if (settingsPanel.activeSelf)
         {
-            if (tabController != null && tabController.TryGoBackToTab())
-            {
-                return;
-            }
-
             CloseSettings();
             return;
         }
@@ -310,86 +331,28 @@ public class MainManager : MonoBehaviour
 
     public void OpenSettings()
     {
-        RememberCurrentSelection();
-
         settingsPanel.SetActive(true);
-
         SetMenuCanvasVisible(false);
-        SetSelected(settingsFirstSelected);
     }
 
     public void CloseSettings()
     {
         settingsPanel.SetActive(false);
         mainMenuPanel.SetActive(true);
-
         SetMenuCanvasVisible(true);
-        RestorePreviousSelection();
     }
 
     public void OpenCredits()
     {
-        RememberCurrentSelection();
-
         creditsPanel.SetActive(true);
-
         SetMenuCanvasVisible(false);
-        SetSelected(creditsFirstSelected);
     }
 
     public void CloseCredits()
     {
         creditsPanel.SetActive(false);
         mainMenuPanel.SetActive(true);
-
         SetMenuCanvasVisible(true);
-        RestorePreviousSelection();
-    }
-
-    public void ToggleSettings()
-    {
-        if (settingsPanel.activeSelf)
-            CloseSettings();
-        else
-            OpenSettings();
-    }
-
-    private void RememberCurrentSelection()
-    {
-        if (EventSystem.current == null) return;
-
-        GameObject current = EventSystem.current.currentSelectedGameObject;
-
-        if (current != null)
-            lastSelectedBeforeSubMenu = current;
-        else
-            lastSelectedBeforeSubMenu = mainMenuFirstSelected;
-    }
-
-    private void RestorePreviousSelection()
-    {
-        if (lastSelectedBeforeSubMenu != null)
-            SetSelected(lastSelectedBeforeSubMenu);
-        else
-            SetSelected(mainMenuFirstSelected);
-    }
-
-    private void SetSelected(GameObject obj)
-    {
-        if (obj == null || EventSystem.current == null) return;
-
-        if (selectCoroutine != null)
-            StopCoroutine(selectCoroutine);
-
-        selectCoroutine = StartCoroutine(SetSelectedNextFrame(obj));
-    }
-
-    private IEnumerator SetSelectedNextFrame(GameObject obj)
-    {
-        yield return null;
-        EventSystem.current.SetSelectedGameObject(null);
-        yield return null;
-        EventSystem.current.SetSelectedGameObject(obj);
     }
 
     private void SetMenuCanvasVisible(bool visible)

@@ -255,15 +255,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Start"",
-                    ""type"": ""Button"",
-                    ""id"": ""76a083e5-3be1-475c-8f58-d3c381e76548"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""Select"",
                     ""type"": ""Button"",
                     ""id"": ""10278e79-5592-49fe-8ea5-a4dab67720e8"",
@@ -904,28 +895,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""aff2a004-c671-4602-be8f-60b091cba530"",
-                    ""path"": ""<Keyboard>/space"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";KeyboardMouse"",
-                    ""action"": ""Start"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""1926956e-0cef-4e86-bc52-7cbd81969981"",
-                    ""path"": ""<Gamepad>/start"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": "";Gamepad"",
-                    ""action"": ""Start"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""b90a5ed2-46fc-47b4-8029-a3c89a3a5aa2"",
                     ""path"": ""<Keyboard>/enter"",
                     ""interactions"": """",
@@ -1056,6 +1025,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""type"": ""PassThrough"",
                     ""id"": ""3b562d8e-8f76-440d-aaa1-dcb02ec27f64"",
                     ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Start"",
+                    ""type"": ""Button"",
+                    ""id"": ""07b4970c-82c3-4d07-84da-64bae8461363"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -1436,6 +1414,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""03da3e01-55c8-4301-877e-5a286417f8a9"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardMouse"",
+                    ""action"": ""Start"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cea88197-f27d-4768-a130-f8d8de027d24"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""Start"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""7f450365-60d8-4021-b721-463e189b1e3f"",
                     ""path"": ""*/{Submit}"",
                     ""interactions"": """",
@@ -1740,7 +1740,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_ChangeBattery = m_Player.FindAction("ChangeBattery", throwIfNotFound: true);
         m_Player_Wheel = m_Player.FindAction("Wheel", throwIfNotFound: true);
         m_Player_PlaceObject = m_Player.FindAction("PlaceObject", throwIfNotFound: true);
-        m_Player_Start = m_Player.FindAction("Start", throwIfNotFound: true);
         m_Player_Select = m_Player.FindAction("Select", throwIfNotFound: true);
         m_Player_ConfirmDial = m_Player.FindAction("ConfirmDial", throwIfNotFound: true);
         m_Player_ContinueDialogue = m_Player.FindAction("ContinueDialogue", throwIfNotFound: true);
@@ -1750,6 +1749,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
+        m_UI_Start = m_UI.FindAction("Start", throwIfNotFound: true);
         m_UI_Submit = m_UI.FindAction("Submit", throwIfNotFound: true);
         m_UI_Cancel = m_UI.FindAction("Cancel", throwIfNotFound: true);
         m_UI_Point = m_UI.FindAction("Point", throwIfNotFound: true);
@@ -1861,7 +1861,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ChangeBattery;
     private readonly InputAction m_Player_Wheel;
     private readonly InputAction m_Player_PlaceObject;
-    private readonly InputAction m_Player_Start;
     private readonly InputAction m_Player_Select;
     private readonly InputAction m_Player_ConfirmDial;
     private readonly InputAction m_Player_ContinueDialogue;
@@ -1951,10 +1950,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/PlaceObject".
         /// </summary>
         public InputAction @PlaceObject => m_Wrapper.m_Player_PlaceObject;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/Start".
-        /// </summary>
-        public InputAction @Start => m_Wrapper.m_Player_Start;
         /// <summary>
         /// Provides access to the underlying input action "Player/Select".
         /// </summary>
@@ -2059,9 +2054,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @PlaceObject.started += instance.OnPlaceObject;
             @PlaceObject.performed += instance.OnPlaceObject;
             @PlaceObject.canceled += instance.OnPlaceObject;
-            @Start.started += instance.OnStart;
-            @Start.performed += instance.OnStart;
-            @Start.canceled += instance.OnStart;
             @Select.started += instance.OnSelect;
             @Select.performed += instance.OnSelect;
             @Select.canceled += instance.OnSelect;
@@ -2145,9 +2137,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @PlaceObject.started -= instance.OnPlaceObject;
             @PlaceObject.performed -= instance.OnPlaceObject;
             @PlaceObject.canceled -= instance.OnPlaceObject;
-            @Start.started -= instance.OnStart;
-            @Start.performed -= instance.OnStart;
-            @Start.canceled -= instance.OnStart;
             @Select.started -= instance.OnSelect;
             @Select.performed -= instance.OnSelect;
             @Select.canceled -= instance.OnSelect;
@@ -2204,6 +2193,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_UI;
     private List<IUIActions> m_UIActionsCallbackInterfaces = new List<IUIActions>();
     private readonly InputAction m_UI_Navigate;
+    private readonly InputAction m_UI_Start;
     private readonly InputAction m_UI_Submit;
     private readonly InputAction m_UI_Cancel;
     private readonly InputAction m_UI_Point;
@@ -2231,6 +2221,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "UI/Navigate".
         /// </summary>
         public InputAction @Navigate => m_Wrapper.m_UI_Navigate;
+        /// <summary>
+        /// Provides access to the underlying input action "UI/Start".
+        /// </summary>
+        public InputAction @Start => m_Wrapper.m_UI_Start;
         /// <summary>
         /// Provides access to the underlying input action "UI/Submit".
         /// </summary>
@@ -2308,6 +2302,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Navigate.started += instance.OnNavigate;
             @Navigate.performed += instance.OnNavigate;
             @Navigate.canceled += instance.OnNavigate;
+            @Start.started += instance.OnStart;
+            @Start.performed += instance.OnStart;
+            @Start.canceled += instance.OnStart;
             @Submit.started += instance.OnSubmit;
             @Submit.performed += instance.OnSubmit;
             @Submit.canceled += instance.OnSubmit;
@@ -2358,6 +2355,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Navigate.started -= instance.OnNavigate;
             @Navigate.performed -= instance.OnNavigate;
             @Navigate.canceled -= instance.OnNavigate;
+            @Start.started -= instance.OnStart;
+            @Start.performed -= instance.OnStart;
+            @Start.canceled -= instance.OnStart;
             @Submit.started -= instance.OnSubmit;
             @Submit.performed -= instance.OnSubmit;
             @Submit.canceled -= instance.OnSubmit;
@@ -2613,13 +2613,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnPlaceObject(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Start" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnStart(InputAction.CallbackContext context);
-        /// <summary>
         /// Method invoked when associated input action "Select" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
@@ -2676,6 +2669,13 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnNavigate(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Start" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnStart(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Submit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

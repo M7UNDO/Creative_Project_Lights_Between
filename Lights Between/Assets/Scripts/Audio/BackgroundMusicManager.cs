@@ -27,6 +27,10 @@ public class BackgroundMusicManager : MonoBehaviour
     [SerializeField] private AudioSource audioSourceA;
     [SerializeField] private AudioSource audioSourceB;
 
+    [Header("Pause Music Settings")]
+    [SerializeField] private AudioClip pauseMenuClip;
+    [Range(0f, 1f)][SerializeField] private float pauseMenuBaseVolume = 1f;
+
     [Header("Track Library")]
     [SerializeField] private List<MusicTrack> musicTracks = new List<MusicTrack>();
 
@@ -37,6 +41,9 @@ public class BackgroundMusicManager : MonoBehaviour
     private AudioSource inactiveSource;
     private Coroutine fadeCoroutine;
     private MusicState currentMusicState;
+
+    private AudioSource pausedGameplaySource;
+    private float pausedGameplayTime;
 
     private Dictionary<MusicState, MusicTrack> trackLookup = new Dictionary<MusicState, MusicTrack>();
 
@@ -85,16 +92,124 @@ public class BackgroundMusicManager : MonoBehaviour
         }
     }
 
-    public void PauseMusic()
+    public void PauseGameMusic(float fadeDuration = 0.5f)
     {
-        if (audioSourceA != null && audioSourceA.isPlaying) audioSourceA.Pause();
-        if (audioSourceB != null && audioSourceB.isPlaying) audioSourceB.Pause();
+        if (fadeCoroutine != null)
+        {
+            StopCoroutine(fadeCoroutine);
+        }
+
+        if (pauseMenuClip != null)
+        {
+            pausedGameplaySource = activeSource;
+
+            if (activeSource != null && activeSource.clip != null)
+            {
+                pausedGameplayTime = activeSource.time;
+                pausedGameplaySource.Pause();
+            }
+            else
+            {
+                pausedGameplayTime = 0f;
+            }
+
+            MusicTrack pauseTrack = new MusicTrack
+            {
+                clip = pauseMenuClip,
+                baseVolume = pauseMenuBaseVolume
+            };
+
+            fadeCoroutine = StartCoroutine(CrossfadeToPauseMusic(pauseTrack, fadeDuration));
+        }
+        else
+        {
+            if (activeSource != null) activeSource.Pause();
+            if (inactiveSource != null) inactiveSource.Pause();
+        }
     }
 
-    public void ResumeMusic()
+    public void ResumeGameMusic(float fadeDuration = 0.5f)
     {
-        if (audioSourceA != null) audioSourceA.UnPause();
-        if (audioSourceB != null) audioSourceB.UnPause();
+        if (fadeCoroutine != null)
+        {
+            StopCoroutine(fadeCoroutine);
+        }
+
+        if (pauseMenuClip != null && pausedGameplaySource != null)
+        {
+            fadeCoroutine = StartCoroutine(CrossfadeFromPauseMusic(fadeDuration));
+        }
+        else
+        {
+            audioSourceA.UnPause();
+            audioSourceB.UnPause();
+        }
+    }
+
+    private IEnumerator CrossfadeToPauseMusic(MusicTrack pauseTrack, float duration)
+    {
+        inactiveSource.clip = pauseTrack.clip;
+        inactiveSource.time = 0f;
+        inactiveSource.volume = 0f;
+        inactiveSource.Play();
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / duration;
+
+            inactiveSource.volume = Mathf.Lerp(0f, pauseTrack.baseVolume, t);
+            yield return null;
+        }
+
+        inactiveSource.volume = pauseTrack.baseVolume;
+
+        AudioSource temp = activeSource;
+        activeSource = inactiveSource;
+        inactiveSource = temp;
+
+        fadeCoroutine = null;
+    }
+
+    private IEnumerator CrossfadeFromPauseMusic(float duration)
+    {
+        AudioSource pauseMenuSource = activeSource;
+        AudioSource gameplaySource = pausedGameplaySource;
+
+        float pauseStartVolume = pauseMenuSource.volume;
+
+        if (!trackLookup.TryGetValue(currentMusicState, out MusicTrack targetTrack))
+        {
+            targetTrack.baseVolume = 1f;
+        }
+
+        gameplaySource.UnPause();
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / duration;
+
+            pauseMenuSource.volume = Mathf.Lerp(pauseStartVolume, 0f, t);
+            gameplaySource.volume = Mathf.Lerp(0f, targetTrack.baseVolume, t);
+
+            yield return null;
+        }
+
+        pauseMenuSource.volume = 0f;
+        pauseMenuSource.Stop();
+
+        gameplaySource.volume = targetTrack.baseVolume;
+
+        activeSource = gameplaySource;
+        inactiveSource = pauseMenuSource;
+        pausedGameplaySource = null;
+
+        fadeCoroutine = null;
     }
 
     public void TransitionToState(MusicState newState, float fadeDuration = -1f)
