@@ -123,19 +123,13 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
             currentInspectInstance.transform.localRotation = Quaternion.Euler(inspectionRotationOffset);
             currentInspectInstance.transform.localScale = inspectionScale;
 
-            overallModelOutline = currentInspectInstance.GetComponent<Outline>();
-            if (overallModelOutline == null)
-            {
-                overallModelOutline = currentInspectInstance.GetComponentInChildren<Outline>();
-            }
+            CacheSpawnedDials();
 
             if (overallModelOutline != null)
             {
                 overallModelOutline.enabled = true;
                 overallModelOutline.OutlineColor = activeOutlineColor;
             }
-
-            CacheSpawnedDials();
         }
 
         EvaluateInspectionLight();
@@ -211,6 +205,8 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
         PadlockInspectContainer container = currentInspectInstance.GetComponent<PadlockInspectContainer>();
         if (container != null)
         {
+            overallModelOutline = container.GetOutline();
+
             if (container.GetDials() != null && container.GetDials().Length == dials.Length)
             {
                 dials = container.GetDials();

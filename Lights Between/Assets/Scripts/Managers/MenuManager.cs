@@ -23,11 +23,14 @@ public class MainManager : MonoBehaviour
     [SerializeField] private CanvasGroup startCanvasGroup;
     [SerializeField] private CanvasGroup menuCanvasGroup;
 
+    [Header("Animation")]
+    [Space(5)]
+    [SerializeField] private Animator menuAnimator;
+    [SerializeField] private string startAnimationTrigger = "Start";
+
     [Header("Menu Settings")]
     [Space(5)]
     [SerializeField] private float transitionDuration = 1f;
-    private GameObject lastSelectedBeforeSubMenu;
-    private Coroutine selectCoroutine;
 
     [Header("Input")]
     [Space(5)]
@@ -59,6 +62,11 @@ public class MainManager : MonoBehaviour
     {
         playerControls = new PlayerControls();
 
+        if (menuAnimator == null)
+        {
+            menuAnimator = GetComponent<Animator>();
+        }
+
         if (!hasSeenIntro)
         {
             if (menuCamera != null)
@@ -82,6 +90,7 @@ public class MainManager : MonoBehaviour
             creditsPanel.SetActive(false);
             settingsPanel.SetActive(false);
 
+            SetStartCanvasVisible(false);
             SetMenuCanvasVisible(true);
 
             if (musicManager != null)
@@ -249,58 +258,27 @@ public class MainManager : MonoBehaviour
         if (startGameSource != null)
             startGameSource.Play();
 
-        yield return StartCoroutine(FadeStartCanvas(0f));
-        yield return StartCoroutine(RotateCamera(gameRotation));
+        if (menuAnimator != null && !string.IsNullOrEmpty(startAnimationTrigger))
+        {
+            menuAnimator.SetTrigger(startAnimationTrigger);
+        }
+
+        yield return new WaitForSecondsRealtime(transitionDuration);
+
+        // Disable animator
+        if (menuAnimator != null)
+        {
+            menuAnimator.enabled = false;
+        }
 
         startGamePanel.SetActive(false);
-
-        SetMenuCanvasVisible(true);
+        SetStartCanvasVisible(false);
 
         mainMenuPanel.SetActive(true);
         creditsPanel.SetActive(false);
         settingsPanel.SetActive(false);
-    }
 
-    private IEnumerator FadeStartCanvas(float targetAlpha)
-    {
-        if (startCanvasGroup == null) yield break;
-
-        float startAlpha = startCanvasGroup.alpha;
-        float t = 0f;
-
-        startCanvasGroup.blocksRaycasts = true;
-
-        while (t < transitionDuration)
-        {
-            t += Time.unscaledDeltaTime;
-            float normalized = t / transitionDuration;
-            startCanvasGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, normalized);
-            yield return null;
-        }
-
-        startCanvasGroup.alpha = targetAlpha;
-        startCanvasGroup.blocksRaycasts = targetAlpha > 0f;
-    }
-
-    private IEnumerator RotateCamera(Vector3 targetEuler)
-    {
-        if (menuCamera == null)
-            yield break;
-
-        Quaternion startRot = menuCamera.rotation;
-        Quaternion targetRot = Quaternion.Euler(targetEuler);
-
-        float t = 0f;
-
-        while (t < transitionDuration)
-        {
-            t += Time.unscaledDeltaTime;
-            float normalized = t / transitionDuration;
-            menuCamera.rotation = Quaternion.Lerp(startRot, targetRot, normalized);
-            yield return null;
-        }
-
-        menuCamera.rotation = targetRot;
+        SetMenuCanvasVisible(true);
     }
 
     private void ResetCamera()

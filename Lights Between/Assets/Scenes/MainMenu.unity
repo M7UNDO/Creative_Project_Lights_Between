@@ -650,7 +650,9 @@ MonoBehaviour:
   settingsPanel: {fileID: 8760040452673441237}
   startCanvasGroup: {fileID: 2510782420562156488}
   menuCanvasGroup: {fileID: 1955071742963924512}
-  transitionDuration: 2
+  menuAnimator: {fileID: 759885286}
+  startAnimationTrigger: Start
+  transitionDuration: 2.45
   startInput: {fileID: -6290986374690536749, guid: b28cb1f9c25d5ed4c8f044a0ec6e47a1, type: 3}
   backInput: {fileID: 4876159811228266767, guid: b28cb1f9c25d5ed4c8f044a0ec6e47a1, type: 3}
   startText: {fileID: 6204616507076585757}
@@ -5093,7 +5095,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8442706860320500799}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0

@@ -1,8 +1,8 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class AsyncLoader : MonoBehaviour
 {
@@ -10,35 +10,75 @@ public class AsyncLoader : MonoBehaviour
     [SerializeField] private GameObject loadingScreen;
     [SerializeField] private GameObject mainMenu;
 
-    [Header("Slider")]
+    [Header("Slider UI")]
     [SerializeField] private Slider loadingSlider;
     [SerializeField] private TextMeshProUGUI percentageTxt;
 
-    [SerializeField] MenuMusicManager menuMusicManager;
+    [Header("Audio")]
+    [SerializeField] private MenuMusicManager menuMusicManager;
 
     public void LoadLevelButton(int levelIndex)
+    {
+        if (levelIndex < 0 || levelIndex >= SceneManager.sceneCountInBuildSettings)
+        {
+            Debug.LogError($"[AsyncLoader] Invalid scene index: {levelIndex}. Check your Build Settings.");
+            return;
+        }
+
+        StartCoroutine(LoadLevelRoutine(levelIndex));
+    }
+
+    public void LoadLevelButton(string sceneName)
+    {
+        if (string.IsNullOrEmpty(sceneName))
+        {
+            Debug.LogError("[AsyncLoader] Scene name is null or empty.");
+            return;
+        }
+
+        StartCoroutine(LoadLevelRoutine(sceneName));
+    }
+
+    private IEnumerator LoadLevelRoutine(object sceneIdentifier)
     {
         if (menuMusicManager != null)
         {
             menuMusicManager.FadeOutAndStop(1f);
         }
 
-        mainMenu.SetActive(false);
-        loadingScreen.SetActive(true);
+        if (mainMenu != null)
+        {
+            mainMenu.SetActive(false);
+        }
 
-        StartCoroutine(LoadLevelAsync(levelIndex));
-    }
+        if (loadingScreen != null)
+        {
+            loadingScreen.SetActive(true);
+        }
 
-    IEnumerator LoadLevelAsync(int levelIndex)
-    {
-        AsyncOperation loadOperation = SceneManager.LoadSceneAsync(levelIndex);
+        AsyncOperation loadOperation = sceneIdentifier is int index
+            ? SceneManager.LoadSceneAsync(index)
+            : SceneManager.LoadSceneAsync((string)sceneIdentifier);
+
+        if (loadOperation == null)
+        {
+            Debug.LogError($"[AsyncLoader] Failed to start async load for: {sceneIdentifier}");
+            yield break;
+        }
 
         while (!loadOperation.isDone)
         {
             float progressValue = Mathf.Clamp01(loadOperation.progress / 0.9f);
 
-            loadingSlider.value = progressValue;
-            percentageTxt.text = Mathf.RoundToInt(progressValue * 100f) + "%";
+            if (loadingSlider != null)
+            {
+                loadingSlider.value = progressValue;
+            }
+
+            if (percentageTxt != null)
+            {
+                percentageTxt.text = $"{Mathf.RoundToInt(progressValue * 100f)}%";
+            }
 
             yield return null;
         }

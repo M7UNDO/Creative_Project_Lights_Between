@@ -4808,11 +4808,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 454345811}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &204053977 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1846294953630431646, guid: 5c9e61ed5e3b0b6438f0e13719ee5651, type: 3}
-  m_PrefabInstance: {fileID: 65083166547497805}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &213555110
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16864,8 +16859,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 00000
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5c0410307b56a964598b6b92142e6d80, type: 2}
-  m_sharedMaterial: {fileID: -5722132103952675201, guid: 5c0410307b56a964598b6b92142e6d80, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 786eebad0ec9b6248a92f6a4ca8e3623, type: 2}
+  m_sharedMaterial: {fileID: -5041089966387696607, guid: 786eebad0ec9b6248a92f6a4ca8e3623, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -25952,24 +25947,6 @@ MonoBehaviour:
   objectiveToActivate: {fileID: 0}
   postPickupDialogue: {fileID: 0}
   pickUpSFX: {fileID: 0}
---- !u!114 &1192171821
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5929244462846633487}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!1 &1201488754
 GameObject:
   m_ObjectHideFlags: 0
@@ -33056,7 +33033,6 @@ MonoBehaviour:
     m_Bits: 1
   defaultCrosshair: {fileID: 7572633587466930537}
   interactableCrosshair: {fileID: 138618882231563439}
-  _activeOutline: {fileID: 0}
   isInteractable: 0
   heldLayer:
     serializedVersion: 2
@@ -44689,10 +44665,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1846294953630431646, guid: 5c9e61ed5e3b0b6438f0e13719ee5651, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6227924888593986304}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5c9e61ed5e3b0b6438f0e13719ee5651, type: 3}
 --- !u!4 &77302631775890940
 Transform:
@@ -47481,7 +47454,7 @@ Transform:
   m_GameObject: {fileID: 919132148716805579}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 25, y: 0, z: 16.02}
+  m_LocalPosition: {x: -0.47, y: 1.5, z: 16.02}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -49948,7 +49921,6 @@ GameObject:
   - component: {fileID: 1711813855006049493}
   - component: {fileID: 832274232}
   - component: {fileID: 832274231}
-  - component: {fileID: 3469287837724749856}
   m_Layer: 7
   m_Name: Remote
   m_TagString: Untagged
@@ -62550,24 +62522,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147939665152}
   m_Mesh: {fileID: -677470010145236080, guid: 99733b5a1532c5e4f9ea80ceed81b5de, type: 3}
---- !u!114 &3469287837724749856
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132147939665152}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!33 &3469287837752892201
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -63054,7 +63008,6 @@ GameObject:
   - component: {fileID: 6441134371357586319}
   - component: {fileID: 1126781167}
   - component: {fileID: 1126781168}
-  - component: {fileID: 8908042516443214160}
   m_Layer: 7
   m_Name: PizzaSlice
   m_TagString: Untagged
@@ -65045,7 +64998,6 @@ GameObject:
   - component: {fileID: 4551017339685265367}
   - component: {fileID: 1722908867}
   - component: {fileID: 1722908868}
-  - component: {fileID: 5884529743922814934}
   m_Layer: 7
   m_Name: PizzaSlice
   m_TagString: Untagged
@@ -67550,7 +67502,6 @@ GameObject:
   - component: {fileID: 392150726691378313}
   - component: {fileID: 695702605}
   - component: {fileID: 695702606}
-  - component: {fileID: 8294803679941427709}
   m_Layer: 7
   m_Name: PizzaSlice
   m_TagString: Untagged
@@ -68840,7 +68791,6 @@ GameObject:
   - component: {fileID: 6468433136711448433}
   - component: {fileID: 486797453}
   - component: {fileID: 486797454}
-  - component: {fileID: 6468433136711448434}
   m_Layer: 7
   m_Name: PizzaSlice
   m_TagString: Untagged
@@ -70709,7 +70659,6 @@ GameObject:
   - component: {fileID: 6477405452075018280}
   - component: {fileID: 5999743763235906116}
   - component: {fileID: 3876575746858302976}
-  - component: {fileID: 9085101259080043280}
   m_Layer: 7
   m_Name: Basement_Key
   m_TagString: Key
@@ -72437,7 +72386,6 @@ GameObject:
   - component: {fileID: 7922543019119257308}
   - component: {fileID: 1940729494}
   - component: {fileID: 1940729495}
-  - component: {fileID: 7922543019119257309}
   m_Layer: 7
   m_Name: PizzaSlice
   m_TagString: Untagged
@@ -73701,24 +73649,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8255871373142260760}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5884529743922814934
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3894812128663813338}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!23 &5887385101499582232
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -73847,7 +73777,6 @@ GameObject:
   - component: {fileID: 8450007124913449425}
   - component: {fileID: 1230578845278232829}
   - component: {fileID: 1192171817}
-  - component: {fileID: 1192171821}
   m_Layer: 7
   m_Name: Oil_Lamp_PickUp
   m_TagString: Untagged
@@ -76745,24 +76674,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6099199367531820512, guid: 5c9e61ed5e3b0b6438f0e13719ee5651, type: 3}
   m_PrefabInstance: {fileID: 65083166547497805}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &6227924888593986304
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 204053977}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!4 &6232483307208938283
 Transform:
   m_ObjectHideFlags: 0
@@ -78403,24 +78314,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6468433136711448434
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4788252580090922867}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!33 &6470016910555822875
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -78689,7 +78582,6 @@ GameObject:
   - component: {fileID: 6977024871899928217}
   - component: {fileID: 1681175388}
   - component: {fileID: 1681175389}
-  - component: {fileID: 7143690665489329772}
   m_Layer: 7
   m_Name: PizzaSlice
   m_TagString: Untagged
@@ -81806,24 +81698,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6493745476582642145}
   m_Mesh: {fileID: -749095445695739834, guid: f4b700f04e8bebc44b43d159ba8df871, type: 3}
---- !u!114 &7143690665489329772
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6493745476582642145}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!1 &7144949929546069741
 GameObject:
   m_ObjectHideFlags: 0
@@ -84588,7 +84462,6 @@ GameObject:
   - component: {fileID: 2376936507428592328}
   - component: {fileID: 929124424}
   - component: {fileID: 929124425}
-  - component: {fileID: 7728196054756798155}
   m_Layer: 7
   m_Name: PizzaSlice
   m_TagString: Untagged
@@ -84596,24 +84469,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &7728196054756798155
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7728196054756798154}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!4 &7731201807044785244
 Transform:
   m_ObjectHideFlags: 0
@@ -85893,24 +85748,6 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &7922543019119257309
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5747827597780355969}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!33 &7923150505587615082
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -86602,7 +86439,6 @@ GameObject:
   - component: {fileID: 8070409392670998048}
   - component: {fileID: 8070409392670998047}
   - component: {fileID: 8070409392670998046}
-  - component: {fileID: 8070409392671308063}
   m_Layer: 7
   m_Name: Bag
   m_TagString: PlayerBag
@@ -86690,24 +86526,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2636493190940263288}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8070409392671308063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8070409392670940842}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!1 &8071480101123689073
 GameObject:
   m_ObjectHideFlags: 0
@@ -88460,24 +88278,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8255871373142260760}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8294803679941427709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4507476773838586990}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!4 &8295622599524010420
 Transform:
   m_ObjectHideFlags: 0
@@ -89503,7 +89303,6 @@ GameObject:
   - component: {fileID: 3345468668576568302}
   - component: {fileID: 1500130542}
   - component: {fileID: 1500130543}
-  - component: {fileID: 8473567354006225809}
   m_Layer: 7
   m_Name: PizzaSlice
   m_TagString: Untagged
@@ -89511,24 +89310,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &8473567354006225809
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8473567354006225808}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!33 &8473876720464873184
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -90503,7 +90284,6 @@ MonoBehaviour:
     m_Bits: 1
   defaultCrosshair: {fileID: 7572633587466930537}
   interactableCrosshair: {fileID: 138618882231563439}
-  _activeOutline: {fileID: 0}
   isInteractable: 0
   heldLayer:
     serializedVersion: 2
@@ -91514,24 +91294,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3551642095283159630}
   m_Mesh: {fileID: 1704309257066748660, guid: f4b700f04e8bebc44b43d159ba8df871, type: 3}
---- !u!114 &8908042516443214160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3551642095283159630}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!4 &8909512005288371861
 Transform:
   m_ObjectHideFlags: 0
@@ -92828,24 +92590,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5353580601702068640}
   m_Mesh: {fileID: -2805758560558034005, guid: 108bf887746ed3848ae5c01f60e065c5, type: 3}
---- !u!114 &9085101259080043280
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5353580601702068640}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Outline
-  outlineMode: 0
-  outlineColor: {r: 1, g: 1, b: 1, a: 1}
-  outlineWidth: 2
-  precomputeOutline: 0
-  bakeKeys: []
-  bakeValues: []
 --- !u!4 &9087918987717148610
 Transform:
   m_ObjectHideFlags: 0

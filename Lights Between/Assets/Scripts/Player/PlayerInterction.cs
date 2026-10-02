@@ -16,7 +16,6 @@ public class PlayerInteraction : MonoBehaviour
     [SerializeField] private Image defaultCrosshair;
     [SerializeField] private Image interactableCrosshair;
 
-    [SerializeField] private Outline _activeOutline;
     public bool isInteractable = false;
     private IInteractable currentInteractable;
     private IInteractable _lastInteractable;
@@ -78,10 +77,6 @@ public class PlayerInteraction : MonoBehaviour
         {
             targetedWorldUI = ProcessInteractableHit(hit);
         }
-        else
-        {
-            HandleObjectOutline(null);
-        }
 
         HandleLastInteractableTransition();
         UpdateUnfocusedWorldUIs(targetedWorldUI);
@@ -95,18 +90,15 @@ public class PlayerInteraction : MonoBehaviour
 
         if (!interaction.IsValid)
         {
-            HandleObjectOutline(null);
             return null;
         }
 
         if (!IsInteractionAllowed(interaction))
         {
-            HandleObjectOutline(null);
             return null;
         }
 
         ApplyInteractionState(interaction);
-        HandleObjectOutline(hit.collider.gameObject);
 
         InteractionResult result = DetermineInteraction(hit.collider, interaction);
         isInteractable = result.CanInteract;
@@ -344,31 +336,6 @@ public class PlayerInteraction : MonoBehaviour
         }
     }
 
-    private void HandleObjectOutline(GameObject outlinedObj)
-    {
-        Outline newOutline = null;
-
-        if (outlinedObj != null)
-        {
-            newOutline = outlinedObj.GetComponent<Outline>();
-        }
-
-        if (_activeOutline != newOutline)
-        {
-            if (_activeOutline != null)
-            {
-                _activeOutline.enabled = false;
-            }
-
-            _activeOutline = newOutline;
-
-            if (_activeOutline != null)
-            {
-                _activeOutline.enabled = true;
-            }
-        }
-    }
-
     private Transform GetClosestOwner(WorldSpaceInteractableUI ui)
     {
         IInteractable parentInteractable = ui.GetComponentInParent<IInteractable>();
@@ -493,12 +460,6 @@ public class PlayerInteraction : MonoBehaviour
         {
             _currentWorldUI.HidePrompt();
             _currentWorldUI = null;
-        }
-
-        if (_activeOutline != null)
-        {
-            _activeOutline.enabled = false;
-            _activeOutline = null;
         }
     }
 
