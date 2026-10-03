@@ -52,6 +52,8 @@ public class ToolWheelController : MonoBehaviour
 
     private void Update()
     {
+        if (fpsController.isInMiniGame || fpsController.isInspecting || fpsController.isJumpscareActive || fpsController.isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen) return;
+
         if (input == null) return;
 
         if (input.wheel && !isWheelOpen)

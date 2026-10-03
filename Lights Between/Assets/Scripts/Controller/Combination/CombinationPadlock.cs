@@ -45,6 +45,10 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
     [SerializeField] private float rotationSpeed = 12.0f;
     [SerializeField] private float degreesPerStep = 36.0f;
 
+    [Header("Animation Settings")]
+    [SerializeField] private string unlockTriggerName = "Unlock";
+    [SerializeField] private float unlockAnimationDuration = 1.5f;
+
     [Header("Overall Model Outline Feedback")]
     [SerializeField] private Color activeOutlineColor = Color.yellow;
     [SerializeField] private Color correctOutlineColor = Color.green;
@@ -63,6 +67,7 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
     private FPSController fpsController;
     private GameObject currentInspectInstance;
     private Outline overallModelOutline;
+    private Animator inspectModelAnimator;
     private int selectedDialIndex = 0;
     private bool isInspecting = false;
     private bool isUnlocked = false;
@@ -206,6 +211,7 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
         if (container != null)
         {
             overallModelOutline = container.GetOutline();
+            inspectModelAnimator = container.GetAnimator();
 
             if (container.GetDials() != null && container.GetDials().Length == dials.Length)
             {
@@ -380,14 +386,19 @@ public class CombinationPadlock : MonoBehaviour, IInteractable
 
         if (isCorrect)
         {
-            Debug.Log("<color=green>[Padlock] Code Correct! Unlocking...</color>");
+            Debug.Log("<color=green>[Padlock] Code Correct! Playing unlock animation...</color>");
 
             if (audioSource != null && lockSuccessSFX != null)
             {
                 audioSource.PlayOneShot(lockSuccessSFX);
             }
 
-            yield return new WaitForSeconds(1.0f);
+            if (inspectModelAnimator != null && !string.IsNullOrEmpty(unlockTriggerName))
+            {
+                inspectModelAnimator.SetTrigger(unlockTriggerName);
+            }
+
+            yield return new WaitForSeconds(unlockAnimationDuration);
 
             isUnlocked = true;
 
