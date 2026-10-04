@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class LighterScript : MonoBehaviour
@@ -8,6 +9,9 @@ public class LighterScript : MonoBehaviour
     [SerializeField] private InputHandler _inputHandler;
     [SerializeField] private Animator _animator;
 
+    [Header("Timing")]
+    [SerializeField] private float _sparkDelay = 0.5f;
+
     [Header("SFX")]
     [SerializeField] private AudioSource _lighterAudioSource;
     [SerializeField] private AudioClip _lighterSpark;
@@ -17,6 +21,7 @@ public class LighterScript : MonoBehaviour
     private static readonly int CloseTrigger = Animator.StringToHash("Close");
 
     private bool _isLit;
+    private Coroutine _igniteCoroutine;
 
     public bool IsLit => _isLit;
 
@@ -24,7 +29,7 @@ public class LighterScript : MonoBehaviour
     {
         if (_inputHandler == null)
         {
-            _inputHandler = Object.FindFirstObjectByType<InputHandler>();
+            _inputHandler = UnityEngine.Object.FindFirstObjectByType<InputHandler>();
         }
 
         if (_animator == null)
@@ -69,14 +74,10 @@ public class LighterScript : MonoBehaviour
 
     private void HandleFlameState()
     {
-        if (_flameObject != null)
+        if (_igniteCoroutine != null)
         {
-            _flameObject.SetActive(_isLit);
-        }
-
-        if (_flameLight != null)
-        {
-            _flameLight.SetActive(_isLit);
+            StopCoroutine(_igniteCoroutine);
+            _igniteCoroutine = null;
         }
 
         if (_isLit)
@@ -91,9 +92,21 @@ public class LighterScript : MonoBehaviour
             {
                 _lighterAudioSource.PlayOneShot(_lighterSpark);
             }
+
+            _igniteCoroutine = StartCoroutine(IgniteRoutine());
         }
         else
         {
+            if (_flameObject != null)
+            {
+                _flameObject.SetActive(false);
+            }
+
+            if (_flameLight != null)
+            {
+                _flameLight.SetActive(false);
+            }
+
             if (_animator != null)
             {
                 _animator.ResetTrigger(SparkTrigger);
@@ -105,5 +118,22 @@ public class LighterScript : MonoBehaviour
                 _lighterAudioSource.PlayOneShot(_closeLighter);
             }
         }
+    }
+
+    private IEnumerator IgniteRoutine()
+    {
+        yield return new WaitForSeconds(_sparkDelay);
+
+        if (_flameObject != null)
+        {
+            _flameObject.SetActive(true);
+        }
+
+        if (_flameLight != null)
+        {
+            _flameLight.SetActive(true);
+        }
+
+        _igniteCoroutine = null;
     }
 }

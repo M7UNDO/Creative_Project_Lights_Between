@@ -44,7 +44,7 @@ public class ToolEquipmentManager : MonoBehaviour
         UnequipTool();
     }
 
-    private void Update()
+    /*private void Update()
     {
         if (input == null) return;
 
@@ -53,7 +53,7 @@ public class ToolEquipmentManager : MonoBehaviour
             ToggleCurrentTool();
             input.toggleFlashlight = false;
         }
-    }
+    }*/
 
     public void EquipTool(ToolClass tool)
     {

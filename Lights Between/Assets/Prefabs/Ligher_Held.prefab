@@ -122,7 +122,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2963200526722428763}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 179.30084}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 71.995735}
 --- !u!33 &1113720863963000547
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -606,6 +606,7 @@ MonoBehaviour:
   _flameLight: {fileID: 7759226766946060637}
   _inputHandler: {fileID: 0}
   _animator: {fileID: 8871924853754871390}
+  _sparkDelay: 1.9
   _lighterAudioSource: {fileID: 3605268772962171395}
   _lighterSpark: {fileID: 8300000, guid: 641be9f8fa62d5d4c974f3d886da9c21, type: 3}
   _closeLighter: {fileID: 8300000, guid: 128e4f2bfa7f6b344b37e5e4d57f860e, type: 3}
@@ -663,7 +664,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2963200526722428763}
-  m_LocalEulerAnglesHint: {x: 62.38877, y: -90, z: -90}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!33 &8106303194992848697
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -10440,7 +10441,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2963200526722428763}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 97.275116}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -15.170502}
 --- !u!33 &374122825514758811
 MeshFilter:
   m_ObjectHideFlags: 0
