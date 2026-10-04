@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 4248545210178462010}
   - component: {fileID: 7542178472900831559}
   - component: {fileID: 5937618049106195511}
+  - component: {fileID: 4752251087503716841}
   m_Layer: 9
   m_Name: FlashlightHeld
   m_TagString: Untagged
@@ -206,13 +207,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FlashlightScript
   TorchLight: {fileID: 6992420127462764394}
-  torchClickSFX: {fileID: 5937618049106195511}
   fpsController: {fileID: 0}
   holdInteraction: {fileID: 0}
+  animator: {fileID: 4752251087503716841}
   lightCookie: {fileID: 2800000, guid: adfa0ebfcb79c7042be5b04397144b3e, type: 3}
   glassRenderer: {fileID: 3583905205337786264}
-  batteryChangeSFX: {fileID: 0}
-  batteryEmptySFX: {fileID: 0}
+  flashlightAudioSource: {fileID: 5937618049106195511}
+  torchClickClip: {fileID: 8300000, guid: 4000ed88b412c6c49a51e349728e620a, type: 3}
+  batteryChangeClip: {fileID: 8300000, guid: 70a310b30932fae4ab1245c5ef025ad0, type: 3}
+  batteryEmptyClip: {fileID: 0}
   positionLagSpeed: 12
   rotationLagSpeed: 8
   swayAmount: 1.5
@@ -244,8 +247,8 @@ MonoBehaviour:
 
     Release
     <sprite name="L1"> to equip item'
-  requiresBatteryChange: 0
   torchLightZone: {fileID: 2197618662182222458}
+  requiresBatteryChange: 0
 --- !u!82 &5937618049106195511
 AudioSource:
   m_ObjectHideFlags: 0
@@ -343,6 +346,28 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!95 &4752251087503716841
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8947998797594139777}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fc59f70198d5f1f489d12bb3721c58ee, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &8240972951845850165
 PrefabInstance:
   m_ObjectHideFlags: 0
