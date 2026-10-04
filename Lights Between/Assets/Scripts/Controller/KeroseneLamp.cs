@@ -43,7 +43,7 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
             currentPower = maxPower;
         }
 
-        if(wickAudioSource && sparkWickClip != null)
+        if (wickAudioSource != null && sparkWickClip != null)
         {
             wickAudioSource.clip = sparkWickClip;
         }
@@ -61,6 +61,8 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
 
     private void Start()
     {
+        ResolvePlayerReferences();
+
         if (holdInteraction != null)
         {
             holdInteraction.onHoldCompleted.AddListener(Ignite);
@@ -69,11 +71,50 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
         UpdatePowerFill();
     }
 
+    private void ResolvePlayerReferences()
+    {
+        if (playerInventory == null)
+        {
+            playerInventory = UnityEngine.Object.FindFirstObjectByType<PlayerToolInventory>();
+        }
+
+        if (playerEquipmentManager == null)
+        {
+            playerEquipmentManager = UnityEngine.Object.FindFirstObjectByType<ToolEquipmentManager>();
+        }
+    }
+
     public void Interact()
     {
-        if (holdInteraction == null) return;
+        if (isIgnited) return;
 
-        holdInteraction.BeginHold();
+        ResolvePlayerReferences();
+
+        if (playerInventory == null || !playerInventory.HasToolType(ToolType.Lighter))
+        {
+            return;
+        }
+
+        ToolClass lighterData = playerInventory.GetToolByType(ToolType.Lighter);
+
+        if (playerEquipmentManager != null && !playerEquipmentManager.IsEquipped(lighterData))
+        {
+            playerEquipmentManager.EquipTool(lighterData);
+        }
+
+        LighterScript currentLighter = playerEquipmentManager != null && playerEquipmentManager.CurrentToolObject != null
+            ? playerEquipmentManager.CurrentToolObject.GetComponentInChildren<LighterScript>()
+            : null;
+
+        if (currentLighter == null || !currentLighter.IsLit)
+        {
+            return;
+        }
+
+        if (holdInteraction != null)
+        {
+            holdInteraction.BeginHold();
+        }
     }
 
     public void CancelInteract()
@@ -135,7 +176,7 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
     {
         isIgnited = true;
 
-        if(wickAudioSource != null)
+        if (wickAudioSource != null)
         {
             wickAudioSource.Play();
         }

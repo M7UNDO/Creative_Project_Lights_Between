@@ -13,6 +13,7 @@ public class ToolEquipmentManager : MonoBehaviour
 
     private GameObject currentToolInstance;
     private FlashlightScript currentFlashlight;
+    private LighterScript currentLighter;
     private InputHandler input;
 
     private Vector3 defaultHoldPointPosition;
@@ -43,17 +44,6 @@ public class ToolEquipmentManager : MonoBehaviour
     {
         UnequipTool();
     }
-
-    /*private void Update()
-    {
-        if (input == null) return;
-
-        if (input.toggleFlashlight)
-        {
-            ToggleCurrentTool();
-            input.toggleFlashlight = false;
-        }
-    }*/
 
     public void EquipTool(ToolClass tool)
     {
@@ -96,6 +86,12 @@ public class ToolEquipmentManager : MonoBehaviour
             {
                 currentFlashlight.SetEquippedState(true);
             }
+
+            currentLighter = currentToolInstance.GetComponentInChildren<LighterScript>();
+            if (currentLighter != null)
+            {
+                currentLighter.OnEquip();
+            }
         }
         else
         {
@@ -112,11 +108,16 @@ public class ToolEquipmentManager : MonoBehaviour
             instantiatedTools.Add(tool, currentToolInstance);
 
             currentFlashlight = currentToolInstance.GetComponentInChildren<FlashlightScript>();
-
             if (currentFlashlight != null)
             {
                 currentFlashlight.Initialise(tool);
                 currentFlashlight.SetEquippedState(true);
+            }
+
+            currentLighter = currentToolInstance.GetComponentInChildren<LighterScript>();
+            if (currentLighter != null)
+            {
+                currentLighter.OnEquip();
             }
         }
     }
@@ -133,6 +134,11 @@ public class ToolEquipmentManager : MonoBehaviour
             currentFlashlight.SetEquippedState(false);
         }
 
+        if (currentLighter != null)
+        {
+            currentLighter.OnUnequip();
+        }
+
         if (currentToolInstance != null)
         {
             currentToolInstance.SetActive(false);
@@ -147,13 +153,19 @@ public class ToolEquipmentManager : MonoBehaviour
         currentToolInstance = null;
         currentTool = null;
         currentFlashlight = null;
+        currentLighter = null;
     }
 
     private void ToggleCurrentTool()
     {
-        if (currentFlashlight == null) return;
-
-        currentFlashlight.Toggle();
+        if (currentFlashlight != null)
+        {
+            currentFlashlight.Toggle();
+        }
+        else if (currentLighter != null)
+        {
+            currentLighter.ToggleFlame();
+        }
     }
 
     public bool IsEquipped(ToolClass tool)

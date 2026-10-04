@@ -37,15 +37,12 @@ public class LighterScript : MonoBehaviour
             _animator = GetComponent<Animator>();
         }
 
-        if (_flameObject != null)
-        {
-            _flameObject.SetActive(false);
-        }
+        ResetLighterStateSilently();
+    }
 
-        if (_flameLight != null)
-        {
-            _flameLight.SetActive(false);
-        }
+    private void OnDisable()
+    {
+        ResetLighterStateSilently();
     }
 
     private void Update()
@@ -54,10 +51,19 @@ public class LighterScript : MonoBehaviour
 
         if (_inputHandler.toggleFlashlight)
         {
-            Debug.Log("Toggle Lighter");
             ToggleFlame();
             _inputHandler.toggleFlashlight = false;
         }
+    }
+
+    public void OnEquip()
+    {
+        SetFlameState(true);
+    }
+
+    public void OnUnequip()
+    {
+        SetFlameState(false);
     }
 
     public void ToggleFlame()
@@ -135,5 +141,26 @@ public class LighterScript : MonoBehaviour
         }
 
         _igniteCoroutine = null;
+    }
+
+    private void ResetLighterStateSilently()
+    {
+        _isLit = false;
+
+        if (_igniteCoroutine != null)
+        {
+            StopCoroutine(_igniteCoroutine);
+            _igniteCoroutine = null;
+        }
+
+        if (_flameObject != null)
+        {
+            _flameObject.SetActive(false);
+        }
+
+        if (_flameLight != null)
+        {
+            _flameLight.SetActive(false);
+        }
     }
 }
