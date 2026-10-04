@@ -17,6 +17,9 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
     [SerializeField] private GameObject PowerDisplayObj;
     [SerializeField] private Image powerRadialFill;
 
+    [Header("SFX")]
+    [SerializeField] private AudioSource wickAudioSource;
+    [SerializeField] private AudioClip sparkWickClip;
 
     private ToolClass toolData;
     private float currentPower;
@@ -40,17 +43,21 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
             currentPower = maxPower;
         }
 
-        if(flameObject != null)
+        if(wickAudioSource && sparkWickClip != null)
+        {
+            wickAudioSource.clip = sparkWickClip;
+        }
+
+        if (flameObject != null)
         {
             flameObject.SetActive(false);
         }
 
-        if(PowerDisplayObj != null)
+        if (PowerDisplayObj != null)
         {
             PowerDisplayObj.SetActive(false);
         }
     }
-
 
     private void Start()
     {
@@ -67,7 +74,6 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
         if (holdInteraction == null) return;
 
         holdInteraction.BeginHold();
-
     }
 
     public void CancelInteract()
@@ -82,11 +88,12 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
     {
         if (isIgnited)
         {
-            if (PowerDisplayObj != null && powerRadialFill)
+            if (PowerDisplayObj != null)
             {
                 PowerDisplayObj.SetActive(true);
             }
-        }   
+            UpdatePowerFill();
+        }
     }
 
     public void HidePower()
@@ -99,8 +106,11 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
 
     private void UpdatePowerFill()
     {
-        float fillPercent = currentPower / maxPower;
-        powerRadialFill.fillAmount = fillPercent;
+        if (powerRadialFill != null)
+        {
+            float fillPercent = currentPower / maxPower;
+            powerRadialFill.fillAmount = fillPercent;
+        }
     }
 
     public void Initialise(ToolClass tool)
@@ -125,6 +135,10 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
     {
         isIgnited = true;
 
+        if(wickAudioSource != null)
+        {
+            wickAudioSource.Play();
+        }
         HandlePower(isIgnited);
     }
 
@@ -148,7 +162,7 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
 
     private void Update()
     {
-        if (!isEquipped && toolData != null) return;
+        if (toolData != null && !isEquipped) return;
         if (currentPower <= 0f) return;
 
         if (isIgnited)
@@ -156,8 +170,11 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
             currentPower -= drainRate * Time.deltaTime;
             currentPower = Mathf.Clamp(currentPower, 0f, maxPower);
 
+            UpdatePowerFill();
+
             if (currentPower <= 0f)
             {
+                isIgnited = false;
                 HandlePower(false);
             }
         }
