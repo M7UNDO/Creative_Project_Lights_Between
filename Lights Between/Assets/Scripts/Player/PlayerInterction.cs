@@ -33,6 +33,7 @@ public class PlayerInteraction : MonoBehaviour
     private InputHandler _input;
     private FPSController _fpsController;
     private GameObject _mainCamera;
+    private KeroseneLampScript _currentKeroseneLamp;
 
     private void Awake()
     {
@@ -66,6 +67,9 @@ public class PlayerInteraction : MonoBehaviour
 
     private void DetectInteractable()
     {
+        KeroseneLampScript previousLamp = _currentKeroseneLamp;
+        _currentKeroseneLamp = null;
+
         currentInteractable = null;
         _hoveredGrabbable = null;
         isInteractable = false;
@@ -76,6 +80,11 @@ public class PlayerInteraction : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))
         {
             targetedWorldUI = ProcessInteractableHit(hit);
+        }
+
+        if (previousLamp != null && previousLamp != _currentKeroseneLamp)
+        {
+            previousLamp.HidePower();
         }
 
         HandleLastInteractableTransition();
@@ -194,6 +203,11 @@ public class PlayerInteraction : MonoBehaviour
             result.Prompt = generator.promptMessage;
             result.CanInteract = generator.CanInteract();
         }
+        else if (hitCollider.TryGetComponent<KeroseneLampScript>(out KeroseneLampScript kerosene))
+        {
+            _currentKeroseneLamp = kerosene;
+            _currentKeroseneLamp.DisplayPower();
+        }
         else if (hitCollider.TryGetComponent<ToolPickup>(out ToolPickup pickup))
         {
             result.Prompt = pickup.PromptMessage;
@@ -293,6 +307,10 @@ public class PlayerInteraction : MonoBehaviour
                         _input.interact = false;
                     }
                 }
+                else if (currentInteractable is KeroseneLampScript kerosene)
+                {
+                    kerosene.Interact();
+                }
                 else
                 {
                     currentInteractable.Interact();
@@ -317,6 +335,11 @@ public class PlayerInteraction : MonoBehaviour
             if (currentInteractable is DoorScript door)
             {
                 door.CancelInteract();
+            }
+
+            if (currentInteractable is KeroseneLampScript kerosene)
+            {
+                kerosene.CancelInteract();
             }
         }
     }
@@ -360,6 +383,10 @@ public class PlayerInteraction : MonoBehaviour
             if (_lastInteractable is DoorScript lastDoor)
             {
                 lastDoor.CancelInteract();
+            }
+            else if (_lastInteractable is KeroseneLampScript lastLamp)
+            {
+                lastLamp.CancelInteract();
             }
         }
 
