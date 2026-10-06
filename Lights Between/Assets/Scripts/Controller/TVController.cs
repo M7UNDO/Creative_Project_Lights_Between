@@ -11,11 +11,6 @@ public class TVController : MonoBehaviour, IInteractable
     [SerializeField] private Material tvOffMaterial;
     [SerializeField] private Material tvOnMaterial;
 
-    [Header("Indicator Light / Emission Settings")]
-    [SerializeField] private Renderer tvLightRenderer;
-    [SerializeField] private Color emissionOnColor = Color.red;
-    [SerializeField] private Color emissionOffColor = Color.black;
-
     [Header("Audio Settings")]
     [SerializeField] private AudioSource tvAudioSource;
     [SerializeField] private AudioClip tvOnSFX;
@@ -30,6 +25,7 @@ public class TVController : MonoBehaviour, IInteractable
 
     private MaterialPropertyBlock emissionPropertyBlock;
     private static readonly int EmissionColorID = Shader.PropertyToID("_EmissionColor");
+    private Material[] sharedMaterialsCache;
 
     private void Awake()
     {
@@ -39,6 +35,13 @@ public class TVController : MonoBehaviour, IInteractable
         {
             connectedBreaker = Object.FindFirstObjectByType<ElectricBoxBreaker>();
         }
+
+        if (tvScreenRenderer != null)
+        {
+            sharedMaterialsCache = tvScreenRenderer.sharedMaterials;
+        }
+
+        PreloadAudioClips();
     }
 
     private void OnEnable()
@@ -71,17 +74,14 @@ public class TVController : MonoBehaviour, IInteractable
     {
         IsTVOn = turnOn;
 
-        if (tvScreenRenderer != null && tvOffMaterial != null && tvOnMaterial != null)
+        if (tvScreenRenderer != null && tvOffMaterial != null && tvOnMaterial != null && sharedMaterialsCache != null)
         {
-            Material[] mats = tvScreenRenderer.materials;
-            if (screenMaterialIndex >= 0 && screenMaterialIndex < mats.Length)
+            if (screenMaterialIndex >= 0 && screenMaterialIndex < sharedMaterialsCache.Length)
             {
-                mats[screenMaterialIndex] = IsTVOn ? tvOnMaterial : tvOffMaterial;
-                tvScreenRenderer.materials = mats;
+                sharedMaterialsCache[screenMaterialIndex] = IsTVOn ? tvOnMaterial : tvOffMaterial;
+                tvScreenRenderer.sharedMaterials = sharedMaterialsCache;
             }
         }
-
-        UpdateEmissionState(IsTVOn);
 
         if (tvAudioSource != null)
         {
@@ -102,30 +102,6 @@ public class TVController : MonoBehaviour, IInteractable
         }
     }
 
-    private void UpdateEmissionState(bool isEmissiveOn)
-    {
-        if (tvLightRenderer == null) return;
-
-        tvLightRenderer.GetPropertyBlock(emissionPropertyBlock);
-        emissionPropertyBlock.SetColor(EmissionColorID, isEmissiveOn ? emissionOnColor : emissionOffColor);
-        tvLightRenderer.SetPropertyBlock(emissionPropertyBlock);
-
-        Material[] sharedMats = tvLightRenderer.sharedMaterials;
-        for (int i = 0; i < sharedMats.Length; i++)
-        {
-            if (sharedMats[i] == null) continue;
-
-            if (isEmissiveOn)
-            {
-                sharedMats[i].EnableKeyword("_EMISSION");
-            }
-            else
-            {
-                sharedMats[i].DisableKeyword("_EMISSION");
-            }
-        }
-    }
-
     private void HandlePowerGridStateChanged(bool isPowerActive)
     {
         if (!isPowerActive && IsTVOn)
@@ -137,5 +113,21 @@ public class TVController : MonoBehaviour, IInteractable
     public string GetPromptMessage()
     {
         return IsTVOn ? turnOffPrompt : turnOnPrompt;
+    }
+
+    private void PreloadAudioClips()
+    {
+        if (tvOnSFX != null && tvOnSFX.loadState != AudioDataLoadState.Loaded)
+        {
+            tvOnSFX.LoadAudioData();
+        }
+        if (tvOffSFX != null && tvOffSFX.loadState != AudioDataLoadState.Loaded)
+        {
+            tvOffSFX.LoadAudioData();
+        }
+        if (tvStaticLoopSFX != null && tvStaticLoopSFX.loadState != AudioDataLoadState.Loaded)
+        {
+            tvStaticLoopSFX.LoadAudioData();
+        }
     }
 }
