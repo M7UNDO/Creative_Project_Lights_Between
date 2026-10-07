@@ -5,6 +5,7 @@ using System.Collections;
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInteraction))]
 [RequireComponent(typeof(PlayerFootsteps))]
+[RequireComponent(typeof(PlayerStamina))]
 #if ENABLE_INPUT_SYSTEM
 [RequireComponent(typeof(PlayerInput))]
 #endif
@@ -132,6 +133,7 @@ public class FPSController : MonoBehaviour
 
     private PlayerInteraction _interaction;
     private PlayerFootsteps _footsteps;
+    private PlayerStamina _stamina;
 
     private const float _threshold = 0.01f;
 
@@ -161,6 +163,7 @@ public class FPSController : MonoBehaviour
         _input = GetComponent<InputHandler>();
         _interaction = GetComponent<PlayerInteraction>();
         _footsteps = GetComponent<PlayerFootsteps>();
+        _stamina = GetComponent<PlayerStamina>();
 
 #if ENABLE_INPUT_SYSTEM
         _playerInput = GetComponent<PlayerInput>();
@@ -406,8 +409,16 @@ public class FPSController : MonoBehaviour
 
     private void Move()
     {
-        float targetSpeed = _input.sprint ? SprintSpeed : MoveSpeed;
-        if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+        bool isMoving = _input.move != Vector2.zero;
+        bool canSprint = isMoving && _input.sprint && _stamina != null && _stamina.CurrentStamina > 0f;
+
+        if (_stamina != null)
+        {
+            _stamina.ProcessStamina(canSprint);
+        }
+
+        float targetSpeed = canSprint ? SprintSpeed : MoveSpeed;
+        if (!isMoving) targetSpeed = 0.0f;
 
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
@@ -426,7 +437,7 @@ public class FPSController : MonoBehaviour
 
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
-        if (_input.move != Vector2.zero)
+        if (isMoving)
         {
             inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
         }
