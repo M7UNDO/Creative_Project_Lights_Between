@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class KeyPickUp : MonoBehaviour, IInteractable
 {
+    [Header("References")]
+    [SerializeField] private ItemClass keyItemData;
+
     public string KeyID = "Garage Key";
     public ObjectiveSO objectiveSO;
 
@@ -21,20 +24,30 @@ public class KeyPickUp : MonoBehaviour, IInteractable
         {
             keyInventory.AddKey(KeyID);
 
-            if (pickUpSFX != null)
-            {
-                AudioSource.PlayClipAtPoint(pickUpSFX, transform.position);
-            }
+            InventoryManager inventory = FindFirstObjectByType<InventoryManager>();
 
-            if (objectiveSO != null)
+            if (inventory != null && keyItemData != null)
             {
-                if(ObjectiveManager.Instance != null)
+                if (inventory.AddItem(keyItemData, 1))
                 {
-                    ObjectiveManager.Instance.CompleteObjective(objectiveSO.ID);
+                    if (pickUpSFX != null)
+                    {
+                        AudioSource.PlayClipAtPoint(pickUpSFX, transform.position);
+                    }
                 }
+
+                if (objectiveSO != null)
+                {
+                    if (ObjectiveManager.Instance != null)
+                    {
+                        ObjectiveManager.Instance.CompleteObjective(objectiveSO.ID);
+                    }
+                }
+
+                Destroy(gameObject);
             }
 
-            Destroy(gameObject);
+            
         }
     }
 }
