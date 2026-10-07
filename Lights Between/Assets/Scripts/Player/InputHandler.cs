@@ -26,6 +26,7 @@ public class InputHandler : MonoBehaviour
     public bool confirmDial;
     public bool use;
     public bool back;
+    public bool inventory;
 
     [Header("Movement Settings", order = 1)]
     [Space(5)]
@@ -93,6 +94,9 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Player.ConfirmDial.performed += ctx => ConfirmDialInput(true);
         playerControls.Player.ConfirmDial.canceled += ctx => ConfirmDialInput(false);
+
+        playerControls.Player.Inventory.performed += ctx => InventoryInput(true);
+        playerControls.Player.Inventory.canceled += ctx => InventoryInput(false);
 
         playerControls.UI.Use.performed += ctx => UseInput(true);
         playerControls.UI.Use.canceled += ctx => UseInput(false);
@@ -208,6 +212,11 @@ public class InputHandler : MonoBehaviour
         back = newBackState;
     }
 
+    public void InventoryInput(bool newInventoryState)
+    {
+        inventory = newInventoryState;
+    }
+
     public void ClearLookInput()
     {
         look = Vector2.zero;
@@ -236,6 +245,7 @@ public class InputHandler : MonoBehaviour
         confirmDial = false;
         use = false;
         back = false;
+        inventory = false;
     }
 
     private void OnApplicationFocus(bool hasFocus)

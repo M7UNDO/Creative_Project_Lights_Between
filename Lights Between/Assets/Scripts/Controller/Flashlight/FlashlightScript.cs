@@ -5,57 +5,73 @@ using UnityEngine.InputSystem;
 
 public class FlashlightScript : MonoBehaviour, IToolPower
 {
-    [Header("References")]
+    [Header("References", order = 0)]
+    [Space(5)]
     [SerializeField] private GameObject TorchLight;
     [SerializeField] private FPSController fpsController;
     [SerializeField] private HoldInteraction holdInteraction;
     [SerializeField] private Animator animator;
 
-    [Header("Visuals")]
+    [Header("Inventory Settings", order = 1)]
+    [Space(5)]
+    [SerializeField] private ItemClass batteryItemData;
+    [SerializeField] private InventoryManager inventoryManager;
+
+    [Header("Visuals", order = 2)]
+    [Space(5)]
     [SerializeField] private Texture lightCookie;
     [SerializeField] private Renderer glassRenderer;
 
-    [Header("SFX")]
+    [Header("SFX", order = 3)]
+    [Space(5)]
     [SerializeField] private AudioSource flashlightAudioSource;
     [SerializeField] private AudioClip torchClickClip;
     [SerializeField] private AudioClip batteryChangeClip;
     [SerializeField] private AudioClip batteryEmptyClip;
 
-    [Header("Lag & Tracking")]
+    [Header("Lag & Tracking", order = 4)]
+    [Space(5)]
     [SerializeField] private float positionLagSpeed = 12f;
     [SerializeField] private float rotationLagSpeed = 8f;
 
-    [Header("Mouse/Stick Sway Settings")]
+    [Header("Mouse/Stick Sway Settings", order = 5)]
+    [Space(5)]
     [SerializeField] private float swayAmount = 1.5f;
     [SerializeField] private float maxSwayAmount = 4f;
     [SerializeField] private float swaySmoothness = 6f;
 
-    [Header("Movement Bobbing Settings")]
+    [Header("Movement Bobbing Settings", order = 6)]
+    [Space(5)]
     [SerializeField] private float walkBobSpeed = 10f;
     [SerializeField] private float walkBobAmountX = 0.025f;
     [SerializeField] private float walkBobAmountY = 0.025f;
 
-    [Header("Drain Settings")]
+    [Header("Drain Settings", order = 7)]
+    [Space(5)]
     [SerializeField] private float drainRate = 5f;
 
-    [Header("Realistic Low Power Flicker Settings")]
+    [Header("Realistic Low Power Flicker Settings", order = 8)]
+    [Space(5)]
     [Range(0.01f, 0.20f)][SerializeField] private float flickerThresholdPercent = 0.10f;
     [SerializeField] private float baseLightIntensity = 1.5f;
     [SerializeField] private float flickerSpeed = 8f;
     [Range(0f, 1f)][SerializeField] private float dropToBlackChance = 0.35f;
 
-    [Header("Prompt Timings & Anti-Spam")]
+    [Header("Prompt Timings & Anti-Spam", order = 9)]
+    [Space(5)]
     [SerializeField] private float promptDuration = 4f;
     [SerializeField] private float fadeDuration = 0.5f;
     [SerializeField] private float toggleCooldown = 0.25f;
     [SerializeField] private float emptyPromptCooldown = 0.8f;
 
-    [Header("Toggle On/Off Prompts")]
+    [Header("Toggle On/Off Prompts", order = 10)]
+    [Space(5)]
     [TextArea][SerializeField] private string keyboardTogglePrompt = "[F] to toggle On/Off";
     [TextArea][SerializeField] private string xboxTogglePrompt = "Press <sprite name=\"Right Bumper\"> to toggle On/Off";
     [TextArea][SerializeField] private string playStationTogglePrompt = "Press <sprite name=\"R1\"> to toggle On/Off";
 
-    [Header("Equipment Wheel Prompts")]
+    [Header("Equipment Wheel Prompts", order = 11)]
+    [Space(5)]
     [TextArea][SerializeField] private string keyboardWheelPrompt = "Hold [TAB] + Move [Mouse]\nRelease [TAB] to equip item";
     [TextArea][SerializeField] private string xboxWheelPrompt = "Hold <sprite name=\"Left Bumper\"> + Move <sprite name=\"Right Stick\">\nRelease <sprite name=\"Left Bumper\"> to equip item";
     [TextArea][SerializeField] private string playStationWheelPrompt = "Hold <sprite name=\"L1\"> + Move <sprite name=\"_Right Stick\">\nRelease <sprite name=\"L1\"> to equip item";
@@ -67,8 +83,6 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     private ToolClass toolData;
     private float maxPower;
-    private int batteryCount = 1;
-    private const int MaxBatteries = 3;
     private float currentBatteryPower;
     private float singleBatteryMaxPower;
 
@@ -105,7 +119,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     private float lastToggleTime = -999f;
     private float lastEmptyPromptTime = -999f;
 
-    public float CurrentPower => (batteryCount > 0 ? currentBatteryPower : 0f) + (Mathf.Max(0, batteryCount - 1) * singleBatteryMaxPower);
+    public float CurrentPower => currentBatteryPower;
     public float MaxPower => maxPower;
     public bool UsesPower => toolData != null && toolData.usesPower;
 
@@ -188,9 +202,8 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     {
         toolData = tool;
         maxPower = tool.maxPower;
-        singleBatteryMaxPower = maxPower / MaxBatteries;
+        singleBatteryMaxPower = maxPower;
         currentBatteryPower = singleBatteryMaxPower;
-        batteryCount = 1;
         requiresBatteryChange = false;
         wasLowPowerState = false;
 
@@ -277,36 +290,46 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         }
     }
 
-    public bool TryAddBattery()
+    public void ReplaceBatteryFromInventory()
     {
-        if (batteryCount >= MaxBatteries) return false;
-
-        batteryCount++;
-        UpdateBatteryUI();
-
-        if (requiresBatteryChange) ChangeBattery();
-
-        return true;
-    }
-
-    public void AddPower(float amount)
-    {
-        currentBatteryPower = Mathf.Clamp(currentBatteryPower + amount, 0f, singleBatteryMaxPower);
-
-        if (currentBatteryPower > 0f && isOn)
+        if (inventoryManager == null)
         {
-            requiresBatteryChange = false;
-            TurnOnLightState();
+            inventoryManager = FindFirstObjectByType<InventoryManager>();
         }
 
-        UpdateBatteryUI();
+        if (inventoryManager != null && batteryItemData != null)
+        {
+            if (inventoryManager.RemoveItem(batteryItemData, 1))
+            {
+                currentBatteryPower = singleBatteryMaxPower;
+                requiresBatteryChange = false;
+                wasLowPowerState = false;
+
+                if (isOn) TurnOnLightState();
+
+                UpdateBatteryUI();
+            }
+        }
+    }
+
+    private int GetCurrentInventoryBatteryCount()
+    {
+        if (inventoryManager == null)
+        {
+            inventoryManager = FindFirstObjectByType<InventoryManager>();
+        }
+
+        if (inventoryManager == null || batteryItemData == null) return 0;
+
+        return inventoryManager.GetItemCount(batteryItemData);
     }
 
     private void HandleBatteryInteraction()
     {
         if (holdInteraction == null || inputHandler == null) return;
 
-        bool hasSpareBattery = batteryCount > 1;
+        int currentBatteries = GetCurrentInventoryBatteryCount();
+        bool hasSpareBattery = currentBatteries > 0;
         bool isLowPower = (currentBatteryPower / singleBatteryMaxPower) <= flickerThresholdPercent;
         bool needsBattery = requiresBatteryChange || isLowPower;
 
@@ -366,24 +389,6 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         if (flashlightUI != null) flashlightUI.TriggerEmptyFlash();
     }
 
-    private void ChangeBattery()
-    {
-        if (batteryCount <= 0) return;
-
-        if (currentBatteryPower <= 0f) batteryCount--;
-
-        if (batteryCount > 0)
-        {
-            currentBatteryPower = singleBatteryMaxPower;
-            requiresBatteryChange = false;
-            wasLowPowerState = false;
-
-            if (isOn) TurnOnLightState();
-        }
-
-        UpdateBatteryUI();
-    }
-
     private void OnHoldBatteryChangeStart()
     {
         if (animator != null)
@@ -408,7 +413,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         if (inputHandler != null) inputHandler.changeBattery = false;
 
         ResetAnimationState();
-        ChangeBattery();
+        ReplaceBatteryFromInventory();
     }
 
     private void ResetAnimationState()
@@ -541,7 +546,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
 
     private void SetupFlashlightAnchor()
     {
-        if (fpsController == null) fpsController = UnityEngine.Object.FindFirstObjectByType<FPSController>();
+        if (fpsController == null) fpsController = FindFirstObjectByType<FPSController>();
 
         if (fpsController != null)
         {
@@ -556,7 +561,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     {
         if (flashlightUI == null)
         {
-            flashlightUI = UnityEngine.Object.FindFirstObjectByType<FlashlightUIScript>(FindObjectsInactive.Include);
+            flashlightUI = FindFirstObjectByType<FlashlightUIScript>(FindObjectsInactive.Include);
         }
 
         if (flashlightUI != null)
@@ -604,14 +609,15 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     {
         if (flashlightUI == null) return;
 
+        int currentBatteries = GetCurrentInventoryBatteryCount();
         bool isLowPower = (currentBatteryPower / singleBatteryMaxPower) <= flickerThresholdPercent;
-        bool hasSpareBattery = batteryCount > 1;
+        bool hasSpareBattery = currentBatteries > 0;
         bool shouldShowPrompt = isEquipped && (requiresBatteryChange || isLowPower);
 
         if (shouldShowPrompt && !wasLowPowerState && !hasSpareBattery) TriggerEmptyFeedback();
 
         wasLowPowerState = shouldShowPrompt;
-        flashlightUI.UpdateBatteryUI(batteryCount, currentBatteryPower <= 0f);
+        flashlightUI.UpdateBatteryUI(currentBatteries, currentBatteryPower <= 0f);
         flashlightUI.SetBatteryPromptState(shouldShowPrompt, hasSpareBattery);
     }
 

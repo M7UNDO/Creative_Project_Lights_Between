@@ -1,16 +1,17 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
 
 public class ManageUI : MonoBehaviour
 {
-    [Header("References")]
+    [Header("References", order = 0)]
     [Space(5)]
     [SerializeField] private PauseManager pauseScript;
     [SerializeField] private TabController tabController;
+    [SerializeField] private InputHandler inputHandler;
 
-    [Header("UI Elements")]
+    [Header("UI Elements", order = 1)]
     [Space(5)]
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject settingsPanel;
@@ -20,22 +21,22 @@ public class ManageUI : MonoBehaviour
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button cancelButton;
 
-    [Header("Audio")]
+    [Header("Audio", order = 2)]
     [Space(5)]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip closeSFX;
 
-    [Header("First Selected Objects")]
+    [Header("First Selected Objects", order = 3)]
     [Space(5)]
     [SerializeField] private GameObject pauseFirstSelected;
     [SerializeField] private GameObject settingsFirstSelected;
     [SerializeField] private GameObject confirmFirstSelected;
 
-    [Header("Canvas Groups")]
+    [Header("Canvas Groups", order = 4)]
     [Space(5)]
     [SerializeField] private CanvasGroup pauseCanvasGroup;
 
-    [Header("Scene Settings")]
+    [Header("Scene Settings", order = 5)]
     [Space(5)]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
 
@@ -58,6 +59,11 @@ public class ManageUI : MonoBehaviour
             pauseScript = FindFirstObjectByType<PauseManager>();
         }
 
+        if (inputHandler == null)
+        {
+            inputHandler = FindFirstObjectByType<InputHandler>();
+        }
+
         if (tabController == null)
         {
             tabController = GetComponentInChildren<TabController>(true);
@@ -78,6 +84,8 @@ public class ManageUI : MonoBehaviour
     {
         if (Time.frameCount == lastProcessedFrame) return;
         lastProcessedFrame = Time.frameCount;
+
+        if (InventoryUI.IsInventoryOpen) return;
 
         if (confirmationPanel != null && confirmationPanel.activeSelf)
         {

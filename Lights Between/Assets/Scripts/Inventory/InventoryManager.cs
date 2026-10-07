@@ -30,6 +30,13 @@ public class InventoryManager : MonoBehaviour
     private readonly List<InventorySlotUI> slotUIComponents = new List<InventorySlotUI>();
     private int selectedIndex = -1;
 
+    public bool HasSelectedItem => selectedIndex >= 0 && selectedIndex < slots.Count;
+
+    private void Start()
+    {
+        RebuildUI();
+    }
+
     private void Update()
     {
         if (inputHandler == null) return;
@@ -38,12 +45,6 @@ public class InventoryManager : MonoBehaviour
         {
             UseSelectedItem();
             inputHandler.use = false;
-        }
-
-        if (inputHandler.back)
-        {
-            DeselectAll();
-            inputHandler.back = false;
         }
     }
 
@@ -82,6 +83,53 @@ public class InventoryManager : MonoBehaviour
         return quantity <= 0;
     }
 
+    public int GetItemCount(ItemClass item)
+    {
+        if (item == null) return 0;
+
+        int totalCount = 0;
+        foreach (var slot in slots)
+        {
+            if (slot != null && slot.Item == item)
+            {
+                totalCount += slot.Quantity;
+            }
+        }
+
+        return totalCount;
+    }
+
+    public bool RemoveItem(ItemClass item, int quantity = 1)
+    {
+        if (item == null) return false;
+
+        for (int i = slots.Count - 1; i >= 0; i--)
+        {
+            if (slots[i].Item == item)
+            {
+                if (slots[i].Quantity > quantity)
+                {
+                    slots[i].SubQuantity(quantity);
+                    RebuildUI();
+                    return true;
+                }
+                else
+                {
+                    quantity -= slots[i].Quantity;
+                    slots.RemoveAt(i);
+                    if (quantity <= 0)
+                    {
+                        RebuildUI();
+                        return true;
+                    }
+                }
+            }
+        }
+
+        RebuildUI();
+        return false;
+    }
+
     public void SelectSlot(int index)
     {
         if (index < 0 || index >= slots.Count)
@@ -115,6 +163,20 @@ public class InventoryManager : MonoBehaviour
 
             RebuildUI();
         }
+    }
+
+    public void DeselectAll()
+    {
+        selectedIndex = -1;
+
+        for (int i = 0; i < slotUIComponents.Count; i++)
+        {
+            slotUIComponents[i].SetSelectedState(false);
+        }
+
+        if (itemNameText != null) itemNameText.text = string.Empty;
+        if (itemDescriptionText != null) itemDescriptionText.text = string.Empty;
+        if (actionPromptsContainer != null) actionPromptsContainer.SetActive(false);
     }
 
     private void RebuildUI()
@@ -181,19 +243,5 @@ public class InventoryManager : MonoBehaviour
 
         if (actionPromptsContainer != null) actionPromptsContainer.SetActive(true);
         if (usePromptText != null) usePromptText.text = currentItem.UsePromptText;
-    }
-
-    private void DeselectAll()
-    {
-        selectedIndex = -1;
-
-        for (int i = 0; i < slotUIComponents.Count; i++)
-        {
-            slotUIComponents[i].SetSelectedState(false);
-        }
-
-        if (itemNameText != null) itemNameText.text = string.Empty;
-        if (itemDescriptionText != null) itemDescriptionText.text = string.Empty;
-        if (actionPromptsContainer != null) actionPromptsContainer.SetActive(false);
     }
 }

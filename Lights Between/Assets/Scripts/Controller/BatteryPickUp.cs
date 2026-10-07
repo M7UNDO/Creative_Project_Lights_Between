@@ -2,15 +2,21 @@ using UnityEngine;
 
 public class BatteryPickUp : MonoBehaviour, IInteractable
 {
-    [Header("SFX")]
+    [Header("Item Configuration", order = 0)]
+    [Space(5)]
+    [SerializeField] private ItemClass batteryItemData;
+
+    [Header("SFX", order = 1)]
+    [Space(5)]
     [SerializeField] private AudioClip pickUpSFX;
 
     public void Interact()
     {
-        FlashlightScript flashlight = FindFirstObjectByType<FlashlightScript>(FindObjectsInactive.Include);
-        if (flashlight != null)
+        InventoryManager inventory = FindFirstObjectByType<InventoryManager>();
+
+        if (inventory != null && batteryItemData != null)
         {
-            if (flashlight.TryAddBattery())
+            if (inventory.AddItem(batteryItemData, 1))
             {
                 if (pickUpSFX != null)
                 {
