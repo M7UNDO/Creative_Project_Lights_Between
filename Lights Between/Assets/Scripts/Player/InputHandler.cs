@@ -3,7 +3,8 @@ using UnityEngine.InputSystem;
 
 public class InputHandler : MonoBehaviour
 {
-    [Header("Character Input Values")]
+    [Header("Character Input Values", order = 0)]
+    [Space(5)]
     public Vector2 move;
     public Vector2 look;
     public Vector2 wheelNavigate;
@@ -23,11 +24,15 @@ public class InputHandler : MonoBehaviour
     public bool close;
     public bool timedAction;
     public bool confirmDial;
+    public bool use;
+    public bool back;
 
-    [Header("Movement Settings")]
+    [Header("Movement Settings", order = 1)]
+    [Space(5)]
     public bool analogMovement;
 
-    [Header("Mouse Cursor Settings")]
+    [Header("Mouse Cursor Settings", order = 2)]
+    [Space(5)]
     public bool cursorLocked = true;
     public bool cursorInputForLook = true;
     public bool blockLookInput;
@@ -88,6 +93,12 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Player.ConfirmDial.performed += ctx => ConfirmDialInput(true);
         playerControls.Player.ConfirmDial.canceled += ctx => ConfirmDialInput(false);
+
+        playerControls.UI.Use.performed += ctx => UseInput(true);
+        playerControls.UI.Use.canceled += ctx => UseInput(false);
+
+        playerControls.UI.Back.performed += ctx => BackInput(true);
+        playerControls.UI.Back.canceled += ctx => BackInput(false);
 
         playerControls.Enable();
     }
@@ -187,6 +198,16 @@ public class InputHandler : MonoBehaviour
         confirmDial = newConfirmDialState;
     }
 
+    public void UseInput(bool newUseState)
+    {
+        use = newUseState;
+    }
+
+    public void BackInput(bool newBackState)
+    {
+        back = newBackState;
+    }
+
     public void ClearLookInput()
     {
         look = Vector2.zero;
@@ -213,6 +234,8 @@ public class InputHandler : MonoBehaviour
         close = false;
         timedAction = false;
         confirmDial = false;
+        use = false;
+        back = false;
     }
 
     private void OnApplicationFocus(bool hasFocus)

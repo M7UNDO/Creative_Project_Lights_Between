@@ -956,7 +956,7 @@
                     "name": "Submit",
                     "type": "Button",
                     "id": "799bcfc2-b590-4c79-9ea4-e3347782ea00",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -1055,6 +1055,15 @@
                     "name": "Back",
                     "type": "Button",
                     "id": "a7d4fcae-419e-4117-94be-27cb36906d73",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Use",
+                    "type": "Button",
+                    "id": "95b1e030-4040-4762-bc0c-ac45b2ab5c26",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -1576,6 +1585,28 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Back",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1e17821b-7d4d-4c23-855a-0a4f49f8beab",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";KeyboardMouse",
+                    "action": "Use",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bbe347f7-dcda-45d2-85f2-09eeb88e8d30",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Use",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

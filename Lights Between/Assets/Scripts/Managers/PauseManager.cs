@@ -6,18 +6,21 @@ public class PauseManager : MonoBehaviour
 {
     public static bool IsGamePaused { get; private set; }
 
-    [Header("References")]
+    [Header("References", order = 0)]
+    [Space(5)]
     [SerializeField] private ManageUI manageUI;
     [SerializeField] private TabController tabController;
     [SerializeField] private FPSController playerController;
     private PlayerInteraction playerInteraction;
 
-    [Header("Audio Mixer Snapshots")]
+    [Header("Audio Mixer Snapshots", order = 1)]
+    [Space(5)]
     [SerializeField] private AudioMixerSnapshot unpausedSnapshot;
     [SerializeField] private AudioMixerSnapshot pausedSnapshot;
     [SerializeField] private float snapshotTransitionDuration = 0.1f;
 
-    [Header("UI Components")]
+    [Header("UI Components", order = 2)]
+    [Space(5)]
     public GameObject PauseCanvas;
 
     private PlayerControls playerControls;
