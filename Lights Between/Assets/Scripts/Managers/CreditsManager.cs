@@ -18,6 +18,10 @@ public class CreditsManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI headerPrefab;
     [SerializeField] private TextMeshProUGUI entryPrefab;
 
+    [Header("UI Prompts")]
+    [SerializeField] private GameObject fastForwardPrompt;
+    [SerializeField] private GameObject backPrompt;
+
     [Header("Scroll Settings")]
     [SerializeField] private float scrollSpeed = 50f;
     [SerializeField] private float fastForwardMultiplier = 3f;
@@ -29,6 +33,8 @@ public class CreditsManager : MonoBehaviour
 
     private float currentSpeed;
     private bool isScrolling = false;
+    private float totalContentHeight;
+    private Coroutine creditSequenceCoroutine;
 
     private void OnEnable()
     {
@@ -36,6 +42,8 @@ public class CreditsManager : MonoBehaviour
         {
             fastForwardInput.action.Enable();
         }
+
+        ResetCreditsSequence();
     }
 
     private void OnDisable()
@@ -44,12 +52,30 @@ public class CreditsManager : MonoBehaviour
         {
             fastForwardInput.action.Disable();
         }
+
+        if (creditSequenceCoroutine != null)
+        {
+            StopCoroutine(creditSequenceCoroutine);
+            creditSequenceCoroutine = null;
+        }
+
+        isScrolling = false;
     }
 
-    private void Start()
+    public void ResetCreditsSequence()
     {
+        if (creditSequenceCoroutine != null)
+        {
+            StopCoroutine(creditSequenceCoroutine);
+        }
+
+        isScrolling = false;
+
+        if (fastForwardPrompt != null) fastForwardPrompt.SetActive(false);
+        if (backPrompt != null) backPrompt.SetActive(false);
+
         BuildCreditsUI();
-        StartCoroutine(StartCreditSequence());
+        creditSequenceCoroutine = StartCoroutine(StartCreditSequence());
     }
 
     private void Update()
@@ -69,7 +95,7 @@ public class CreditsManager : MonoBehaviour
 
         contentContainer.anchoredPosition += Vector2.up * (currentSpeed * Time.deltaTime);
 
-        float finishPosition = contentContainer.rect.height + viewportRect.rect.height;
+        float finishPosition = totalContentHeight + viewportRect.rect.height;
         if (contentContainer.anchoredPosition.y >= finishPosition)
         {
             isScrolling = false;
@@ -118,9 +144,33 @@ public class CreditsManager : MonoBehaviour
         }
 
         Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(contentContainer);
+
+        totalContentHeight = CalculateContentHeight();
 
         float startY = -viewportRect.rect.height;
         contentContainer.anchoredPosition = new Vector2(contentContainer.anchoredPosition.x, startY);
+    }
+
+    private float CalculateContentHeight()
+    {
+        float height = LayoutUtility.GetPreferredHeight(contentContainer);
+        if (height > 0f) return height;
+
+        float calculatedHeight = 0f;
+        foreach (RectTransform child in contentContainer)
+        {
+            calculatedHeight += LayoutUtility.GetPreferredHeight(child);
+        }
+
+        VerticalLayoutGroup layoutGroup = contentContainer.GetComponent<VerticalLayoutGroup>();
+        if (layoutGroup != null)
+        {
+            calculatedHeight += layoutGroup.padding.top + layoutGroup.padding.bottom;
+            calculatedHeight += (contentContainer.childCount - 1) * layoutGroup.spacing;
+        }
+
+        return calculatedHeight;
     }
 
     private string FormatEntryText(CreditSectionType type, CreditEntry entry)
@@ -135,7 +185,7 @@ public class CreditsManager : MonoBehaviour
             case CreditSectionType.Attribution:
                 if (!string.IsNullOrEmpty(entry.sourceText))
                 {
-                    return $"{entry.primaryText} – {entry.secondaryText}\n<color=#AAAAAA><size=100%>{entry.sourceText}</size></color>";
+                    return $"{entry.primaryText} - {entry.secondaryText}\n<color=#AAAAAA><size=100%>{entry.sourceText}</size></color>";
                 }
                 return $"{entry.primaryText}\n<color=#AAAAAA><size=85%>{entry.secondaryText}</size></color>";
 
@@ -147,11 +197,18 @@ public class CreditsManager : MonoBehaviour
     private IEnumerator StartCreditSequence()
     {
         yield return new WaitForSeconds(startDelay);
+
         isScrolling = true;
+
+        if (fastForwardPrompt != null) fastForwardPrompt.SetActive(true);
+        if (backPrompt != null) backPrompt.SetActive(false);
     }
 
     private void OnCreditsFinished()
     {
+        if (fastForwardPrompt != null) fastForwardPrompt.SetActive(false);
+        if (backPrompt != null) backPrompt.SetActive(true);
+
         StartCoroutine(EndSequenceRoutine());
     }
 

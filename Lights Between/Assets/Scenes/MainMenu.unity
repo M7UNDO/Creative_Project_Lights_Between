@@ -282,8 +282,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -150}
-  m_SizeDelta: {x: 0, y: -300}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &130914486
 MonoBehaviour:
@@ -298,7 +298,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.ScrollRect
   m_Content: {fileID: 431987649}
-  m_Horizontal: 1
+  m_Horizontal: 0
   m_Vertical: 1
   m_MovementType: 0
   m_Elasticity: 0.1
@@ -712,7 +712,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 1
-  m_Spacing: 30
+  m_Spacing: 50
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
@@ -1667,7 +1667,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &982607064
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2103,61 +2103,6 @@ MonoBehaviour:
   loadingSlider: {fileID: 972730014}
   percentageTxt: {fileID: 567952586}
   menuMusicManager: {fileID: 223127634}
---- !u!1 &1344624131
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1344624132}
-  - component: {fileID: 1344624133}
-  m_Layer: 0
-  m_Name: CreditsManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1344624132
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1344624131}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1788464204}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1344624133
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1344624131}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dc259b94910b2f42837ed8b1020bf5f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CreditsManager
-  creditData: {fileID: 11400000, guid: d55b8627a3eec3545a256c152e6d1d79, type: 2}
-  contentContainer: {fileID: 431987649}
-  viewportRect: {fileID: 1303980811}
-  titlePrefab: {fileID: 3963361762648258215, guid: 97bb2e4d4592892448355235340bf3c1, type: 3}
-  headerPrefab: {fileID: 2916968438550173800, guid: f9b6a1b45b0741c419c00d32230871c6, type: 3}
-  entryPrefab: {fileID: 6202107668540829483, guid: 4a3df13f84bb5534cb4348e4e9bdd092, type: 3}
-  scrollSpeed: 50
-  fastForwardMultiplier: 3
-  startDelay: 1
-  endDelay: 2
-  fastForwardInput: {fileID: 7652597651508680508, guid: b28cb1f9c25d5ed4c8f044a0ec6e47a1, type: 3}
 --- !u!1 &1442478167
 GameObject:
   m_ObjectHideFlags: 0
@@ -2648,7 +2593,6 @@ Transform:
   - {fileID: 1316785341}
   - {fileID: 1609956695}
   - {fileID: 1218203322}
-  - {fileID: 1344624132}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1860686894
@@ -2668,7 +2612,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1860686895
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4144,13 +4088,14 @@ GameObject:
   - component: {fileID: 6105776975723296708}
   - component: {fileID: 1495931904173815798}
   - component: {fileID: 5372005215472863306}
+  - component: {fileID: 6105776975723296709}
   m_Layer: 5
   m_Name: CreditPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &559909933322501789
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10916,8 +10861,33 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6105776975723296709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 551216013531219749}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dc259b94910b2f42837ed8b1020bf5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CreditsManager
+  creditData: {fileID: 11400000, guid: d55b8627a3eec3545a256c152e6d1d79, type: 2}
+  contentContainer: {fileID: 431987649}
+  viewportRect: {fileID: 1303980811}
+  titlePrefab: {fileID: 3963361762648258215, guid: 97bb2e4d4592892448355235340bf3c1, type: 3}
+  headerPrefab: {fileID: 2916968438550173800, guid: f9b6a1b45b0741c419c00d32230871c6, type: 3}
+  entryPrefab: {fileID: 6202107668540829483, guid: 4a3df13f84bb5534cb4348e4e9bdd092, type: 3}
+  fastForwardPrompt: {fileID: 982607063}
+  backPrompt: {fileID: 1860686894}
+  scrollSpeed: 50
+  fastForwardMultiplier: 4
+  startDelay: 1
+  endDelay: 0
+  fastForwardInput: {fileID: 7652597651508680508, guid: b28cb1f9c25d5ed4c8f044a0ec6e47a1, type: 3}
 --- !u!114 &6129012556022082611
 MonoBehaviour:
   m_ObjectHideFlags: 0

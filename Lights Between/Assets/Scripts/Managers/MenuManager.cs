@@ -265,7 +265,6 @@ public class MainManager : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(transitionDuration);
 
-        // Disable animator
         if (menuAnimator != null)
         {
             menuAnimator.enabled = false;
@@ -324,6 +323,12 @@ public class MainManager : MonoBehaviour
     {
         creditsPanel.SetActive(true);
         SetMenuCanvasVisible(false);
+
+        CreditsManager creditsManager = creditsPanel.GetComponentInChildren<CreditsManager>(true);
+        if (creditsManager != null)
+        {
+            creditsManager.ResetCreditsSequence();
+        }
     }
 
     public void CloseCredits()
