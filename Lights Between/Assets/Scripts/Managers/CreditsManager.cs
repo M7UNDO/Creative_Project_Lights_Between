@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class CreditsManager : MonoBehaviour
 {
@@ -21,65 +22,52 @@ public class CreditsManager : MonoBehaviour
     [SerializeField] private float scrollSpeed = 50f;
     [SerializeField] private float fastForwardMultiplier = 3f;
     [SerializeField] private float startDelay = 1f;
-    [SerializeField] private float endDelay = 1.5f;
+    [SerializeField] private float endDelay = 2f;
 
-    [Header("Input Settings")]
-    [SerializeField] private InputActionReference speedUpInput;
-
-    [Header("Managers")]
-    [SerializeField] private MainManager mainManager;
+    [Header("Input")]
+    [SerializeField] private InputActionReference fastForwardInput;
 
     private float currentSpeed;
     private bool isScrolling = false;
-    private Coroutine scrollCoroutine;
-
-    private void Awake()
-    {
-        if (mainManager == null)
-        {
-            mainManager = FindFirstObjectByType<MainManager>();
-        }
-    }
 
     private void OnEnable()
     {
-        if (speedUpInput != null && speedUpInput.action != null)
+        if (fastForwardInput != null && fastForwardInput.action != null)
         {
-            speedUpInput.action.Enable();
+            fastForwardInput.action.Enable();
         }
-
-        BuildCreditsUI();
-        ResetScrollPosition();
-
-        if (scrollCoroutine != null)
-        {
-            StopCoroutine(scrollCoroutine);
-        }
-        scrollCoroutine = StartCoroutine(StartCreditSequence());
     }
 
     private void OnDisable()
     {
-        if (speedUpInput != null && speedUpInput.action != null)
+        if (fastForwardInput != null && fastForwardInput.action != null)
         {
-            speedUpInput.action.Disable();
+            fastForwardInput.action.Disable();
         }
+    }
 
-        isScrolling = false;
-        if (scrollCoroutine != null)
-        {
-            StopCoroutine(scrollCoroutine);
-        }
+    private void Start()
+    {
+        BuildCreditsUI();
+        StartCoroutine(StartCreditSequence());
     }
 
     private void Update()
     {
         if (!isScrolling) return;
 
-        bool isSpeedingUp = speedUpInput != null && speedUpInput.action != null && speedUpInput.action.IsPressed();
-        currentSpeed = isSpeedingUp ? scrollSpeed * fastForwardMultiplier : scrollSpeed;
+        bool isFastForwarding = fastForwardInput != null && fastForwardInput.action != null && fastForwardInput.action.IsPressed();
 
-        contentContainer.anchoredPosition += Vector2.up * (currentSpeed * Time.unscaledDeltaTime);
+        if (isFastForwarding)
+        {
+            currentSpeed = scrollSpeed * fastForwardMultiplier;
+        }
+        else
+        {
+            currentSpeed = scrollSpeed;
+        }
+
+        contentContainer.anchoredPosition += Vector2.up * (currentSpeed * Time.deltaTime);
 
         float finishPosition = contentContainer.rect.height + viewportRect.rect.height;
         if (contentContainer.anchoredPosition.y >= finishPosition)
@@ -95,8 +83,6 @@ public class CreditsManager : MonoBehaviour
         {
             Destroy(child.gameObject);
         }
-
-        if (creditData == null) return;
 
         if (!string.IsNullOrEmpty(creditData.gameTitle))
         {
@@ -132,11 +118,7 @@ public class CreditsManager : MonoBehaviour
         }
 
         Canvas.ForceUpdateCanvases();
-    }
 
-    private void ResetScrollPosition()
-    {
-        if (viewportRect == null || contentContainer == null) return;
         float startY = -viewportRect.rect.height;
         contentContainer.anchoredPosition = new Vector2(contentContainer.anchoredPosition.x, startY);
     }
@@ -145,43 +127,36 @@ public class CreditsManager : MonoBehaviour
     {
         switch (type)
         {
-            case CreditSectionType.Model3D:
-                string license = string.IsNullOrEmpty(entry.licenseText) ? "CC BY 4.0" : entry.licenseText;
-                return $"{entry.primaryText} - {entry.secondaryText}\nSketchfab - {license}";
+            case CreditSectionType.HeaderAndNames:
+                return string.IsNullOrEmpty(entry.secondaryText)
+                    ? entry.primaryText
+                    : $"{entry.primaryText}\n<color=#CCCCCC><size=100%>{entry.secondaryText}</size></color>";
 
-            case CreditSectionType.Music:
-                return $"{entry.primaryText}\nby {entry.secondaryText} via Pixabay";
-
-            case CreditSectionType.Standard:
-            default:
-                if (string.IsNullOrEmpty(entry.secondaryText))
+            case CreditSectionType.Attribution:
+                if (!string.IsNullOrEmpty(entry.sourceText))
                 {
-                    return entry.primaryText;
+                    return $"{entry.primaryText} – {entry.secondaryText}\n<color=#AAAAAA><size=100%>{entry.sourceText}</size></color>";
                 }
-                return $"{entry.primaryText}\n{entry.secondaryText}";
+                return $"{entry.primaryText}\n<color=#AAAAAA><size=85%>{entry.secondaryText}</size></color>";
+
+            default:
+                return entry.primaryText;
         }
     }
 
     private IEnumerator StartCreditSequence()
     {
-        isScrolling = false;
-        yield return new WaitForSecondsRealtime(startDelay);
+        yield return new WaitForSeconds(startDelay);
         isScrolling = true;
     }
 
     private void OnCreditsFinished()
     {
-        StartCoroutine(EndCreditSequence());
+        StartCoroutine(EndSequenceRoutine());
     }
 
-    private IEnumerator EndCreditSequence()
+    private IEnumerator EndSequenceRoutine()
     {
-        yield return new WaitForSecondsRealtime(endDelay);
-
-        if (mainManager != null)
-        {
-            mainManager.ReturnToMainMenu();
-        }
-        else;
+        yield return new WaitForSeconds(endDelay);
     }
 }
