@@ -6,6 +6,8 @@ using TMPro;
 public class HighlightButton : MonoBehaviour,
     IPointerEnterHandler,
     IPointerExitHandler,
+    ISelectHandler,
+    IDeselectHandler,
     IPointerClickHandler,
     ISubmitHandler
 {
@@ -64,21 +66,7 @@ public class HighlightButton : MonoBehaviour,
         }
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (selectable != null && !selectable.interactable)
-            return;
-
-        ApplyHighlightColours();
-        PlaySFX(hoverSFX);
-
-        if (hasInputIcon && inputIcon != null)
-        {
-            inputIcon.gameObject.SetActive(true);
-        }
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
+    private void OnDisable()
     {
         ApplyNormalColours();
 
@@ -86,6 +74,36 @@ public class HighlightButton : MonoBehaviour,
         {
             inputIcon.gameObject.SetActive(false);
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (selectable != null && !selectable.interactable)
+            return;
+
+        // Syncs mouse hover with EventSystem selection.
+        // This triggers OnDeselect on the previously selected button 
+        // and OnSelect on this button automatically.
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(gameObject);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        // Optional: clear selection if you want hovering off the menu to remove focus entirely.
+        // Leave empty if you prefer keeping the last hovered button focused.
+    }
+
+    public void OnSelect(BaseEventData eventData)
+    {
+        HandleHighlight();
+    }
+
+    public void OnDeselect(BaseEventData eventData)
+    {
+        HandleUnhighlight();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -102,6 +120,30 @@ public class HighlightButton : MonoBehaviour,
             return;
 
         PlaySFX(clickSFX);
+    }
+
+    private void HandleHighlight()
+    {
+        if (selectable != null && !selectable.interactable)
+            return;
+
+        ApplyHighlightColours();
+        PlaySFX(hoverSFX);
+
+        if (hasInputIcon && inputIcon != null)
+        {
+            inputIcon.gameObject.SetActive(true);
+        }
+    }
+
+    private void HandleUnhighlight()
+    {
+        ApplyNormalColours();
+
+        if (hasInputIcon && inputIcon != null)
+        {
+            inputIcon.gameObject.SetActive(false);
+        }
     }
 
     private void ApplyNormalColours()

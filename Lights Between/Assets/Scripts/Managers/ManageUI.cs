@@ -1,18 +1,19 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ManageUI : MonoBehaviour
 {
-    [Header("References")]
+    [Header("References", order = 0)]
     [Space(5)]
     [SerializeField] private PauseManager pauseScript;
     [SerializeField] private TabController tabController;
     [SerializeField] private InputHandler inputHandler;
     [SerializeField] private InventoryUI inventoryUI;
 
-    [Header("UI Elements")]
+    [Header("UI Elements", order = 1)]
     [Space(5)]
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject settingsPanel;
@@ -22,24 +23,26 @@ public class ManageUI : MonoBehaviour
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button cancelButton;
 
-    [Header("Audio")]
+    [Header("Audio", order = 2)]
     [Space(5)]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip closeSFX;
 
-    [Header("First Selected Objects")]
+    [Header("First Selected Objects", order = 3)]
     [Space(5)]
     [SerializeField] private GameObject pauseFirstSelected;
     [SerializeField] private GameObject settingsFirstSelected;
     [SerializeField] private GameObject confirmFirstSelected;
 
-    [Header("Canvas Groups")]
+    [Header("Canvas Groups", order = 4)]
     [Space(5)]
     [SerializeField] private CanvasGroup pauseCanvasGroup;
 
-    [Header("Scene Settings")]
+    [Header("Scene Settings", order = 5)]
     [Space(5)]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
+
+    private GameObject lastSelectedButton;
 
     private void Awake()
     {
@@ -165,6 +168,7 @@ public class ManageUI : MonoBehaviour
         if (pauseScript != null)
         {
             pauseScript.Pause();
+            SetSelected(pauseFirstSelected);
         }
     }
 
@@ -184,15 +188,24 @@ public class ManageUI : MonoBehaviour
 
     public void OpenSettings()
     {
+        SaveCurrentSelected();
+
         if (pausePanel != null) pausePanel.SetActive(false);
         if (settingsPanel != null) settingsPanel.SetActive(true);
+
+        SetSelected(settingsFirstSelected);
     }
 
     public void CloseSettings()
     {
         PlayCloseSFX();
         if (settingsPanel != null) settingsPanel.SetActive(false);
-        if (pausePanel != null && PauseManager.IsGamePaused) pausePanel.SetActive(true);
+
+        if (pausePanel != null && PauseManager.IsGamePaused)
+        {
+            pausePanel.SetActive(true);
+            RestorePreviousSelected();
+        }
     }
 
     public void ConfirmQuitGame()
@@ -209,6 +222,8 @@ public class ManageUI : MonoBehaviour
     {
         if (confirmationPanel != null)
         {
+            SaveCurrentSelected();
+
             if (pausePanel != null) pausePanel.SetActive(false);
 
             confirmationPanel.SetActive(true);
@@ -229,6 +244,8 @@ public class ManageUI : MonoBehaviour
                 cancelButton.onClick.RemoveAllListeners();
                 cancelButton.onClick.AddListener(CancelConfirmation);
             }
+
+            SetSelected(confirmFirstSelected);
         }
     }
 
@@ -242,7 +259,12 @@ public class ManageUI : MonoBehaviour
         if (confirmationPanel != null)
         {
             confirmationPanel.SetActive(false);
-            if (pausePanel != null && PauseManager.IsGamePaused) pausePanel.SetActive(true);
+
+            if (pausePanel != null && PauseManager.IsGamePaused)
+            {
+                pausePanel.SetActive(true);
+                RestorePreviousSelected();
+            }
         }
     }
 
@@ -276,6 +298,36 @@ public class ManageUI : MonoBehaviour
         pauseCanvasGroup.alpha = visible ? 1f : 0f;
         pauseCanvasGroup.interactable = visible;
         pauseCanvasGroup.blocksRaycasts = visible;
+    }
+
+    private void SaveCurrentSelected()
+    {
+        if (EventSystem.current != null && EventSystem.current.currentSelectedGameObject != null)
+        {
+            lastSelectedButton = EventSystem.current.currentSelectedGameObject;
+        }
+    }
+
+    private void RestorePreviousSelected()
+    {
+        if (lastSelectedButton != null)
+        {
+            SetSelected(lastSelectedButton);
+            lastSelectedButton = null;
+        }
+        else
+        {
+            SetSelected(pauseFirstSelected);
+        }
+    }
+
+    private void SetSelected(GameObject target)
+    {
+        if (target != null && EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(target);
+        }
     }
 
     private void PlayCloseSFX()
