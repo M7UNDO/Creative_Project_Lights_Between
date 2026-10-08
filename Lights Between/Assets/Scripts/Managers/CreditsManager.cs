@@ -95,8 +95,7 @@ public class CreditsManager : MonoBehaviour
 
         contentContainer.anchoredPosition += Vector2.up * (currentSpeed * Time.deltaTime);
 
-        float finishPosition = totalContentHeight + viewportRect.rect.height;
-        if (contentContainer.anchoredPosition.y >= finishPosition)
+        if (contentContainer.anchoredPosition.y >= totalContentHeight)
         {
             isScrolling = false;
             OnCreditsFinished();
