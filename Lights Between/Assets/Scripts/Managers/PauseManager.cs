@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.InputSystem;
 
 public class PauseManager : MonoBehaviour
 {
@@ -11,7 +10,6 @@ public class PauseManager : MonoBehaviour
     [SerializeField] private ManageUI manageUI;
     [SerializeField] private TabController tabController;
     [SerializeField] private FPSController playerController;
-    private PlayerInteraction playerInteraction;
 
     [Header("Audio Mixer Snapshots", order = 1)]
     [Space(5)]
@@ -22,17 +20,6 @@ public class PauseManager : MonoBehaviour
     [Header("UI Components", order = 2)]
     [Space(5)]
     public GameObject PauseCanvas;
-
-    private PlayerControls playerControls;
-    private System.Action<InputAction.CallbackContext> pauseAction;
-    private System.Action<InputAction.CallbackContext> cancelAction;
-
-    private void Awake()
-    {
-        playerControls = new PlayerControls();
-        pauseAction = ctx => TogglePause();
-        cancelAction = ctx => OnCancelPressed();
-    }
 
     private void Start()
     {
@@ -46,70 +33,9 @@ public class PauseManager : MonoBehaviour
             playerController = FindFirstObjectByType<FPSController>();
         }
 
-        if (playerController != null)
-        {
-            playerInteraction = playerController.GetComponent<PlayerInteraction>();
-        }
-
         if (tabController == null)
         {
             tabController = GetComponentInChildren<TabController>(true);
-        }
-
-        if (tabController != null && playerControls != null)
-        {
-            tabController.InitializeTabNavigation(
-                playerControls.UI.PreviousTab,
-                playerControls.UI.NextTab
-            );
-        }
-    }
-
-    private void OnEnable()
-    {
-        if (playerControls == null)
-        {
-            playerControls = new PlayerControls();
-            pauseAction = ctx => TogglePause();
-            cancelAction = ctx => OnCancelPressed();
-        }
-
-        playerControls.Player.Pause.performed += pauseAction;
-        playerControls.UI.Back.performed += cancelAction;
-
-        if (IsGamePaused)
-        {
-            playerControls.Player.Disable();
-            playerControls.UI.Enable();
-        }
-        else
-        {
-            playerControls.UI.Disable();
-            playerControls.Player.Enable();
-        }
-    }
-
-    private void OnDisable()
-    {
-        if (playerControls != null)
-        {
-            playerControls.Player.Pause.performed -= pauseAction;
-            playerControls.UI.Back.performed -= cancelAction;
-
-            playerControls.Player.Disable();
-            playerControls.UI.Disable();
-        }
-    }
-
-    private void OnCancelPressed()
-    {
-        if (manageUI != null)
-        {
-            manageUI.Back();
-        }
-        else
-        {
-            TogglePause();
         }
     }
 
@@ -152,9 +78,6 @@ public class PauseManager : MonoBehaviour
 
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-
-        playerControls.Player.Disable();
-        playerControls.UI.Enable();
     }
 
     public void Resume()
@@ -184,8 +107,5 @@ public class PauseManager : MonoBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-
-        playerControls.UI.Disable();
-        playerControls.Player.Enable();
     }
 }

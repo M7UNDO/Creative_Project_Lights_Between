@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -21,6 +22,7 @@ public class InputHandler : MonoBehaviour
     public bool placementModeOff;
     public bool placeObject;
     public bool cancel;
+    public bool pause;
     public bool close;
     public bool timedAction;
     public bool confirmDial;
@@ -86,6 +88,9 @@ public class InputHandler : MonoBehaviour
         playerControls.Player.PlaceObject.performed += ctx => PlaceObjectInput(true);
         playerControls.Player.PlaceObject.canceled += ctx => PlaceObjectInput(false);
 
+        playerControls.Player.Pause.performed += ctx => PauseInput(true);
+        playerControls.Player.Pause.canceled += ctx => PauseInput(false);
+
         playerControls.Player.Cancel.performed += ctx => CancelInput(true);
         playerControls.Player.Cancel.canceled += ctx => CancelInput(false);
 
@@ -106,6 +111,8 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Enable();
     }
+
+    
 
     private void OnDisable()
     {
@@ -140,6 +147,11 @@ public class InputHandler : MonoBehaviour
     public void InteractInput(bool newInteractState)
     {
         interact = newInteractState;
+    }
+
+    private void PauseInput(bool newPauseState)
+    {
+        pause = newPauseState;
     }
 
     public void DropInput(bool newDropState)
@@ -245,6 +257,7 @@ public class InputHandler : MonoBehaviour
         confirmDial = false;
         use = false;
         back = false;
+        pause = false;
         inventory = false;
     }
 

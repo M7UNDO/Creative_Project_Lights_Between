@@ -5,13 +5,14 @@ using UnityEngine.UI;
 
 public class ManageUI : MonoBehaviour
 {
-    [Header("References", order = 0)]
+    [Header("References")]
     [Space(5)]
     [SerializeField] private PauseManager pauseScript;
     [SerializeField] private TabController tabController;
     [SerializeField] private InputHandler inputHandler;
+    [SerializeField] private InventoryUI inventoryUI;
 
-    [Header("UI Elements", order = 1)]
+    [Header("UI Elements")]
     [Space(5)]
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject settingsPanel;
@@ -21,28 +22,24 @@ public class ManageUI : MonoBehaviour
     [SerializeField] private Button confirmButton;
     [SerializeField] private Button cancelButton;
 
-    [Header("Audio", order = 2)]
+    [Header("Audio")]
     [Space(5)]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip closeSFX;
 
-    [Header("First Selected Objects", order = 3)]
+    [Header("First Selected Objects")]
     [Space(5)]
     [SerializeField] private GameObject pauseFirstSelected;
     [SerializeField] private GameObject settingsFirstSelected;
     [SerializeField] private GameObject confirmFirstSelected;
 
-    [Header("Canvas Groups", order = 4)]
+    [Header("Canvas Groups")]
     [Space(5)]
     [SerializeField] private CanvasGroup pauseCanvasGroup;
 
-    [Header("Scene Settings", order = 5)]
+    [Header("Scene Settings")]
     [Space(5)]
     [SerializeField] private string mainMenuSceneName = "MainMenu";
-
-    private GameObject lastSelectedBeforeSubMenu;
-    private Coroutine selectCoroutine;
-    private int lastProcessedFrame = -1;
 
     private void Awake()
     {
@@ -64,6 +61,11 @@ public class ManageUI : MonoBehaviour
             inputHandler = FindFirstObjectByType<InputHandler>();
         }
 
+        if (inventoryUI == null)
+        {
+            inventoryUI = FindFirstObjectByType<InventoryUI>();
+        }
+
         if (tabController == null)
         {
             tabController = GetComponentInChildren<TabController>(true);
@@ -80,13 +82,48 @@ public class ManageUI : MonoBehaviour
         CloseSettings();
     }
 
+    private void Update()
+    {
+        if (inputHandler == null) return;
+
+        if (inputHandler.inventory)
+        {
+            inputHandler.inventory = false;
+            HandleInventoryInput();
+            return;
+        }
+
+        if (inputHandler.back || inputHandler.pause)
+        {
+            inputHandler.back = false;
+            inputHandler.pause = false;
+            Back();
+        }
+    }
+
+    private void HandleInventoryInput()
+    {
+        if (confirmationPanel != null && confirmationPanel.activeSelf) return;
+        if (settingsPanel != null && settingsPanel.activeSelf) return;
+
+        if (InventoryUI.IsInventoryOpen)
+        {
+            if (inventoryUI != null)
+            {
+                inventoryUI.CloseInventory();
+            }
+        }
+        else if (!PauseManager.IsGamePaused)
+        {
+            if (inventoryUI != null)
+            {
+                inventoryUI.OpenInventory();
+            }
+        }
+    }
+
     public void Back()
     {
-        if (Time.frameCount == lastProcessedFrame) return;
-        lastProcessedFrame = Time.frameCount;
-
-        if (InventoryUI.IsInventoryOpen) return;
-
         if (confirmationPanel != null && confirmationPanel.activeSelf)
         {
             CancelConfirmation();
@@ -99,13 +136,35 @@ public class ManageUI : MonoBehaviour
             return;
         }
 
-        if (pausePanel != null && pausePanel.activeSelf)
+        if (InventoryUI.IsInventoryOpen)
+        {
+            if (inventoryUI != null)
+            {
+                if (inventoryUI.HasSelectedItem())
+                {
+                    inventoryUI.DeselectItem();
+                }
+                else
+                {
+                    inventoryUI.CloseInventory();
+                }
+            }
+            return;
+        }
+
+        if (PauseManager.IsGamePaused)
         {
             PlayCloseSFX();
             if (pauseScript != null)
             {
                 pauseScript.Resume();
             }
+            return;
+        }
+
+        if (pauseScript != null)
+        {
+            pauseScript.Pause();
         }
     }
 
@@ -133,7 +192,7 @@ public class ManageUI : MonoBehaviour
     {
         PlayCloseSFX();
         if (settingsPanel != null) settingsPanel.SetActive(false);
-        if (pausePanel != null) pausePanel.SetActive(true);
+        if (pausePanel != null && PauseManager.IsGamePaused) pausePanel.SetActive(true);
     }
 
     public void ConfirmQuitGame()
@@ -183,7 +242,7 @@ public class ManageUI : MonoBehaviour
         if (confirmationPanel != null)
         {
             confirmationPanel.SetActive(false);
-            if (pausePanel != null) pausePanel.SetActive(true);
+            if (pausePanel != null && PauseManager.IsGamePaused) pausePanel.SetActive(true);
         }
     }
 

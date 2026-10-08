@@ -7,7 +7,6 @@ public class InventoryUI : MonoBehaviour
     [Header("References")]
     [Space(5)]
     [SerializeField] private GameObject inventoryPanel;
-    [SerializeField] private InputHandler inputHandler;
     [SerializeField] private InventoryManager inventoryManager;
 
     [Header("Audio")]
@@ -17,11 +16,6 @@ public class InventoryUI : MonoBehaviour
 
     private void Start()
     {
-        if (inputHandler == null)
-        {
-            inputHandler = FindFirstObjectByType<InputHandler>();
-        }
-
         if (inventoryManager == null)
         {
             inventoryManager = FindFirstObjectByType<InventoryManager>();
@@ -33,23 +27,6 @@ public class InventoryUI : MonoBehaviour
         }
 
         CloseInventory();
-    }
-
-    private void Update()
-    {
-        if (inputHandler == null) return;
-
-        if (inputHandler.inventory)
-        {
-            ToggleInventory();
-            inputHandler.inventory = false;
-        }
-
-        if (IsInventoryOpen && inputHandler.back)
-        {
-            HandleBackInput();
-            inputHandler.back = false;
-        }
     }
 
     public void ToggleInventory()
@@ -104,15 +81,17 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    private void HandleBackInput()
+    public bool HasSelectedItem()
     {
-        if (inventoryManager != null && inventoryManager.HasSelectedItem)
+        return inventoryManager != null && inventoryManager.HasSelectedItem;
+    }
+
+    public void DeselectItem()
+    {
+        if (inventoryManager != null)
         {
             inventoryManager.DeselectAll();
-            return;
         }
-
-        CloseInventory();
     }
 
     private void PlayCloseSFX()

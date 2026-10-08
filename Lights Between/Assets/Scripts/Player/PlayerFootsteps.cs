@@ -38,7 +38,7 @@ public class PlayerFootsteps : MonoBehaviour
 
     private void Update()
     {
-        if (_fpsController.isSeated || _fpsController.isInspecting || _fpsController.isDialogueActive || _fpsController.isInMiniGame || _fpsController.isJumpscareActive)
+        if (_fpsController.isSeated || _fpsController.isInspecting || _fpsController.isDialogueActive || _fpsController.isInMiniGame || _fpsController.isJumpscareActive || PauseManager.IsGamePaused || InventoryUI.IsInventoryOpen)
         {
             StopFootsteps();
             return;
