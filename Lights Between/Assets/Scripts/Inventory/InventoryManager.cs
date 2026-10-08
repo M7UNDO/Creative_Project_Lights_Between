@@ -4,16 +4,16 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
 {
-    [Header("Settings", order = 0)]
+    [Header("Settings")]
     [Space(5)]
     [SerializeField] private int maxCapacity = 12;
 
-    [Header("References", order = 1)]
+    [Header("References")]
     [Space(5)]
     [SerializeField] private InputHandler inputHandler;
     [SerializeField] private GameObject playerGameObject;
 
-    [Header("UI References", order = 2)]
+    [Header("UI References")]
     [Space(5)]
     [SerializeField] private Transform slotGridHolder;
     [SerializeField] private GameObject slotPrefab;
@@ -21,7 +21,7 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI itemDescriptionText;
     [SerializeField] private TextMeshProUGUI capacityCounterText;
 
-    [Header("Input Prompt UI", order = 3)]
+    [Header("Input Prompt UI")]
     [Space(5)]
     [SerializeField] private GameObject actionPromptsContainer;
     [SerializeField] private TextMeshProUGUI usePromptText;
