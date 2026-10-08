@@ -1,10 +1,11 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using TMPro;
 
 public class ToolWheelController : MonoBehaviour
 {
-    [Header("References")]
+    [Header("References", order = 0)]
+    [Space(5)]
     [SerializeField] private FPSController fpsController;
     [SerializeField] private InputHandler input;
     [SerializeField] private GameObject hud;
@@ -14,26 +15,29 @@ public class ToolWheelController : MonoBehaviour
     [SerializeField] private ToolSlot[] slots;
     [SerializeField] private TextMeshProUGUI centerItemNameText;
 
-    [Header("Settings")]
+    [Header("Settings", order = 1)]
+    [Space(5)]
     [SerializeField] private bool slowTimeWhenOpen = true;
     [SerializeField] private float slowedTimeScale = 0.2f;
     [SerializeField] private float inputDeadZone = 0.35f;
     [SerializeField] private float mouseDeadZone = 80f;
 
-    [Header("Unequip Slot")]
+    [Header("Unequip Slot", order = 2)]
+    [Space(5)]
     [SerializeField] private int unequipSlotIndex = 0;
     [SerializeField] private Sprite unequipIcon;
 
-    private bool isWheelOpen;
-    private int selectedIndex = -1;
-    private int lastSelectedIndex = -1;
-
-    [Header("SFX")]
+    [Header("SFX", order = 3)]
+    [Space(5)]
     [SerializeField] private AudioSource toolWheelSource;
     public AudioClip SlotHover;
     public AudioClip SlotRelease;
     [SerializeField] private AudioClip wheelOpen;
     [SerializeField] private AudioClip wheelClose;
+
+    private bool isWheelOpen;
+    private int selectedIndex = -1;
+    private int lastSelectedIndex = -1;
 
     private void Awake()
     {
@@ -92,7 +96,7 @@ public class ToolWheelController : MonoBehaviour
 
         RefreshWheel();
 
-       Cursor.lockState = CursorLockMode.None;
+        Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
         input.cursorInputForLook = false;
@@ -177,16 +181,16 @@ public class ToolWheelController : MonoBehaviour
 
         if (inventory == null) return;
 
-        foreach (ToolClass tool in inventory.AcquiredTools)
+        foreach (ToolSlotData slotData in inventory.AcquiredTools)
         {
-            if (tool == null) continue;
+            if (slotData == null || slotData.Tool == null) continue;
 
-            int index = tool.fixedRadialSlotIndex;
+            int index = slotData.Tool.fixedRadialSlotIndex;
             if (index >= 0 && index < slots.Length && index != unequipSlotIndex)
             {
                 if (slots[index] != null)
                 {
-                    slots[index].Setup(tool);
+                    slots[index].Setup(slotData.Tool, slotData.Quantity);
                 }
             }
         }
