@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: LightsBetweenCreditsData
+  m_Script: {fileID: 11500000, guid: 017e2e96b44b1c84aa12d12b62af81d1, type: 3}
+  m_Name: GameCreditsData
   m_EditorClassIdentifier: Assembly-CSharp::CreditData
   gameTitle: Lights Between
   sections:
@@ -27,10 +27,7 @@ MonoBehaviour:
       secondaryText: YJ_
       sourceText: "Sketchfab \u2013 CC BY 4.0"
     - primaryText: Combination padlock
-      secondaryText: ' KairosMax'
-      sourceText: "Sketchfab \u2013 CC BY 4.0"
-    - primaryText: Combination padlock
-      secondaryText: ' KairosMax'
+      secondaryText: KairosMax
       sourceText: "Sketchfab \u2013 CC BY 4.0"
     - primaryText: Old Wall Mounted Telephone
       secondaryText: ' ShepDes'

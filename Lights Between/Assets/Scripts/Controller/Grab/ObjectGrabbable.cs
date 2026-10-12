@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ObjectGrabbable : MonoBehaviour
@@ -15,7 +16,7 @@ public class ObjectGrabbable : MonoBehaviour
     private Transform objectGrabPointTransform;
     private RigidbodyConstraints originalConstraints;
 
-    private int originalLayer;
+    private Dictionary<Transform, int> originalLayers = new Dictionary<Transform, int>();
     private Collider[] objectColliders;
 
     private Vector3 lastPosition;
@@ -28,8 +29,19 @@ public class ObjectGrabbable : MonoBehaviour
     {
         objectRigidbody = GetComponent<Rigidbody>();
         originalConstraints = objectRigidbody.constraints;
-        originalLayer = gameObject.layer;
         objectColliders = GetComponentsInChildren<Collider>();
+
+        CacheOriginalLayers(transform);
+    }
+
+    private void CacheOriginalLayers(Transform root)
+    {
+        originalLayers[root] = root.gameObject.layer;
+
+        foreach (Transform child in root)
+        {
+            CacheOriginalLayers(child);
+        }
     }
 
     public void Grab(Transform objectGrabPointTransform, int targetLayer)
@@ -54,10 +66,8 @@ public class ObjectGrabbable : MonoBehaviour
             }
         }
 
-        // Parent the item to the player's anchor
         transform.SetParent(this.objectGrabPointTransform);
 
-        // CLEAN ARCHITECTURE: Apply the offset to the item itself, NOT the player's anchor.
         if (useCustomGrabOffset)
         {
             transform.localPosition = grabPositionOffset;
@@ -75,7 +85,7 @@ public class ObjectGrabbable : MonoBehaviour
     public void SnapToTarget(Transform snapTransform, bool destroyOnSnap = false)
     {
         transform.SetParent(null);
-        SetLayerRecursively(gameObject, originalLayer);
+        RestoreOriginalLayers(transform);
         objectGrabPointTransform = null;
 
         if (destroyOnSnap)
@@ -102,7 +112,7 @@ public class ObjectGrabbable : MonoBehaviour
     public void Drop()
     {
         transform.SetParent(null);
-        SetLayerRecursively(gameObject, originalLayer);
+        RestoreOriginalLayers(transform);
         objectGrabPointTransform = null;
 
         foreach (Collider col in objectColliders)
@@ -141,6 +151,21 @@ public class ObjectGrabbable : MonoBehaviour
         foreach (Transform child in targetObject.transform)
         {
             SetLayerRecursively(child.gameObject, newLayer);
+        }
+    }
+
+    private void RestoreOriginalLayers(Transform root)
+    {
+        if (root == null) return;
+
+        if (originalLayers.TryGetValue(root, out int initialLayer))
+        {
+            root.gameObject.layer = initialLayer;
+        }
+
+        foreach (Transform child in root)
+        {
+            RestoreOriginalLayers(child);
         }
     }
 }

@@ -1,16 +1,19 @@
-using System.Collections.Generic;
 using System.Collections;
-using UnityEngine;
+using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
 
 public class PlayerKeyInventory : MonoBehaviour, IKeyInventory
 {
     [SerializeField] private List<string> keys = new List<string>();
     [SerializeField] private float displayTime = 1.5f;
 
-    [Header("UI")]
+    [Header("UI", order = 0)]
+    [Space(5)]
     public GameObject KeyCollectionContainer;
     public TextMeshProUGUI keyCollectedTxt;
+
+    private readonly Dictionary<string, ItemClass> keyItemMap = new Dictionary<string, ItemClass>();
 
     public void Start()
     {
@@ -30,23 +33,41 @@ public class PlayerKeyInventory : MonoBehaviour, IKeyInventory
         if (HasKey(keyID))
         {
             keys.Remove(keyID);
+
+            if (keyItemMap.TryGetValue(keyID, out ItemClass itemData))
+            {
+                InventoryManager inventory = FindFirstObjectByType<InventoryManager>();
+                if (inventory != null)
+                {
+                    inventory.RemoveItem(itemData, 1);
+                }
+                keyItemMap.Remove(keyID);
+            }
+
             return true;
         }
         return false;
     }
 
-    public void AddKey(string keyID)
+    public void AddKey(string keyID, ItemClass itemData = null)
     {
         if (!keys.Contains(keyID))
         {
             keys.Add(keyID);
 
-            if (KeyCollectionContainer == null) return;
-            StartCoroutine(DisplayKeyCollected(keyID));
+            if (itemData != null && !keyItemMap.ContainsKey(keyID))
+            {
+                keyItemMap.Add(keyID, itemData);
+            }
+
+            if (KeyCollectionContainer != null)
+            {
+                StartCoroutine(DisplayKeyCollected(keyID));
+            }
         }
     }
 
-    IEnumerator DisplayKeyCollected(string keyID)
+    private IEnumerator DisplayKeyCollected(string keyID)
     {
         if (keyCollectedTxt != null)
         {

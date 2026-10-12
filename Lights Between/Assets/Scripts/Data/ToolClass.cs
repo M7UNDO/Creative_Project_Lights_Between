@@ -7,6 +7,7 @@ public enum ToolType
     Lighter,
     GeneratorFuel,
     Keys,
+    Crowbar,
     None
 }
 

@@ -14,6 +14,7 @@ public class InputHandler : MonoBehaviour
     public bool sprint;
     public bool standUp;
     public bool interact;
+    public bool grab;
     public bool drop;
     public bool wheel;
     public bool toggleFlashlight;
@@ -69,6 +70,9 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Player.Interact.performed += ctx => InteractInput(true);
         playerControls.Player.Interact.canceled += ctx => InteractInput(false);
+
+        playerControls.Player.Grab.performed += ctx => GrabInput(true);
+        playerControls.Player.Grab.canceled += ctx => GrabInput(false);
 
         playerControls.Player.Drop.performed += ctx => DropInput(true);
         playerControls.Player.Drop.canceled += ctx => DropInput(false);
@@ -147,6 +151,11 @@ public class InputHandler : MonoBehaviour
     public void InteractInput(bool newInteractState)
     {
         interact = newInteractState;
+    }
+
+    public void GrabInput(bool newGrabState)
+    {
+        grab = newGrabState;
     }
 
     private void PauseInput(bool newPauseState)
@@ -244,6 +253,7 @@ public class InputHandler : MonoBehaviour
         sprint = false;
         standUp = false;
         interact = false;
+        grab = false;
         drop = false;
         wheel = false;
         toggleFlashlight = false;

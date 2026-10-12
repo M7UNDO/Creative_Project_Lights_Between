@@ -2,15 +2,19 @@ using UnityEngine;
 
 public class KeyPickUp : MonoBehaviour, IInteractable
 {
-    [Header("References")]
+    [Header("References", order = 0)]
+    [Space(5)]
     [SerializeField] private ItemClass keyItemData;
 
+    [Header("Key Settings", order = 1)]
+    [Space(5)]
     public string KeyID = "Garage Key";
     public ObjectiveSO objectiveSO;
 
-    [Header("SFX")]
-
+    [Header("SFX", order = 2)]
+    [Space(5)]
     public AudioClip pickUpSFX;
+
     public void Interact()
     {
         PickupKey();
@@ -22,32 +26,26 @@ public class KeyPickUp : MonoBehaviour, IInteractable
 
         if (player != null && player.TryGetComponent<PlayerKeyInventory>(out PlayerKeyInventory keyInventory))
         {
-            keyInventory.AddKey(KeyID);
+            keyInventory.AddKey(KeyID, keyItemData);
 
             InventoryManager inventory = FindFirstObjectByType<InventoryManager>();
 
             if (inventory != null && keyItemData != null)
             {
-                if (inventory.AddItem(keyItemData, 1))
-                {
-                    if (pickUpSFX != null)
-                    {
-                        AudioSource.PlayClipAtPoint(pickUpSFX, transform.position);
-                    }
-                }
-
-                if (objectiveSO != null)
-                {
-                    if (ObjectiveManager.Instance != null)
-                    {
-                        ObjectiveManager.Instance.CompleteObjective(objectiveSO.ID);
-                    }
-                }
-
-                Destroy(gameObject);
+                inventory.AddItem(keyItemData, 1);
             }
 
-            
+            if (pickUpSFX != null)
+            {
+                AudioSource.PlayClipAtPoint(pickUpSFX, transform.position);
+            }
+
+            if (objectiveSO != null && ObjectiveManager.Instance != null)
+            {
+                ObjectiveManager.Instance.CompleteObjective(objectiveSO.ID);
+            }
+
+            Destroy(gameObject);
         }
     }
 }

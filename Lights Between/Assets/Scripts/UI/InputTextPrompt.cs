@@ -10,8 +10,11 @@ public class InputTextPrompt : MonoBehaviour
     [TextArea]
     [SerializeField] private string formatTemplate = "Press {0} to Start";
 
-    [Header("Keyboard Text")]
+    [Header("Keyboard Settings")]
+    [SerializeField] private bool useKeyboardSprites = false;
     [SerializeField] private string keyboardInputText = "[A] [D]";
+    [SerializeField] private string keyboardPrimarySpriteName = "Keyboard_A";
+    [SerializeField] private string keyboardSecondarySpriteName = "Keyboard_D";
 
     [Header("Xbox Sprite Names")]
     [SerializeField] private string xboxPrimarySpriteName = "Xbox_DPad_Left";
@@ -53,7 +56,9 @@ public class InputTextPrompt : MonoBehaviour
         switch (deviceType)
         {
             case InputDeviceType.KeyboardMouse:
-                return keyboardInputText;
+                return useKeyboardSprites
+                    ? FormatDualSprites(keyboardPrimarySpriteName, keyboardSecondarySpriteName)
+                    : keyboardInputText;
 
             case InputDeviceType.Xbox:
                 return FormatDualSprites(xboxPrimarySpriteName, xboxSecondarySpriteName);

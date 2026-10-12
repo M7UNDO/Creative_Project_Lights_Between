@@ -79,7 +79,10 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactionRange, interactionLayer, QueryTriggerInteraction.Collide))
         {
-            targetedWorldUI = ProcessInteractableHit(hit);
+            if (IsPathClear(ray.origin, hit))
+            {
+                targetedWorldUI = ProcessInteractableHit(hit);
+            }
         }
 
         if (previousLamp != null && previousLamp != _currentKeroseneLamp)
@@ -91,6 +94,22 @@ public class PlayerInteraction : MonoBehaviour
         UpdateUnfocusedWorldUIs(targetedWorldUI);
 
         _currentWorldUI = targetedWorldUI;
+    }
+
+    private bool IsPathClear(Vector3 origin, RaycastHit targetHit)
+    {
+        Vector3 direction = targetHit.point - origin;
+        float distance = direction.magnitude;
+
+        if (Physics.Raycast(origin, direction.normalized, out RaycastHit occlusionHit, distance, occlusionLayer, QueryTriggerInteraction.Ignore))
+        {
+            if (occlusionHit.collider != targetHit.collider && !occlusionHit.transform.IsChildOf(targetHit.transform))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private WorldSpaceInteractableUI ProcessInteractableHit(RaycastHit hit)

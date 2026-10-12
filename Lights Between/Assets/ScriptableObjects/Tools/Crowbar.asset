@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 935e463c8b7111546bba3b351f6fc5ea, type: 3}
   m_Name: Crowbar
   m_EditorClassIdentifier: Assembly-CSharp::ToolClass
-  toolName: 
-  toolType: 0
-  toolPrefab: {fileID: 0}
-  sprite: {fileID: 0}
-  holdPointPositionOffset: {x: 0, y: 0, z: 0}
-  holdPointRotationOffset: {x: 0, y: 0, z: 0}
+  toolName: Crowbar
+  toolType: 5
+  toolPrefab: {fileID: 1320297969141407599, guid: 99c8942878d403d459a2b60cf1de1b48, type: 3}
+  sprite: {fileID: 21300000, guid: 3a398e5b78593494fb53ffd9ff51ec6b, type: 3}
+  isStackable: 0
+  stackSize: 64
+  holdPointPositionOffset: {x: 0.7, y: -0.3, z: 1}
+  holdPointRotationOffset: {x: -90, y: 90, z: 0}
   usesPower: 0
   maxPower: 0
-  fixedRadialSlotIndex: 0
+  fixedRadialSlotIndex: 5

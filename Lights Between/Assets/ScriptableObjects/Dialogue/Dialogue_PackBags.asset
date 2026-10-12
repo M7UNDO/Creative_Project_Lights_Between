@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ce59cacb38a79c4bafa296c62696bed, type: 3}
   m_Name: Dialogue_PackBags
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSO
+  formattedLines: []
   lines:
-  - "\u201CMom? Dad? Sammy? I\u2019m home!"
-  - Hmm... guess nobody heard me.
-  - I should probably take this upstairs.
+  - Mom? Dad? Sammy? I'm home!
+  - Hmm, guess nobody's around.
+  - I thought they knew I was coming home today.
+  - I should probably take my bag upstairs and get settled in.
   onDialogueCompletedEvent: {fileID: 11400000, guid: 89932dd89cb81544098c304821743345, type: 2}
   objectiveToActivateOnComplete: {fileID: 11400000, guid: e751466cbc1287541846e399a61775e0, type: 2}

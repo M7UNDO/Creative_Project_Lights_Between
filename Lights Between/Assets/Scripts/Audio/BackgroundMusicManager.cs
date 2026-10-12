@@ -8,6 +8,7 @@ public enum MusicState
     Tension,
     DoorKnockTension,
     HorrorStinger,
+    Riser,
     Action
 }
 
@@ -44,6 +45,7 @@ public class BackgroundMusicManager : MonoBehaviour
 
     private AudioSource pausedGameplaySource;
     private float pausedGameplayTime;
+    private bool isPaused;
 
     private Dictionary<MusicState, MusicTrack> trackLookup = new Dictionary<MusicState, MusicTrack>();
 
@@ -80,6 +82,25 @@ public class BackgroundMusicManager : MonoBehaviour
         inactiveSource = audioSourceB;
     }
 
+    public void SetStateCalmAmbience() => TransitionToState(MusicState.CalmAmbience);
+    public void SetStateTension() => TransitionToState(MusicState.Tension);
+    public void SetStateDoorKnockTension() => TransitionToState(MusicState.DoorKnockTension);
+    public void SetStateHorrorStinger() => TransitionToState(MusicState.HorrorStinger);
+    public void SetStateRiser() => TransitionToState(MusicState.Riser);
+    public void SetStateAction() => TransitionToState(MusicState.Action);
+
+    public void SetStateByName(string stateName)
+    {
+        if (System.Enum.TryParse(stateName, out MusicState parsedState))
+        {
+            TransitionToState(parsedState);
+        }
+        else
+        {
+            Debug.LogWarning($"[MusicManager] Invalid state name: {stateName}");
+        }
+    }
+
     private void BuildLookupDictionary()
     {
         trackLookup.Clear();
@@ -94,6 +115,9 @@ public class BackgroundMusicManager : MonoBehaviour
 
     public void PauseGameMusic(float fadeDuration = 0.5f)
     {
+        if (isPaused) return;
+        isPaused = true;
+
         if (fadeCoroutine != null)
         {
             StopCoroutine(fadeCoroutine);
@@ -103,14 +127,10 @@ public class BackgroundMusicManager : MonoBehaviour
         {
             pausedGameplaySource = activeSource;
 
-            if (activeSource != null && activeSource.clip != null)
+            if (pausedGameplaySource != null && pausedGameplaySource.clip != null)
             {
-                pausedGameplayTime = activeSource.time;
+                pausedGameplayTime = pausedGameplaySource.time;
                 pausedGameplaySource.Pause();
-            }
-            else
-            {
-                pausedGameplayTime = 0f;
             }
 
             MusicTrack pauseTrack = new MusicTrack
@@ -130,6 +150,9 @@ public class BackgroundMusicManager : MonoBehaviour
 
     public void ResumeGameMusic(float fadeDuration = 0.5f)
     {
+        if (!isPaused) return;
+        isPaused = false;
+
         if (fadeCoroutine != null)
         {
             StopCoroutine(fadeCoroutine);
@@ -202,6 +225,7 @@ public class BackgroundMusicManager : MonoBehaviour
 
         pauseMenuSource.volume = 0f;
         pauseMenuSource.Stop();
+        pauseMenuSource.clip = null;
 
         gameplaySource.volume = targetTrack.baseVolume;
 
@@ -228,6 +252,17 @@ public class BackgroundMusicManager : MonoBehaviour
         if (fadeCoroutine != null)
         {
             StopCoroutine(fadeCoroutine);
+        }
+
+        if (isPaused)
+        {
+            if (pausedGameplaySource != null)
+            {
+                pausedGameplaySource.Stop();
+                pausedGameplaySource.clip = targetTrack.clip;
+                pausedGameplaySource.time = 0f;
+            }
+            return;
         }
 
         fadeCoroutine = StartCoroutine(CrossfadeRoutine(targetTrack, actualFadeDuration));

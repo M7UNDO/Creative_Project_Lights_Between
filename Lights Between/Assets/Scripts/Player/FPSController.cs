@@ -253,33 +253,6 @@ public class FPSController : MonoBehaviour
 
     private void CameraRotation()
     {
-        bool isGrabInputHeld = false;
-#if ENABLE_INPUT_SYSTEM
-        if (_playerInput != null)
-        {
-            var grabAction = _playerInput.actions.FindAction("Grab");
-            if (grabAction != null)
-            {
-                isGrabInputHeld = grabAction.IsPressed();
-            }
-        }
-#else
-        isGrabInputHeld = Input.GetKey(KeyCode.Mouse1);
-#endif
-
-        if (_interaction != null && _interaction.CurrentGrabbable != null && isGrabInputHeld)
-        {
-            if (_input.look.sqrMagnitude >= _threshold)
-            {
-                float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
-                float pivotSensitivity = IsCurrentDeviceMouse ? 0.5f : 50f;
-                float rotationSpeed = (IsCurrentDeviceMouse ? MouseSensitvity : ControllerSensitivity) * _currentSensitivityMultiplier;
-
-                _interaction.CurrentGrabbable.transform.parent.Rotate(Vector3.up * _input.look.x * rotationSpeed * pivotSensitivity * deltaTimeMultiplier);
-            }
-            return;
-        }
-
         if (_input.look.sqrMagnitude >= _threshold)
         {
             float rotationSpeed = (IsCurrentDeviceMouse ? MouseSensitvity : ControllerSensitivity) * _currentSensitivityMultiplier;

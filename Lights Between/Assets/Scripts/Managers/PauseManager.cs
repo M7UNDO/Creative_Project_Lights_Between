@@ -5,19 +5,19 @@ public class PauseManager : MonoBehaviour
 {
     public static bool IsGamePaused { get; private set; }
 
-    [Header("References", order = 0)]
+    [Header("References")]
     [Space(5)]
     [SerializeField] private ManageUI manageUI;
     [SerializeField] private TabController tabController;
     [SerializeField] private FPSController playerController;
 
-    [Header("Audio Mixer Snapshots", order = 1)]
+    [Header("Audio Mixer Snapshots")]
     [Space(5)]
     [SerializeField] private AudioMixerSnapshot unpausedSnapshot;
     [SerializeField] private AudioMixerSnapshot pausedSnapshot;
     [SerializeField] private float snapshotTransitionDuration = 0.1f;
 
-    [Header("UI Components", order = 2)]
+    [Header("UI Components")]
     [Space(5)]
     public GameObject PauseCanvas;
 
@@ -100,9 +100,12 @@ public class PauseManager : MonoBehaviour
             PauseCanvas.SetActive(false);
         }
 
-        if (VolumeBlurController.Instance != null)
+        if (!NoteUIController.isNoteOpen)
         {
-            VolumeBlurController.Instance.SetMenuBlurState(false);
+            if (VolumeBlurController.Instance != null)
+            {
+                VolumeBlurController.Instance.SetMenuBlurState(false);
+            }
         }
 
         Cursor.visible = false;
