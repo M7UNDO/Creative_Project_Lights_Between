@@ -54,7 +54,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
-        if (_fpsController.isInMiniGame || _fpsController.isInspecting || _fpsController.isJumpscareActive || _fpsController.isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen)
+        if (_fpsController.isInMiniGame || _fpsController.isInspecting || _fpsController.isJumpscareActive || _fpsController.isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen || DrawingUIController.isDrawingOpen)
         {
             HideActiveWorldUI();
             return;
@@ -555,7 +555,8 @@ public class PlayerInteraction : MonoBehaviour
                            && !_fpsController.isDialogueActive
                            && !PauseManager.IsGamePaused
                            && !LevelManager.IsGameOver
-                           && !NoteUIController.isNoteOpen;
+                           && !NoteUIController.isNoteOpen
+                           && !DrawingUIController.isDrawingOpen; ;
 
         if (hudCanvasGroup == null)
         {

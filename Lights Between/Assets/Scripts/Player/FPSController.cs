@@ -177,7 +177,7 @@ public class FPSController : MonoBehaviour
     {
         UpdateSensitivityMultiplier();
 
-        if (isInMiniGame || isInspecting || isJumpscareActive || isDialogueActive || PauseManager.IsGamePaused || InventoryUI.IsInventoryOpen || NoteUIController.isNoteOpen) return;
+        if (isInMiniGame || isInspecting || isJumpscareActive || isDialogueActive || PauseManager.IsGamePaused || InventoryUI.IsInventoryOpen || NoteUIController.isNoteOpen || DrawingUIController.isDrawingOpen) return;
 
         if (isSeated)
         {
@@ -204,7 +204,7 @@ public class FPSController : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused || InventoryUI.IsInventoryOpen || NoteUIController.isNoteOpen) return;
+        if (isInMiniGame || isInspecting || isJumpscareActive || PauseManager.IsGamePaused || InventoryUI.IsInventoryOpen || NoteUIController.isNoteOpen || DrawingUIController.isDrawingOpen) return;
         CameraRotation();
     }
 
