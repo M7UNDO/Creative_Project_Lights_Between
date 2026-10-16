@@ -30,11 +30,6 @@ public class InspectionManager : MonoBehaviour
 
         currentObject = inspectable;
 
-        if (currentObject.WorldUI != null)
-        {
-            currentObject.WorldUI.SetSystemDisabled(true);
-        }
-
         if (playerController == null)
         {
             playerController = FindFirstObjectByType<FPSController>();
@@ -123,11 +118,6 @@ public class InspectionManager : MonoBehaviour
         if (playerController != null)
         {
             playerController.SetInspectionMode(false);
-        }
-
-        if (currentObject != null && currentObject.WorldUI != null)
-        {
-            currentObject.WorldUI.SetSystemDisabled(false);
         }
 
         currentObject = null;
