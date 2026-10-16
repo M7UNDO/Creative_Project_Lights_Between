@@ -9,11 +9,14 @@ public class DoorBarricadeUnlocker : MonoBehaviour
     [SerializeField] private LayerMask nonInteractableLayer;
     [SerializeField] private LayerMask targetInteractionLayer;
 
+    [SerializeField] GameObject doorWorldUI;
+
     private InputHandler playerInput;
 
     private void Start()
     {
         SetDoorLayer(GetLayerFromMask(nonInteractableLayer));
+        if (doorWorldUI != null) doorWorldUI.SetActive(false);
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
@@ -37,6 +40,9 @@ public class DoorBarricadeUnlocker : MonoBehaviour
         {
             StartCoroutine(UnlockDoorWhenInputReleased());
             enabled = false;
+
+            if(doorWorldUI != null) doorWorldUI.SetActive(true);
+
         }
     }
 
