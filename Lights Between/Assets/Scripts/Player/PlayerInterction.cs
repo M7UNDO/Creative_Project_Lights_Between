@@ -222,6 +222,12 @@ public class PlayerInteraction : MonoBehaviour
             result.Prompt = generator.promptMessage;
             result.CanInteract = generator.CanInteract();
         }
+        else if (hitCollider.GetComponentInParent<BarricadePlankScript>() != null)
+        {
+            BarricadePlankScript plank = hitCollider.GetComponentInParent<BarricadePlankScript>();
+            result.Prompt = plank.promptMessage;
+            result.CanInteract = plank.CanInteract();
+        }
         else if (hitCollider.TryGetComponent<KeroseneLampScript>(out KeroseneLampScript kerosene))
         {
             _currentKeroseneLamp = kerosene;
@@ -330,6 +336,10 @@ public class PlayerInteraction : MonoBehaviour
                 {
                     kerosene.Interact();
                 }
+                else if (currentInteractable is BarricadePlankScript plank)
+                {
+                    plank.Interact();
+                }
                 else
                 {
                     currentInteractable.Interact();
@@ -359,6 +369,11 @@ public class PlayerInteraction : MonoBehaviour
             if (currentInteractable is KeroseneLampScript kerosene)
             {
                 kerosene.CancelInteract();
+            }
+
+            if (currentInteractable is BarricadePlankScript plank)
+            {
+                plank.CancelInteract();
             }
         }
     }
@@ -406,6 +421,10 @@ public class PlayerInteraction : MonoBehaviour
             else if (_lastInteractable is KeroseneLampScript lastLamp)
             {
                 lastLamp.CancelInteract();
+            }
+            else if (_lastInteractable is BarricadePlankScript lastPlank)
+            {
+                lastPlank.CancelInteract();
             }
         }
 
