@@ -17,6 +17,8 @@ public class AsyncLoader : MonoBehaviour
     [Header("Audio")]
     [SerializeField] private MenuMusicManager menuMusicManager;
 
+    [SerializeField] private bool isMainMenu = false;
+
     public void LoadLevelButton(int levelIndex)
     {
         if (levelIndex < 0 || levelIndex >= SceneManager.sceneCountInBuildSettings)
@@ -41,10 +43,14 @@ public class AsyncLoader : MonoBehaviour
 
     private IEnumerator LoadLevelRoutine(object sceneIdentifier)
     {
-        if (menuMusicManager != null)
+        if ((isMainMenu))
         {
-            menuMusicManager.FadeOutAndStop(1f);
+            if (menuMusicManager != null)
+            {
+                menuMusicManager.FadeOutAndStop(1f);
+            }
         }
+        
 
         if (mainMenu != null)
         {

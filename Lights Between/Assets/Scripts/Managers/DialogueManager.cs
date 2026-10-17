@@ -303,10 +303,9 @@ public class DialogueManager : MonoBehaviour
             playerController = FindFirstObjectByType<FPSController>();
         }
 
-        if (playerController != null)
-        {
-            playerController.SetDialogueMode(state);
-        }
+        if (playerController == null) return;
+
+        playerController.SetDialogueMode(state);
     }
 
     public void ClearDialogueUI()
