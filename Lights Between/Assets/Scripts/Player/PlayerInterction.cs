@@ -135,7 +135,7 @@ public class PlayerInteraction : MonoBehaviour
 
         if (targetedWorldUI != null && !_fpsController.isInspecting)
         {
-            targetedWorldUI.ShowPrompt(result.Prompt, isInteractable, result.CanInteract);
+            targetedWorldUI.ShowPrompt(result.Prompt, true, result.CanInteract);
         }
 
         return targetedWorldUI;
@@ -320,7 +320,13 @@ public class PlayerInteraction : MonoBehaviour
             {
                 if (currentInteractable is SnapZone snapZone)
                 {
-                    snapZone.Interact();
+                    ObjectGrabbable itemToSnap = _currentGrabbable;
+
+                    if (snapZone.TrySnapItem(itemToSnap, out Transform snapTarget))
+                    {
+                        ClearCurrentGrabbableForSnap(snapTarget, snapZone.DestroyObjectOnSnap);
+                    }
+
                     _input.interact = false;
                 }
                 else if (currentInteractable is DoorScript door)
@@ -511,12 +517,6 @@ public class PlayerInteraction : MonoBehaviour
 
     public void ClearInteractionState()
     {
-        if (_currentGrabbable != null)
-        {
-            _currentGrabbable.Drop();
-            _currentGrabbable = null;
-        }
-
         currentInteractable = null;
         _hoveredGrabbable = null;
         isInteractable = false;

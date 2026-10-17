@@ -5,18 +5,22 @@ using UnityEngine.Events;
 
 public class SnapZone : MonoBehaviour, IInteractable
 {
-    [Header("Requirements")]
-    [SerializeField] private string requiredItemID = "BreakerHandle";
-    [SerializeField] private int requiredItemCount = 1;
-    [SerializeField] private string promptText = "Attach Lever";
+    [System.Serializable]
+    public struct SnapRequirement
+    {
+        public string itemID;
+        public Transform snapPoint;
+        public GameObject visualToEnable;
+        [HideInInspector] public bool isSnapped;
+    }
+
+    [Header("Requirements & Mapping")]
+    [SerializeField] private List<SnapRequirement> requirements = new List<SnapRequirement>();
+    [SerializeField] private string promptText = "Place Luggage";
 
     [Header("Snap Behavior")]
-    [SerializeField] private List<Transform> snapPoints = new List<Transform>();
     [SerializeField] private bool destroyObjectOnSnap = true;
-    [SerializeField] private GameObject enableVisualOnSnap;
-
-    [Header("Breaker Box Target")]
-    [SerializeField] private ElectricBoxBreaker breakerBoxToRepair;
+    public bool DestroyObjectOnSnap => destroyObjectOnSnap;
 
     [Header("Objective Progression")]
     [SerializeField] private ObjectiveSO performRitualObjective;
@@ -27,14 +31,15 @@ public class SnapZone : MonoBehaviour, IInteractable
 
     [Header("Events & Audio")]
     [SerializeField] private StringGameEventSO interactionChannel;
-    [SerializeField] private string interactionEventID = "BreakerRepaired";
+    [SerializeField] private string interactionEventID = "LuggagePlaced";
     [SerializeField] private AudioClip snapSFX;
 
-    [Header("Unity Event Hook")]
+    [Header("Unity Event Hooks")]
+    [SerializeField] private UnityEvent onSingleItemSnapped;
     [SerializeField] private UnityEvent onSnapComplete;
 
-    [Header("Invalid Item Dialogue")]
-    [SerializeField] private string invalidItemID = "UncookedPizza";
+    [Header("Invalid Item Handling")]
+    [SerializeField] private List<string> invalidItemIDs = new List<string> { "UncookedPizza" };
     [SerializeField] private DialogueSO invalidItemDialogue;
 
     [Header("Dialogue Trigger")]
@@ -50,67 +55,84 @@ public class SnapZone : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if (!CanSnapForScenario()) return;
+    }
 
-        PlayerInteraction player = FindFirstObjectByType<PlayerInteraction>();
-        if (player == null) return;
+    public bool TrySnapItem(ObjectGrabbable heldItem, out Transform snapTarget)
+    {
+        snapTarget = null;
 
-        ObjectGrabbable heldItem = player.CurrentGrabbable;
+        if (IsComplete() || heldItem == null) return false;
 
-        if (heldItem != null && heldItem.ItemID == invalidItemID)
+        if (IsInvalidItem(heldItem.ItemID))
         {
-            if (DialogueManager.Instance != null && invalidItemDialogue != null)
-            {
-                DialogueManager.Instance.StartDialogue(invalidItemDialogue);
-            }
-            return;
+            TriggerInvalidDialogue();
+            return false;
         }
 
-        if (heldItem != null && heldItem.ItemID == requiredItemID)
+        for (int i = 0; i < requirements.Count; i++)
         {
-            Transform snapTarget = snapPoints.Count > currentSnappedCount ? snapPoints[currentSnappedCount] : transform;
+            SnapRequirement req = requirements[i];
 
-            player.ClearCurrentGrabbableForSnap(snapTarget, destroyObjectOnSnap);
-
-            currentSnappedCount++;
-
-            if (enableVisualOnSnap != null)
+            if (!req.isSnapped && req.itemID == heldItem.ItemID)
             {
-                enableVisualOnSnap.SetActive(true);
-            }
+                snapTarget = req.snapPoint != null ? req.snapPoint : transform;
 
-            if (breakerBoxToRepair != null)
-            {
-                breakerBoxToRepair.AttachMissingLever();
-            }
-
-            if (snapSFX != null)
-            {
-                AudioSource.PlayClipAtPoint(snapSFX, transform.position);
-            }
-
-            if (currentSnappedCount >= requiredItemCount)
-            {
-                if (interactionChannel != null)
+                if (req.visualToEnable != null)
                 {
-                    interactionChannel.Raise(interactionEventID);
+                    req.visualToEnable.SetActive(true);
                 }
 
-                if (ObjectiveManager.Instance != null && performRitualObjective != null)
+                req.isSnapped = true;
+                requirements[i] = req;
+
+                currentSnappedCount++;
+
+                if (snapSFX != null)
                 {
-                    ObjectiveManager.Instance.ActivateObjective(performRitualObjective);
+                    AudioSource.PlayClipAtPoint(snapSFX, transform.position);
                 }
 
-                if (DialogueManager.Instance != null && postSnapDialogue != null)
+                onSingleItemSnapped?.Invoke();
+
+                if (currentSnappedCount >= requirements.Count)
                 {
-                    DialogueManager.Instance.StartDialogue(postSnapDialogue);
+                    StartCoroutine(CompleteSequenceRoutine());
                 }
 
-                onSnapComplete?.Invoke();
-
-                CleanupSnapZone();
+                return true;
             }
         }
+
+        return false;
+    }
+
+    private IEnumerator CompleteSequenceRoutine()
+    {
+        yield return new WaitForEndOfFrame();
+
+        CompleteSnapSequence();
+    }
+
+    private void CompleteSnapSequence()
+    {
+        if (interactionChannel != null)
+        {
+            interactionChannel.Raise(interactionEventID);
+        }
+
+        if (ObjectiveManager.Instance != null && performRitualObjective != null)
+        {
+            ObjectiveManager.Instance.ActivateObjective(performRitualObjective);
+        }
+
+        if (DialogueManager.Instance != null && postSnapDialogue != null)
+        {
+            DialogueManager.Instance.StartDialogue(postSnapDialogue);
+        }
+
+        onSnapComplete?.Invoke();
+
+        CleanupSnapZone();
     }
 
     private void CleanupSnapZone()
@@ -130,38 +152,55 @@ public class SnapZone : MonoBehaviour, IInteractable
         }
     }
 
-    private bool CanSnapForScenario()
-    {
-        if (breakerBoxToRepair != null)
-        {
-            return breakerBoxToRepair.IsLeverMissing;
-        }
-        return true;
-    }
-
     public bool CanSnap(ObjectGrabbable heldItem)
     {
-        if (!CanSnapForScenario() || currentSnappedCount >= requiredItemCount) return false;
+        if (IsComplete() || heldItem == null) return false;
 
-        if (heldItem != null && heldItem.ItemID == invalidItemID) return true;
+        if (IsInvalidItem(heldItem.ItemID)) return true;
 
-        return heldItem != null && heldItem.ItemID == requiredItemID;
+        foreach (SnapRequirement req in requirements)
+        {
+            if (!req.isSnapped && req.itemID == heldItem.ItemID)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public string GetPromptMessage(ObjectGrabbable heldItem)
     {
-        if (!CanSnapForScenario() || currentSnappedCount >= requiredItemCount) return string.Empty;
+        if (IsComplete() || heldItem == null) return string.Empty;
 
-        if (heldItem != null && heldItem.ItemID == invalidItemID)
+        if (IsInvalidItem(heldItem.ItemID))
         {
-            return "Place Pizza";
+            return "Place Item";
         }
 
         if (CanSnap(heldItem))
         {
-            return $"{promptText} ({currentSnappedCount}/{requiredItemCount})";
+            return $"{promptText} ({currentSnappedCount}/{requirements.Count})";
         }
 
         return string.Empty;
+    }
+
+    private bool IsInvalidItem(string itemID)
+    {
+        return invalidItemIDs.Contains(itemID);
+    }
+
+    private bool IsComplete()
+    {
+        return currentSnappedCount >= requirements.Count;
+    }
+
+    private void TriggerInvalidDialogue()
+    {
+        if (DialogueManager.Instance != null && invalidItemDialogue != null)
+        {
+            DialogueManager.Instance.StartDialogue(invalidItemDialogue);
+        }
     }
 }

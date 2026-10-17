@@ -7,6 +7,12 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
     [SerializeField] private string promptMessage = "Dial Police";
     [SerializeField] private bool isUnlocked = false;
 
+    [Header("Narrative/Objective Lock")]
+    [Tooltip("If assigned, the player can only interact when this objective is active.")]
+    [SerializeField] private ObjectiveSO requiredObjective;
+    [Tooltip("Optional dialogue to play if player tries to use this before it's unlocked.")]
+    [SerializeField] private DialogueSO lockedDialogue;
+
     [Header("Audio SFX")]
     [SerializeField] private AudioSource phoneAudioSource;
     [SerializeField] private AudioClip dialSFX;
@@ -16,16 +22,37 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
     [Header("Dialogue Narrative")]
     [SerializeField] private DialogueSO phoneCallDialogue;
 
-    public string PromptMessage => isUnlocked ? promptMessage : "";
+    public string PromptMessage => IsTelephoneUnlocked() ? promptMessage : string.Empty;
 
     public void SetTelephoneUnlocked(bool unlocked)
     {
         isUnlocked = unlocked;
     }
 
+    public bool IsTelephoneUnlocked()
+    {
+        if (requiredObjective != null)
+        {
+            if (ObjectiveManager.Instance != null)
+            {
+                return ObjectiveManager.Instance.GetObjectiveStatus(requiredObjective.ID) == ObjectiveStatus.Active;
+            }
+            return false;
+        }
+
+        return isUnlocked;
+    }
+
     public void Interact()
     {
-        if (!isUnlocked) return;
+        if (!IsTelephoneUnlocked())
+        {
+            if (lockedDialogue != null && DialogueManager.Instance != null)
+            {
+                DialogueManager.Instance.StartDialogue(lockedDialogue);
+            }
+            return;
+        }
 
         StartCoroutine(ExecuteTelephoneSequence());
     }
@@ -35,7 +62,6 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
         isUnlocked = false;
 
         FPSController player = FindFirstObjectByType<FPSController>();
-
 
         if (player != null)
         {
@@ -76,7 +102,6 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
                 yield return null;
             }
         }
-
 
         if (player != null)
         {
