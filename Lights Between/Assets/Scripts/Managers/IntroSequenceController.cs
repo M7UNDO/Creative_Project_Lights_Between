@@ -25,6 +25,13 @@ public class IntroSequenceController : MonoBehaviour
     [SerializeField] private AudioClip introMusicClip;
     [SerializeField] private float musicFadeInDuration = 1.5f;
 
+    [Header("Door SFX")]
+    [SerializeField] private AudioSource doorAudioSource;
+    [SerializeField] private AudioClip doorOpenClip;
+    [SerializeField] private AudioClip doorCloseClip;
+    [SerializeField] private float delayBetweenDoorSounds = 1.5f;
+    [SerializeField] private float postDoorCloseDelay = 1.0f;
+
     [Header("Level Transition")]
     [SerializeField] private AsyncLoader asyncLoader;
     [SerializeField] private int targetSceneIndex = 1;
@@ -72,6 +79,8 @@ public class IntroSequenceController : MonoBehaviour
             yield return new WaitUntil(() => isDialogueFinished);
         }
 
+        yield return PlayDoorEntrySequence();
+
         TransitionToGameLevel();
     }
 
@@ -114,6 +123,27 @@ public class IntroSequenceController : MonoBehaviour
         audioSource.Play();
 
         StartCoroutine(FadeAudioRoutine(audioSource, 1f, musicFadeInDuration));
+    }
+
+    private IEnumerator PlayDoorEntrySequence()
+    {
+        AudioSource targetAudioSource = doorAudioSource != null ? doorAudioSource : audioSource;
+
+        if (targetAudioSource == null) yield break;
+
+        if (doorOpenClip != null)
+        {
+            targetAudioSource.PlayOneShot(doorOpenClip);
+        }
+
+        yield return new WaitForSeconds(delayBetweenDoorSounds);
+
+        if (doorCloseClip != null)
+        {
+            targetAudioSource.PlayOneShot(doorCloseClip);
+        }
+
+        yield return new WaitForSeconds(postDoorCloseDelay);
     }
 
     private IEnumerator FadeAudioRoutine(AudioSource source, float targetVolume, float duration)
