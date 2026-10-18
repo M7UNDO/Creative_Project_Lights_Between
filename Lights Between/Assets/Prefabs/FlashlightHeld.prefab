@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7079076008736518626}
   - component: {fileID: 6177159714341115767}
-  - component: {fileID: 9082187123987179839}
   m_Layer: 10
   m_Name: FlashLightZone
   m_TagString: Untagged
@@ -54,19 +53,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 3.482613}
   m_Center: {x: 0, y: 0.08, z: 1.2413065}
---- !u!114 &9082187123987179839
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2197618662182222458}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61f2062db18daaa40ba74cbbda1b909a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LightZone
-  isActive: 1
 --- !u!1 &8181050455219353647
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,6 +154,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4248545210178462010}
   - component: {fileID: 7542178472900831559}
+  - component: {fileID: 9213416941017478488}
   - component: {fileID: 5937618049106195511}
   - component: {fileID: 4752251087503716841}
   m_Layer: 9
@@ -210,6 +197,8 @@ MonoBehaviour:
   fpsController: {fileID: 0}
   holdInteraction: {fileID: 0}
   animator: {fileID: 4752251087503716841}
+  batteryItemData: {fileID: 0}
+  inventoryManager: {fileID: 0}
   lightCookie: {fileID: 2800000, guid: adfa0ebfcb79c7042be5b04397144b3e, type: 3}
   glassRenderer: {fileID: 3583905205337786264}
   flashlightAudioSource: {fileID: 5937618049106195511}
@@ -249,6 +238,29 @@ MonoBehaviour:
     <sprite name="L1"> to equip item'
   torchLightZone: {fileID: 2197618662182222458}
   requiresBatteryChange: 0
+--- !u!114 &9213416941017478488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8947998797594139777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4177035c85123564ab955a760fec162f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FlashlightObserver
+  flashlight: {fileID: 7542178472900831559}
+  spotLight: {fileID: 6486629864566378680}
+  playerCamera: {fileID: 0}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 2048
+  occlusionLayers:
+    serializedVersion: 2
+    m_Bits: 193
+  playerViewMaxAngle: 45
+  raycastTargetOffset: {x: 0, y: 1, z: 0}
 --- !u!82 &5937618049106195511
 AudioSource:
   m_ObjectHideFlags: 0
@@ -432,6 +444,11 @@ PrefabInstance:
 --- !u!4 &4516628548974028961 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5544943243988558996, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
+  m_PrefabInstance: {fileID: 8240972951845850165}
+  m_PrefabAsset: {fileID: 0}
+--- !u!108 &6486629864566378680 stripped
+Light:
+  m_CorrespondingSourceObject: {fileID: 2907339925633670285, guid: 0144dffb414c0e34fbb0d7ebc96e4067, type: 3}
   m_PrefabInstance: {fileID: 8240972951845850165}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &6992420127462764394 stripped

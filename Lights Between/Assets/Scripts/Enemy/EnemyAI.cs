@@ -10,19 +10,28 @@ public class EnemyAI : MonoBehaviour
     public Animator animator;
     public Transform waypointGroup;
     public AISensor sensor;
+    public FlashlightObserver flashlightObserver;
 
     [Header("Suspicion System")]
     public float suspicion = 0f;
-    public float suspicionIncreaseRate = 25f;
-    public float suspicionDecreaseRate = 10f;
+    public float baseSuspicionIncreaseRate = 50f;
+    public float suspicionDecreaseRate = 15f;
     public float suspicionThreshold = 100f;
+    [SerializeField] private float instantDetectionRange = 3.5f;
+
+    [Header("Hearing & Rear Proximity Sensing")]
+    [SerializeField] private float hearingRange = 6f;
+    [SerializeField] private float closeProximityAwarenessRange = 1.8f;
+    [SerializeField] private float minNoiseSpeedThreshold = 1.2f;
+    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private Transform playerTransform;
 
     [Header("Detection Memory")]
     public float loseSightDelay = 1.5f;
     private float loseSightTimer;
 
     [Header("Alert Settings")]
-    public float alertDuration = 1.5f;
+    public float alertDuration = 1.0f;
     [SerializeField] private float rigLerpSpeed = 5f;
 
     private bool isAlerting;
@@ -93,8 +102,10 @@ public class EnemyAI : MonoBehaviour
     private Quaternion targetLookRotation;
 
     private bool canSeePlayer;
+    private bool canHearPlayer;
     private bool hasDetectedPlayer;
     private Vector3 lastKnownPlayerPosition;
+    private float currentMovementNoise;
 
     private float currentSpeedPercent;
     private float targetSpeedPercent;
@@ -103,6 +114,7 @@ public class EnemyAI : MonoBehaviour
     private State currentState;
 
     private bool isRetreating;
+    private bool isLightObserved;
     private Camera mainCamera;
 
     public BackgroundMusicManager musicManager;
@@ -113,6 +125,17 @@ public class EnemyAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         mainCamera = Camera.main;
+
+        if (flashlightObserver == null)
+        {
+            flashlightObserver = FindFirstObjectByType<FlashlightObserver>();
+        }
+
+        if (playerTransform == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null) playerTransform = playerObj.transform;
+        }
 
         agent.acceleration = 8f;
         agent.angularSpeed = 360f;
@@ -141,9 +164,44 @@ public class EnemyAI : MonoBehaviour
         UpdateHeadAim(0f);
     }
 
+    private void OnEnable()
+    {
+        FlashlightObserver.OnObserverSpawned += HandleObserverSpawned;
+        FlashlightObserver.OnObserverDespawned += HandleObserverDespawned;
+    }
+
+    private void OnDisable()
+    {
+        FlashlightObserver.OnObserverSpawned -= HandleObserverSpawned;
+        FlashlightObserver.OnObserverDespawned -= HandleObserverDespawned;
+    }
+
+    private void HandleObserverSpawned(FlashlightObserver observer)
+    {
+        flashlightObserver = observer;
+    }
+
+    private void HandleObserverDespawned(FlashlightObserver observer)
+    {
+        if (flashlightObserver == observer)
+        {
+            flashlightObserver = null;
+        }
+    }
+
     void Update()
     {
         if (gameOver) return;
+
+        CheckFlashlightObservation();
+
+        if (isLightObserved)
+        {
+            ApplyFreezeState();
+            return;
+        }
+
+        UnfreezeState();
 
         if (currentState != State.Returning && currentState != State.Catch && currentState != State.Retreat)
         {
@@ -153,13 +211,14 @@ public class EnemyAI : MonoBehaviour
         {
             currentTarget = null;
             canSeePlayer = false;
+            canHearPlayer = false;
         }
 
         float distanceToPlayer = currentTarget ?
             Vector3.Distance(transform.position, currentTarget.position) :
             Mathf.Infinity;
 
-        HandleSuspicion();
+        HandleSuspicion(distanceToPlayer);
 
         if (isAlerting)
         {
@@ -178,7 +237,15 @@ public class EnemyAI : MonoBehaviour
             }
             else if (suspicion >= suspicionThreshold && !hasAlerted && !isAlerting)
             {
-                StartCoroutine(AlertBeforeChase());
+                if (distanceToPlayer <= instantDetectionRange)
+                {
+                    hasAlerted = true;
+                    ChangeState(State.Chase);
+                }
+                else
+                {
+                    StartCoroutine(AlertBeforeChase());
+                }
             }
             else
             {
@@ -243,6 +310,62 @@ public class EnemyAI : MonoBehaviour
             RotateTowardsMovementDirection();
     }
 
+    private void CheckFlashlightObservation()
+    {
+        if (flashlightObserver == null)
+        {
+            flashlightObserver = FindFirstObjectByType<FlashlightObserver>();
+        }
+
+        if (flashlightObserver != null && flashlightObserver.isActiveAndEnabled)
+        {
+            isLightObserved = flashlightObserver.IsTargetObserved(transform);
+        }
+        else
+        {
+            isLightObserved = false;
+        }
+    }
+
+    private void ApplyFreezeState()
+    {
+        if (agent.enabled)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
+        if (animator != null)
+        {
+            animator.speed = 0f;
+        }
+
+        if (crawlSource != null && crawlSource.isPlaying)
+        {
+            crawlSource.Pause();
+        }
+
+        AlignToSurface(transform.forward);
+    }
+
+    private void UnfreezeState()
+    {
+        if (animator != null && animator.speed == 0f)
+        {
+            animator.speed = (currentState == State.Chase || currentState == State.Retreat) ? runAnimationSpeed : walkAnimationSpeed;
+        }
+
+        if (crawlSource != null && !crawlSource.isPlaying && agent.velocity.sqrMagnitude > 0.1f)
+        {
+            crawlSource.UnPause();
+        }
+
+        if (agent.enabled && currentState != State.Catch && !isAlerting)
+        {
+            agent.isStopped = false;
+        }
+    }
+
     private void UpdatePerception()
     {
         Transform closest = GetClosestSensorTarget();
@@ -258,6 +381,40 @@ public class EnemyAI : MonoBehaviour
         else
         {
             canSeePlayer = false;
+        }
+
+        canHearPlayer = false;
+        currentMovementNoise = 0f;
+
+        if (playerTransform != null)
+        {
+            float distToPlayer = Vector3.Distance(transform.position, playerTransform.position);
+
+            if (distToPlayer <= hearingRange)
+            {
+                CharacterController playerCC = playerTransform.GetComponent<CharacterController>();
+                Rigidbody playerRb = playerTransform.GetComponent<Rigidbody>();
+
+                Vector3 playerVel = playerCC != null ? playerCC.velocity : (playerRb != null ? playerRb.linearVelocity : Vector3.zero);
+                float playerSpeed = playerVel.magnitude;
+
+                if (playerSpeed > minNoiseSpeedThreshold || distToPlayer <= closeProximityAwarenessRange)
+                {
+                    canHearPlayer = true;
+                    hasDetectedPlayer = true;
+                    currentTarget = playerTransform;
+                    lastKnownPlayerPosition = playerTransform.position;
+                    loseSightTimer = loseSightDelay;
+
+                    currentMovementNoise = distToPlayer <= closeProximityAwarenessRange
+                        ? 1f
+                        : Mathf.Clamp01(playerSpeed / 5f);
+                }
+            }
+        }
+
+        if (!canSeePlayer && !canHearPlayer)
+        {
             loseSightTimer -= Time.deltaTime;
 
             if (loseSightTimer <= 0)
@@ -289,16 +446,34 @@ public class EnemyAI : MonoBehaviour
         return closest;
     }
 
-    private void HandleSuspicion()
+    private void HandleSuspicion(float distanceToPlayer)
     {
         if (canSeePlayer)
         {
-            float lightModifier = GetTargetLightModifier();
-            suspicion += (suspicionIncreaseRate * lightModifier) * Time.deltaTime;
+            if (distanceToPlayer <= instantDetectionRange)
+            {
+                suspicion = suspicionThreshold;
+            }
+            else
+            {
+                float proximityFactor = Mathf.Clamp01(1f - (distanceToPlayer / maxChaseDistance));
+                float distanceMultiplier = Mathf.Lerp(1f, 4f, proximityFactor);
+
+                suspicion += (baseSuspicionIncreaseRate * distanceMultiplier) * Time.deltaTime;
+            }
+        }
+        else if (canHearPlayer)
+        {
+            float proximityFactor = Mathf.Clamp01(1f - (distanceToPlayer / hearingRange));
+            float hearingMultiplier = Mathf.Lerp(0.3f, 1.8f, proximityFactor) * currentMovementNoise;
+
+            suspicion += (baseSuspicionIncreaseRate * 0.4f * hearingMultiplier) * Time.deltaTime;
+
+            suspicion = Mathf.Clamp(suspicion, 0f, suspicionThreshold * 0.85f);
         }
         else if (hasDetectedPlayer)
         {
-            suspicion += (suspicionIncreaseRate * 0.5f) * Time.deltaTime;
+            suspicion += (baseSuspicionIncreaseRate * 0.15f) * Time.deltaTime;
         }
         else
         {
@@ -312,11 +487,6 @@ public class EnemyAI : MonoBehaviour
             hasAlerted = false;
             UpdateHeadAim(0f);
         }
-    }
-
-    private float GetTargetLightModifier()
-    {
-        return 1.0f;
     }
 
     public void ReactToLightExposure()
@@ -547,12 +717,18 @@ public class EnemyAI : MonoBehaviour
     void Suspicious()
     {
         agent.SetDestination(lastKnownPlayerPosition);
+        UpdateHeadAim(0.5f);
 
         if (!agent.pathPending && agent.remainingDistance < 1f)
         {
             if (!isIdle)
             {
                 StartIdle();
+                Vector3 dirToNoise = (lastKnownPlayerPosition - transform.position).normalized;
+                if (dirToNoise != Vector3.zero)
+                {
+                    targetLookRotation = Quaternion.LookRotation(dirToNoise);
+                }
             }
             else
             {
@@ -571,6 +747,8 @@ public class EnemyAI : MonoBehaviour
         else
         {
             isIdle = false;
+            Vector3 moveDir = agent.velocity.sqrMagnitude > 0.1f ? agent.velocity.normalized : transform.forward;
+            AlignToSurface(moveDir);
         }
     }
 
@@ -591,7 +769,7 @@ public class EnemyAI : MonoBehaviour
 
     void ChasePlayer()
     {
-        if (canSeePlayer)
+        if (canSeePlayer || canHearPlayer)
         {
             agent.SetDestination(currentTarget.position);
             UpdateHeadAim(1f);
@@ -717,7 +895,7 @@ public class EnemyAI : MonoBehaviour
 
             if (voiceSource != null)
             {
-                voiceSource.spatialBlend = 1f; // Force 3D spatial blend
+                voiceSource.spatialBlend = 1f;
                 voiceSource.PlayOneShot(breatheClips[index], breatheAudioVolume);
             }
         }
