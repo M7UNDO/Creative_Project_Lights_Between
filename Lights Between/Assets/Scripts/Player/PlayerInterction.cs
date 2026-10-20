@@ -244,6 +244,11 @@ public class PlayerInteraction : MonoBehaviour
             result.Prompt = cellPhone.IsPhoneUnlocked() ? cellPhone.PromptMessage : string.Empty;
             result.CanInteract = cellPhone.IsPhoneUnlocked();
         }
+        else if (hitCollider.TryGetComponent<PlayerPoseAnchor>(out PlayerPoseAnchor poseAnchor))
+        {
+            result.Prompt = poseAnchor.GetPromptMessage();
+            result.CanInteract = poseAnchor.IsAnchorUnlocked();
+        }
         else if (hitCollider.TryGetComponent<DoorScript>(out DoorScript doorScript))
         {
             doorScript.UpdatePromptMessage(_keyInventory);

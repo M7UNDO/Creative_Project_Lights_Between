@@ -1,6 +1,6 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PlayerInteraction))]
@@ -45,6 +45,10 @@ public class FPSController : MonoBehaviour
     [Header("Sitting & Sleeping State")]
     public bool isSeated { get; private set; }
     public PlayerPoseAnchor CurrentPoseAnchor { get; private set; }
+
+    [Header("Pose UI Reference")]
+    [SerializeField] private GameObject posePromptUI;
+    public GameObject PosePromptUI => posePromptUI;
 
     public Transform FlashlightAnchor;
 
@@ -216,8 +220,17 @@ public class FPSController : MonoBehaviour
 
     public void SetSeatedState(bool seated, Transform seatPoint = null, Transform lookAtTarget = null, PlayerPoseAnchor anchor = null)
     {
+        bool wasSeated = isSeated;
         isSeated = seated;
         CurrentPoseAnchor = seated ? anchor : null;
+
+        if (!seated && wasSeated)
+        {
+            if (_stamina != null)
+            {
+                _stamina.RefillStamina();
+            }
+        }
 
         if (seated)
         {
@@ -387,7 +400,8 @@ public class FPSController : MonoBehaviour
 
         if (_stamina != null)
         {
-            _stamina.ProcessStamina(canSprint);
+            bool suppressStaminaUI = isSeated || isDialogueActive || isInspecting || isInMiniGame || isJumpscareActive;
+            _stamina.ProcessStamina(canSprint, suppressStaminaUI);
         }
 
         float targetSpeed = canSprint ? SprintSpeed : MoveSpeed;

@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 {
@@ -13,11 +13,11 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
     [SerializeField] private Transform standUpPosition;
 
     [Header("Interaction Settings")]
-    [SerializeField] private GameObject posePromptUI;
     [SerializeField] private string sitPrompt = "Sit Down";
     [SerializeField] private string standPrompt = "Stand Up";
     [SerializeField] private float fadeDuration = 0.4f;
     [SerializeField] private float uiFadeSpeed = 4.0f;
+    [SerializeField] private bool allowStandUpOnSit = true;
 
     [Header("Narrative/Objective Lock")]
     [SerializeField] private ObjectiveSO requiredObjective;
@@ -37,6 +37,8 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     private void Start()
     {
+        canStandUp = allowStandUpOnSit;
+
         if (playerController == null)
         {
             playerController = Object.FindFirstObjectByType<FPSController>();
@@ -76,17 +78,27 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     private void CacheCanvasGroup()
     {
-        if (posePromptUI != null)
+        GameObject promptUI = GetPosePromptUI();
+        if (promptUI != null)
         {
-            poseCanvasGroup = posePromptUI.GetComponent<CanvasGroup>();
+            poseCanvasGroup = promptUI.GetComponent<CanvasGroup>();
             if (poseCanvasGroup == null)
             {
-                poseCanvasGroup = posePromptUI.AddComponent<CanvasGroup>();
+                poseCanvasGroup = promptUI.AddComponent<CanvasGroup>();
             }
 
             poseCanvasGroup.alpha = 0f;
-            posePromptUI.SetActive(true);
+            promptUI.SetActive(true);
         }
+    }
+
+    private GameObject GetPosePromptUI()
+    {
+        if (playerController != null && playerController.PosePromptUI != null)
+        {
+            return playerController.PosePromptUI;
+        }
+        return null;
     }
 
     private void HandleDialogueStarted()
@@ -139,17 +151,17 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
             return;
         }
 
-        if (!IsAnchorUnlocked())
-        {
-            if (lockedDialogue != null && DialogueManager.Instance != null)
-            {
-                DialogueManager.Instance.StartDialogue(lockedDialogue);
-            }
-            return;
-        }
-
         if (!isOccupied)
         {
+            if (!IsAnchorUnlocked())
+            {
+                if (lockedDialogue != null && DialogueManager.Instance != null)
+                {
+                    DialogueManager.Instance.StartDialogue(lockedDialogue);
+                }
+                return;
+            }
+
             SitDown();
         }
         else if (canStandUp)
@@ -171,6 +183,8 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
         }
 
         if (playerInteraction != null && playerInteraction.CurrentGrabbable != null) return;
+
+        canStandUp = allowStandUpOnSit;
 
         CacheCanvasGroup();
         isTransitioning = true;
@@ -276,7 +290,12 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     public string GetPromptMessage()
     {
-        if (!isOccupied && playerInteraction != null && playerInteraction.CurrentGrabbable != null)
+        if (isOccupied)
+        {
+            return canStandUp ? standPrompt : "";
+        }
+
+        if (playerInteraction != null && playerInteraction.CurrentGrabbable != null)
         {
             return "";
         }
@@ -286,6 +305,6 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
             return "";
         }
 
-        return isOccupied ? standPrompt : sitPrompt;
+        return sitPrompt;
     }
 }

@@ -8,6 +8,9 @@ public class PizzaEatingPlate : MonoBehaviour
     [SerializeField] private List<PizzaSlice> pizzaSlices = new List<PizzaSlice>();
     [SerializeField] private float eatDelayDuration = 3.0f;
 
+    [Header("Pose Anchor Reference")]
+    [SerializeField] private PlayerPoseAnchor tablePoseAnchor;
+
     [Header("Events & Audio")]
     [SerializeField] private StringGameEventSO interactionChannel;
     [SerializeField] private AudioSource audioSource;
@@ -73,13 +76,21 @@ public class PizzaEatingPlate : MonoBehaviour
             }
 
             yield return new WaitForSeconds(2f);
-            
-            if(DialogueManager.Instance != null)
+
+            if (DialogueManager.Instance != null && dialogueSO != null)
             {
                 DialogueManager.Instance.StartDialogue(dialogueSO);
+
+                while (DialogueManager.Instance.IsDialogueActive)
+                {
+                    yield return null;
+                }
+            }
+
+            if (tablePoseAnchor != null)
+            {
+                tablePoseAnchor.SetStandUpPermission(true);
             }
         }
     }
-
-
 }

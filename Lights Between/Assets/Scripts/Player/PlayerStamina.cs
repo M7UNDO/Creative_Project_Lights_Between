@@ -5,15 +5,11 @@ public class PlayerStamina : MonoBehaviour
 {
     [Header("Stamina Settings")]
     [SerializeField] private float maxStamina = 100f;
-    [Tooltip("How many seconds the player can sprint before running out.")]
     [SerializeField] private float sprintDuration = 4f;
-    [Tooltip("How many seconds it takes to fully refill from zero.")]
     [SerializeField] private float regenDuration = 3f;
-    [Tooltip("Delay in seconds before stamina starts regenerating after stopping.")]
     [SerializeField] private float regenDelay = 0.5f;
 
     [Header("UI References")]
-    [Tooltip("Attach a CanvasGroup to your Stamina UI parent to handle fading.")]
     [SerializeField] private CanvasGroup staminaCanvasGroup;
     [SerializeField] private Image staminaFill;
 
@@ -33,7 +29,18 @@ public class PlayerStamina : MonoBehaviour
         if (staminaCanvasGroup != null) staminaCanvasGroup.alpha = 0f;
     }
 
-    public void ProcessStamina(bool isSprinting)
+    public void RefillStamina()
+    {
+        CurrentStamina = maxStamina;
+        timeAtMaxStamina = hideDelay;
+        targetAlpha = 0f;
+        if (staminaCanvasGroup != null)
+        {
+            staminaCanvasGroup.alpha = 0f;
+        }
+    }
+
+    public void ProcessStamina(bool isSprinting, bool suppressUI = false)
     {
         float drainRate = maxStamina / sprintDuration;
         float regenRate = maxStamina / regenDuration;
@@ -43,7 +50,7 @@ public class PlayerStamina : MonoBehaviour
             CurrentStamina -= drainRate * Time.deltaTime;
             timeSinceLastSprint = 0f;
             timeAtMaxStamina = 0f;
-            targetAlpha = 1f;
+            targetAlpha = suppressUI ? 0f : 1f;
         }
         else
         {
@@ -52,13 +59,17 @@ public class PlayerStamina : MonoBehaviour
             if (timeSinceLastSprint >= regenDelay && CurrentStamina < maxStamina)
             {
                 CurrentStamina += regenRate * Time.deltaTime;
-                targetAlpha = 1f;
+                targetAlpha = suppressUI ? 0f : 1f;
             }
         }
 
         CurrentStamina = Mathf.Clamp(CurrentStamina, 0f, maxStamina);
 
-        if (CurrentStamina >= maxStamina && !isSprinting)
+        if (suppressUI)
+        {
+            targetAlpha = 0f;
+        }
+        else if (CurrentStamina >= maxStamina && !isSprinting)
         {
             timeAtMaxStamina += Time.deltaTime;
             if (timeAtMaxStamina >= hideDelay)
