@@ -52,6 +52,8 @@ public class InventoryManager : MonoBehaviour
     {
         if (item == null) return false;
 
+        int initialQuantityToAdd = quantity;
+
         if (item.IsStackable)
         {
             foreach (var slot in slots)
@@ -65,6 +67,7 @@ public class InventoryManager : MonoBehaviour
 
                     if (quantity <= 0)
                     {
+                        TriggerPickupNotification(item, initialQuantityToAdd);
                         RebuildUI();
                         return true;
                     }
@@ -79,8 +82,25 @@ public class InventoryManager : MonoBehaviour
             quantity -= amountToAdd;
         }
 
+        int totalAdded = initialQuantityToAdd - quantity;
+
+        if (totalAdded > 0)
+        {
+            TriggerPickupNotification(item, totalAdded);
+            RebuildUI();
+            return true;
+        }
+
         RebuildUI();
-        return quantity <= 0;
+        return false;
+    }
+
+    private void TriggerPickupNotification(ItemClass item, int addedQuantity)
+    {
+        if (InventoryUI.Instance != null && item != null)
+        {
+            InventoryUI.Instance.ShowPickupNotification(item, addedQuantity);
+        }
     }
 
     public int GetItemCount(ItemClass item)

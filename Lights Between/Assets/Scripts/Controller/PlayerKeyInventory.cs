@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class PlayerKeyInventory : MonoBehaviour, IKeyInventory
@@ -8,20 +6,7 @@ public class PlayerKeyInventory : MonoBehaviour, IKeyInventory
     [SerializeField] private List<string> keys = new List<string>();
     [SerializeField] private float displayTime = 1.5f;
 
-    [Header("UI", order = 0)]
-    [Space(5)]
-    public GameObject KeyCollectionContainer;
-    public TextMeshProUGUI keyCollectedTxt;
-
     private readonly Dictionary<string, ItemClass> keyItemMap = new Dictionary<string, ItemClass>();
-
-    public void Start()
-    {
-        if (KeyCollectionContainer != null)
-        {
-            KeyCollectionContainer.SetActive(false);
-        }
-    }
 
     public bool HasKey(string keyID)
     {
@@ -59,25 +44,6 @@ public class PlayerKeyInventory : MonoBehaviour, IKeyInventory
             {
                 keyItemMap.Add(keyID, itemData);
             }
-
-            if (KeyCollectionContainer != null)
-            {
-                StartCoroutine(DisplayKeyCollected(keyID));
-            }
         }
-    }
-
-    private IEnumerator DisplayKeyCollected(string keyID)
-    {
-        if (keyCollectedTxt != null)
-        {
-            string formattedKeyName = keyID.Replace("_", " ").Replace("-", " ");
-            keyCollectedTxt.text = $"Collected: {formattedKeyName}";
-        }
-
-        KeyCollectionContainer.SetActive(true);
-
-        yield return new WaitForSeconds(displayTime);
-        KeyCollectionContainer.SetActive(false);
     }
 }

@@ -610,15 +610,21 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     {
         if (flashlightUI == null) return;
 
-        int currentBatteries = GetCurrentInventoryBatteryCount();
+        int spareBatteries = GetCurrentInventoryBatteryCount();
+
+        int activeBatteryCount = (currentBatteryPower > 0f && !requiresBatteryChange) ? 1 : 0;
+
+        int totalBatteryCount = activeBatteryCount + spareBatteries;
+
         bool isLowPower = (currentBatteryPower / singleBatteryMaxPower) <= flickerThresholdPercent;
-        bool hasSpareBattery = currentBatteries > 0;
+        bool hasSpareBattery = spareBatteries > 0;
         bool shouldShowPrompt = isEquipped && (requiresBatteryChange || isLowPower);
 
         if (shouldShowPrompt && !wasLowPowerState && !hasSpareBattery) TriggerEmptyFeedback();
 
         wasLowPowerState = shouldShowPrompt;
-        flashlightUI.UpdateBatteryUI(currentBatteries, currentBatteryPower <= 0f);
+
+        flashlightUI.UpdateBatteryUI(totalBatteryCount, currentBatteryPower <= 0f);
         flashlightUI.SetBatteryPromptState(shouldShowPrompt, hasSpareBattery);
     }
 

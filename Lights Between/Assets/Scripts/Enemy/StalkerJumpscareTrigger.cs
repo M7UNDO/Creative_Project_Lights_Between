@@ -30,9 +30,6 @@ public class StalkerJumpscareTrigger : MonoBehaviour
     [SerializeField] private Transform creatureLookTarget;
     [SerializeField] private float cameraTransitionDuration = 0.3f;
 
-    [Header("Occlusion & Line of Sight")]
-    [SerializeField] private LayerMask occlusionMask = ~0;
-
     [Header("Audio SFX")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip jumpscareSFX;
@@ -93,32 +90,9 @@ public class StalkerJumpscareTrigger : MonoBehaviour
 
     private void ExecuteSequenceForPlayer(FPSController player)
     {
-        Vector3 targetPos = creatureLookTarget != null
-            ? creatureLookTarget.position
-            : (creatureSpawnPoint != null ? creatureSpawnPoint.position : transform.position);
-
-        if (!HasLineOfSight(player, targetPos)) return;
-
         hasTriggered = true;
         SetTriggerState(false);
         StartCoroutine(ExecuteStalkerSequence(player));
-    }
-
-    private bool HasLineOfSight(FPSController fpsController, Vector3 targetPosition)
-    {
-        Camera playerCamera = fpsController.GetComponentInChildren<Camera>();
-        Vector3 origin = playerCamera != null ? playerCamera.transform.position : fpsController.transform.position;
-
-        if (Physics.Linecast(origin, targetPosition, out RaycastHit hit, occlusionMask, QueryTriggerInteraction.Ignore))
-        {
-            if (creatureLookTarget != null && hit.transform == creatureLookTarget) return true;
-            if (creatureActor != null && hit.transform.IsChildOf(creatureActor.transform)) return true;
-            if (creatureSpawnPoint != null && hit.transform == creatureSpawnPoint) return true;
-
-            return false;
-        }
-
-        return true;
     }
 
     private void SetTriggerState(bool enabledState)
