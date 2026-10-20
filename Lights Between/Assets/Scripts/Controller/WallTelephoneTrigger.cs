@@ -5,7 +5,6 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
 {
     [Header("Interaction Settings")]
     [SerializeField] private string promptMessage = "Dial Police";
-    [SerializeField] private bool isUnlocked = false;
 
     [Header("Narrative/Objective Lock")]
     [SerializeField] private ObjectiveSO requiredObjective;
@@ -24,11 +23,13 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
     [Header("Dialogue Narrative")]
     [SerializeField] private DialogueSO phoneCallDialogue;
 
+    private bool hasBeenUsed = false;
+
     public string PromptMessage => IsTelephoneUnlocked() ? promptMessage : "";
 
     public bool IsTelephoneUnlocked()
     {
-        if (!isUnlocked) return false;
+        if (hasBeenUsed) return false;
 
         if (requiredObjective == null) return true;
 
@@ -38,11 +39,6 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
         }
 
         return false;
-    }
-
-    public void SetTelephoneUnlocked(bool unlocked)
-    {
-        isUnlocked = unlocked;
     }
 
     public void Interact()
@@ -61,7 +57,7 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
 
     private IEnumerator ExecuteTelephoneSequence()
     {
-        isUnlocked = false;
+        hasBeenUsed = true;
 
         FPSController player = FindFirstObjectByType<FPSController>();
 

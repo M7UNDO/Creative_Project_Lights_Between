@@ -177,6 +177,21 @@ public class PlayerInteraction : MonoBehaviour
             if (!toolPickup.IsPickupUnlocked()) return false;
         }
 
+        if (interaction.Interactable is SnapZone snapZone)
+        {
+            if (!snapZone.IsSnapZoneUnlocked()) return false;
+        }
+
+        if (interaction.Interactable is WallTelephoneTrigger wallPhone)
+        {
+            if (!wallPhone.IsTelephoneUnlocked()) return false;
+        }
+
+        if (interaction.Interactable is PhoneScript cellPhone)
+        {
+            if (!cellPhone.IsPhoneUnlocked()) return false;
+        }
+
         if (interaction.HasGrabbable && _fpsController.isSeated)
         {
             return false;
@@ -208,8 +223,26 @@ public class PlayerInteraction : MonoBehaviour
 
         if (hitCollider.TryGetComponent<SnapZone>(out SnapZone snapZone))
         {
-            result.Prompt = snapZone.GetPromptMessage(_currentGrabbable);
-            result.CanInteract = snapZone.CanSnap(_currentGrabbable);
+            if (!snapZone.IsSnapZoneUnlocked())
+            {
+                result.Prompt = string.Empty;
+                result.CanInteract = false;
+            }
+            else
+            {
+                result.Prompt = snapZone.GetPromptMessage(_currentGrabbable);
+                result.CanInteract = snapZone.CanSnap(_currentGrabbable);
+            }
+        }
+        else if (hitCollider.TryGetComponent<WallTelephoneTrigger>(out WallTelephoneTrigger wallPhone))
+        {
+            result.Prompt = wallPhone.IsTelephoneUnlocked() ? wallPhone.PromptMessage : string.Empty;
+            result.CanInteract = wallPhone.IsTelephoneUnlocked();
+        }
+        else if (hitCollider.TryGetComponent<PhoneScript>(out PhoneScript cellPhone))
+        {
+            result.Prompt = cellPhone.IsPhoneUnlocked() ? cellPhone.PromptMessage : string.Empty;
+            result.CanInteract = cellPhone.IsPhoneUnlocked();
         }
         else if (hitCollider.TryGetComponent<DoorScript>(out DoorScript doorScript))
         {
@@ -565,7 +598,7 @@ public class PlayerInteraction : MonoBehaviour
                            && !PauseManager.IsGamePaused
                            && !LevelManager.IsGameOver
                            && !NoteUIController.isNoteOpen
-                           && !DrawingUIController.isDrawingOpen; ;
+                           && !DrawingUIController.isDrawingOpen;
 
         if (hudCanvasGroup == null)
         {
