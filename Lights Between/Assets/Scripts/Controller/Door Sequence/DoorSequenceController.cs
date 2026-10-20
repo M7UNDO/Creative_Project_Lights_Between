@@ -4,7 +4,7 @@ using UnityEngine;
 public class DoorSequenceController : MonoBehaviour
 {
     [Header("Event Channels (Listeners)")]
-    [SerializeField] private GameEventSO onPhoneCallEndedEvent;
+    [SerializeField] private GameEventSO onPowerRestoredEvent;
     [SerializeField] private GameEventSO onFrontDoorReachedEvent;
     [SerializeField] private GameEventSO onDoorRefusalEndedEvent;
     [SerializeField] private StringGameEventSO interactionChannel;
@@ -19,6 +19,7 @@ public class DoorSequenceController : MonoBehaviour
     [SerializeField] private AudioClip softKnockSFX;
     [SerializeField] private AudioClip heavyBangSFX;
     [SerializeField] private string returnDollInteractionID = InteractionIDs.ReturnDoll;
+    [SerializeField] private string generatorStartedInteractionID = "GeneratorStarted";
     [SerializeField] private float reminderKnockInterval = 12.0f;
 
     [Header("Door Trigger")]
@@ -45,9 +46,9 @@ public class DoorSequenceController : MonoBehaviour
 
     private void OnEnable()
     {
-        if (onPhoneCallEndedEvent != null)
+        if (onPowerRestoredEvent != null)
         {
-            onPhoneCallEndedEvent.RegisterListener(HandlePhoneCallEnded);
+            onPowerRestoredEvent.RegisterListener(HandlePowerRestored);
         }
 
         if (onFrontDoorReachedEvent != null)
@@ -68,9 +69,9 @@ public class DoorSequenceController : MonoBehaviour
 
     private void OnDisable()
     {
-        if (onPhoneCallEndedEvent != null)
+        if (onPowerRestoredEvent != null)
         {
-            onPhoneCallEndedEvent.UnregisterListener(HandlePhoneCallEnded);
+            onPowerRestoredEvent.UnregisterListener(HandlePowerRestored);
         }
 
         if (onFrontDoorReachedEvent != null)
@@ -89,7 +90,7 @@ public class DoorSequenceController : MonoBehaviour
         }
     }
 
-    private void HandlePhoneCallEnded()
+    private void HandlePowerRestored()
     {
         if (hasSpawnedDoll) return;
 
@@ -108,11 +109,40 @@ public class DoorSequenceController : MonoBehaviour
 
     private void HandleInteractionEvent(string interactionID)
     {
-        if (interactionID == returnDollInteractionID)
+        if (interactionID == generatorStartedInteractionID)
+        {
+            HandlePowerRestored();
+        }
+        else if (interactionID == returnDollInteractionID)
         {
             if (reminderKnockCoroutine != null) StopCoroutine(reminderKnockCoroutine);
             reminderKnockCoroutine = StartCoroutine(ExecuteInitialDoorKnockSequence());
         }
+    }
+
+    public void OnPlayerReachedFrontDoor()
+    {
+        hasReachedDoor = true;
+
+        if (dialogueTrigger != null)
+        {
+            dialogueTrigger.SetActive(false);
+        }
+
+        if (reminderKnockCoroutine != null)
+        {
+            StopCoroutine(reminderKnockCoroutine);
+            reminderKnockCoroutine = null;
+        }
+    }
+
+    private void HandleDoorRefusalEnded()
+    {
+        if (hasHandledDoorRefusal) return;
+
+        hasHandledDoorRefusal = true;
+        OnPlayerReachedFrontDoor();
+        StartCoroutine(ExecuteCreatureBangingSequence());
     }
 
     private IEnumerator ExecuteInitialDoorKnockSequence()
@@ -143,31 +173,6 @@ public class DoorSequenceController : MonoBehaviour
 
             yield return new WaitForSeconds(reminderKnockInterval);
         }
-    }
-
-    public void OnPlayerReachedFrontDoor()
-    {
-        hasReachedDoor = true;
-
-        if (dialogueTrigger != null)
-        {
-            dialogueTrigger.SetActive(false);
-        }
-
-        if (reminderKnockCoroutine != null)
-        {
-            StopCoroutine(reminderKnockCoroutine);
-            reminderKnockCoroutine = null;
-        }
-    }
-
-    private void HandleDoorRefusalEnded()
-    {
-        if (hasHandledDoorRefusal) return;
-
-        hasHandledDoorRefusal = true;
-        OnPlayerReachedFrontDoor();
-        StartCoroutine(ExecuteCreatureBangingSequence());
     }
 
     private IEnumerator ExecuteCreatureBangingSequence()
