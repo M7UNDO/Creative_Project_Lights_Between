@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.Rendering;
 
 public class PlayerKill : MonoBehaviour
@@ -11,15 +12,29 @@ public class PlayerKill : MonoBehaviour
     [SerializeField] private Light faceSpotlight;
     [SerializeField] private Transform framingTarget;
     [SerializeField] private Volume jumpscareVolume;
+    [SerializeField] private MultiAimConstraint headAim;
+    [SerializeField] private GameObject creatureMesh;
+
+    [Header("Ground Alignment Settings")]
+    [SerializeField] private LayerMask groundLayers;
+    [SerializeField] private float groundRayDistance = 3f;
 
     [Header("Dynamic Positioning Settings")]
     [SerializeField] private float spawnDistance = 1.5f;
-    [SerializeField] private float heightOffset = -0.5f;
+    [SerializeField] private float heightOffset = 0f;
     [SerializeField] private float horizontalAngleOffset = 0f;
 
     private Transform targetCameraTransform;
     private FPSController targetPlayerController;
     private bool isTrackingTarget;
+
+    private void Awake()
+    {
+        if (creatureMesh != null)
+        {
+            creatureMesh.SetActive(false);
+        }
+    }
 
     private void LateUpdate()
     {
@@ -58,6 +73,14 @@ public class PlayerKill : MonoBehaviour
         }
     }
 
+    public void StopJumpscareAnimation()
+    {
+        if (creatureAnimator != null)
+        {
+            creatureAnimator.speed = 0f;
+        }
+    }
+
     public void OnCreatureScream(AnimationEvent animationEvent)
     {
         if (animationEvent.animatorClipInfo.weight <= 0.5f) return;
@@ -93,6 +116,13 @@ public class PlayerKill : MonoBehaviour
 
         Vector3 spawnDirection = Quaternion.Euler(0f, horizontalAngleOffset, 0f) * playerTransform.forward;
         Vector3 finalPosition = playerTransform.position + (spawnDirection * spawnDistance);
+
+        Vector3 rayOrigin = finalPosition + Vector3.up * 1.5f;
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, groundRayDistance, groundLayers))
+        {
+            finalPosition.y = hit.point.y;
+        }
+
         finalPosition.y += heightOffset;
 
         transform.position = finalPosition;
@@ -109,6 +139,11 @@ public class PlayerKill : MonoBehaviour
     {
         gameObject.SetActive(true);
 
+        if (headAim != null)
+        {
+            headAim.weight = 1f;
+        }
+
         if (jumpscareVolume != null)
         {
             jumpscareVolume.gameObject.SetActive(true);
@@ -116,7 +151,14 @@ public class PlayerKill : MonoBehaviour
 
         if (creatureAnimator != null)
         {
+            creatureAnimator.speed = 1f;
             creatureAnimator.SetTrigger("PlayJumpscare");
+            creatureAnimator.Update(0f);
+        }
+
+        if (creatureMesh != null)
+        {
+            creatureMesh.SetActive(true);
         }
 
         if (jumpscareAudioSource != null && jumpscareClip != null)

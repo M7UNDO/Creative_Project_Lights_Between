@@ -87,6 +87,7 @@ public class ManageUI : MonoBehaviour
 
     private void Update()
     {
+        if (EnemyManager.IsGameOver) return;
         if (inputHandler == null) return;
 
         if (inputHandler.inventory)
@@ -127,6 +128,8 @@ public class ManageUI : MonoBehaviour
 
     public void Back()
     {
+        if (EnemyManager.IsGameOver) return;
+
         if (confirmationPanel != null && confirmationPanel.activeSelf)
         {
             CancelConfirmation();
@@ -174,6 +177,8 @@ public class ManageUI : MonoBehaviour
 
     public void Settings()
     {
+        if (EnemyManager.IsGameOver) return;
+
         bool isOpening = settingsPanel != null && !settingsPanel.activeSelf;
 
         if (isOpening)
@@ -188,6 +193,8 @@ public class ManageUI : MonoBehaviour
 
     public void OpenSettings()
     {
+        if (EnemyManager.IsGameOver) return;
+
         SaveCurrentSelected();
 
         if (pausePanel != null) pausePanel.SetActive(false);

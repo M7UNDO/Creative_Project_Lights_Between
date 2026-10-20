@@ -41,6 +41,8 @@ public class PauseManager : MonoBehaviour
 
     public void TogglePause()
     {
+        if (EnemyManager.IsGameOver) return;
+
         if (IsGamePaused)
         {
             Resume();
@@ -53,6 +55,8 @@ public class PauseManager : MonoBehaviour
 
     public void Pause()
     {
+        if (EnemyManager.IsGameOver) return;
+
         IsGamePaused = true;
         Time.timeScale = 0f;
 

@@ -4955,7 +4955,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 184018829}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 705705849}
+        m_TargetAssemblyTypeName: EnemyManager, Assembly-CSharp
+        m_MethodName: RestartLevel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &184018829
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10743,9 +10755,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6f139ff0ad549034b9989b0e484bdd02, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5424a547278bb284b9918fef53a22c53, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -17907,7 +17919,6 @@ GameObject:
   m_Component:
   - component: {fileID: 705705848}
   - component: {fileID: 705705849}
-  - component: {fileID: 705705850}
   m_Layer: 0
   m_Name: EnemyManager
   m_TagString: Untagged
@@ -17944,30 +17955,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyManager
   enemyObject: {fileID: 919132148207362938}
   enemyAI: {fileID: 5866666020710065093}
-  playerKillSequence: {fileID: 705705850}
+  playerKillSequence: {fileID: 1189810422}
   playerController: {fileID: 4958918896838999208}
---- !u!114 &705705850
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 705705847}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45dbead0aa01a1c4f941e670ab7fcc27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerKill
-  creatureAnimator: {fileID: 1189810420}
-  jumpscareAudioSource: {fileID: 1189810414}
-  jumpscareClip: {fileID: 8300000, guid: 219a7d857410e5648bf5c6a0df96a7bd, type: 3}
-  bloodParticles: {fileID: 0}
-  faceSpotlight: {fileID: 794117841}
-  framingTarget: {fileID: 1013836794}
-  jumpscareVolume: {fileID: 1589273675}
-  spawnDistance: 1.5
-  heightOffset: -0.5
-  horizontalAngleOffset: 0
+  gameOverUI: {fileID: 533269073}
+  gameOverDelay: 4
 --- !u!23 &708603414 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: -6842247630330417655, guid: 00f54845250d1b84790b60740a496ca6, type: 3}
@@ -19625,7 +19616,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &794117839
 Transform:
   m_ObjectHideFlags: 0
@@ -19634,13 +19625,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 794117838}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.99144495, z: 0, w: -0.13052607}
-  m_LocalPosition: {x: -0.11418469, y: -0.00000065565115, z: 0.42614424}
+  m_LocalRotation: {x: 0.15721488, y: 0.008761571, z: 0.004201572, w: 0.98751664}
+  m_LocalPosition: {x: 0.105000064, y: 0.12000553, z: -0.6480038}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 179802326}
-  m_LocalEulerAnglesHint: {x: 0, y: -195, z: 0}
+  m_LocalEulerAnglesHint: {x: 18.085, y: 1.123, z: 0.666}
 --- !u!114 &794117840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19683,8 +19674,8 @@ Light:
   m_Color: {r: 1, g: 0.26981127, b: 0.26981127, a: 1}
   m_Intensity: 5
   m_Range: 10
-  m_SpotAngle: 117.864235
-  m_InnerSpotAngle: 21.80208
+  m_SpotAngle: 156.22137
+  m_InnerSpotAngle: 60.15918
   m_CookieSize2D: {x: 0.5, y: 0.5}
   m_Shadows:
     m_Type: 0
@@ -23714,6 +23705,53 @@ Transform:
   - {fileID: 1189810421}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &950377541
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 950377542}
+  - component: {fileID: 950377543}
+  m_Layer: 0
+  m_Name: Rig 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &950377542
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950377541}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.0294117, y: -0.58823526, z: -8.235293}
+  m_LocalScale: {x: 0.58823526, y: 0.58823526, z: 0.58823526}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2115660399}
+  m_Father: {fileID: 1189810421}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &950377543
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 950377541}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b342d8ce5c2fd48b8fa3147d48d1d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.Rig
+  m_Weight: 1
+  m_Effectors: []
 --- !u!1 &952241580
 GameObject:
   m_ObjectHideFlags: 0
@@ -25055,13 +25093,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1013836794}
+  - component: {fileID: 1013836795}
   m_Layer: 0
   m_Name: LookPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1013836794
 Transform:
   m_ObjectHideFlags: 0
@@ -25070,13 +25109,33 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013836793}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.559193, y: -0, z: -0, w: -0.82903755}
-  m_LocalPosition: {x: 0.00000008195639, y: -0.09740424, z: 0.17432177}
+  m_LocalRotation: {x: 0.5591929, y: -0.000000048428777, z: -0.000000009778888, w: -0.8290376}
+  m_LocalPosition: {x: 0, y: -0.09740418, z: 0.17432158}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 179802326}
   m_LocalEulerAnglesHint: {x: -428, y: 0, z: 0}
+--- !u!114 &1013836795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1013836793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2d8418b0b9634b1892b0268dd9c2743, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.BoneRenderer
+  boneShape: 1
+  drawBones: 1
+  drawTripods: 0
+  boneSize: 1
+  tripodSize: 1
+  boneColor: {r: 0, g: 0, b: 1, a: 0.5}
+  m_Transforms:
+  - {fileID: 1013836794}
 --- !u!1 &1014083795
 GameObject:
   m_ObjectHideFlags: 0
@@ -28751,13 +28810,16 @@ GameObject:
   - component: {fileID: 1189810421}
   - component: {fileID: 1189810420}
   - component: {fileID: 1189810414}
+  - component: {fileID: 1189810422}
+  - component: {fileID: 1189810424}
+  - component: {fileID: 1189810423}
   m_Layer: 0
   m_Name: ShadowProwler_Kill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!82 &1189810414
 AudioSource:
   m_ObjectHideFlags: 0
@@ -28893,8 +28955,172 @@ Transform:
   - {fileID: 596995728}
   - {fileID: 434820170}
   - {fileID: 410611448}
+  - {fileID: 950377542}
   m_Father: {fileID: 949054336}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1189810422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189810411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45dbead0aa01a1c4f941e670ab7fcc27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerKill
+  creatureAnimator: {fileID: 1189810420}
+  jumpscareAudioSource: {fileID: 1189810414}
+  jumpscareClip: {fileID: 8300000, guid: 219a7d857410e5648bf5c6a0df96a7bd, type: 3}
+  bloodParticles: {fileID: 0}
+  faceSpotlight: {fileID: 794117841}
+  framingTarget: {fileID: 1013836794}
+  jumpscareVolume: {fileID: 1589273675}
+  headAim: {fileID: 2115660400}
+  creatureMesh: {fileID: 596995726}
+  spawnDistance: 1.5
+  heightOffset: -0.5
+  horizontalAngleOffset: 0
+--- !u!114 &1189810423
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189810411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2d8418b0b9634b1892b0268dd9c2743, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.BoneRenderer
+  boneShape: 1
+  drawBones: 1
+  drawTripods: 0
+  boneSize: 1
+  tripodSize: 1
+  boneColor: {r: 0, g: 0, b: 1, a: 0.5}
+  m_Transforms:
+  - {fileID: 865141080}
+  - {fileID: 998481210}
+  - {fileID: 68679270}
+  - {fileID: 1810376485}
+  - {fileID: 1737873556}
+  - {fileID: 455556502}
+  - {fileID: 1655414799}
+  - {fileID: 1970494561}
+  - {fileID: 365735524}
+  - {fileID: 1557443627}
+  - {fileID: 828687726}
+  - {fileID: 282047058}
+  - {fileID: 1295289288}
+  - {fileID: 1228856955}
+  - {fileID: 2114004367}
+  - {fileID: 1603111935}
+  - {fileID: 1142109879}
+  - {fileID: 1075348185}
+  - {fileID: 1718238281}
+  - {fileID: 972057370}
+  - {fileID: 177329103}
+  - {fileID: 723627692}
+  - {fileID: 1884957033}
+  - {fileID: 1016580944}
+  - {fileID: 1976592566}
+  - {fileID: 2073730122}
+  - {fileID: 1944579282}
+  - {fileID: 496070828}
+  - {fileID: 444067886}
+  - {fileID: 1691724660}
+  - {fileID: 586639226}
+  - {fileID: 481672449}
+  - {fileID: 1127858097}
+  - {fileID: 1542091760}
+  - {fileID: 476586943}
+  - {fileID: 702013015}
+  - {fileID: 878796949}
+  - {fileID: 1170828071}
+  - {fileID: 380184945}
+  - {fileID: 1177101558}
+  - {fileID: 632311668}
+  - {fileID: 1261075503}
+  - {fileID: 1953552373}
+  - {fileID: 1280837246}
+  - {fileID: 1367866999}
+  - {fileID: 751994971}
+  - {fileID: 167966748}
+  - {fileID: 77345782}
+  - {fileID: 1176229395}
+  - {fileID: 1216436381}
+  - {fileID: 1279212407}
+  - {fileID: 1136566649}
+  - {fileID: 1946142534}
+  - {fileID: 1258242524}
+  - {fileID: 1606332958}
+  - {fileID: 256453}
+  - {fileID: 1277693512}
+  - {fileID: 392913312}
+  - {fileID: 331154272}
+  - {fileID: 254139180}
+  - {fileID: 2135937420}
+  - {fileID: 1294611918}
+  - {fileID: 1969270615}
+  - {fileID: 453275346}
+  - {fileID: 1265072454}
+  - {fileID: 348288299}
+  - {fileID: 471438662}
+  - {fileID: 331579305}
+  - {fileID: 1646357250}
+  - {fileID: 2124664379}
+  - {fileID: 228987308}
+  - {fileID: 1988395179}
+  - {fileID: 806009073}
+  - {fileID: 1486738393}
+  - {fileID: 643158237}
+  - {fileID: 1189544997}
+  - {fileID: 1885953520}
+  - {fileID: 276683120}
+  - {fileID: 520431530}
+  - {fileID: 2023951086}
+  - {fileID: 1161126058}
+  - {fileID: 791268815}
+  - {fileID: 1803562701}
+  - {fileID: 1316764883}
+  - {fileID: 735370337}
+  - {fileID: 2014562934}
+  - {fileID: 368627083}
+  - {fileID: 1542003716}
+  - {fileID: 154819679}
+  - {fileID: 563124470}
+  - {fileID: 684726876}
+  - {fileID: 2031509302}
+  - {fileID: 273784741}
+  - {fileID: 1428252031}
+  - {fileID: 59593848}
+  - {fileID: 98049468}
+  - {fileID: 633627390}
+  - {fileID: 875719768}
+  - {fileID: 179802326}
+  - {fileID: 1524197332}
+  - {fileID: 90876560}
+  - {fileID: 312347892}
+  - {fileID: 1235892529}
+  - {fileID: 1473775465}
+--- !u!114 &1189810424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1189810411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fff0960ef4ea6e04eac66b4a7fd2189d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.RigBuilder
+  m_RigLayers:
+  - m_Rig: {fileID: 950377543}
+    m_Active: 1
+  m_Effectors: []
 --- !u!1 &1189962881
 GameObject:
   m_ObjectHideFlags: 0
@@ -43500,7 +43726,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1924512600}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 705705849}
+        m_TargetAssemblyTypeName: EnemyManager, Assembly-CSharp
+        m_MethodName: LoadLevelInt
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1924512600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -49140,6 +49378,92 @@ Transform:
   - {fileID: 1142109879}
   m_Father: {fileID: 1228856955}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2115660398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2115660399}
+  - component: {fileID: 2115660400}
+  m_Layer: 0
+  m_Name: Headaim
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2115660399
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2115660398}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 950377542}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2115660400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2115660398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c430f382484144e925c097c2d33cfe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.MultiAimConstraint
+  m_Weight: 1
+  m_Data:
+    m_ConstrainedObject: {fileID: 179802326}
+    m_SourceObjects:
+      m_Length: 1
+      m_Item0:
+        transform: {fileID: 1740753165119675854}
+        weight: 1
+      m_Item1:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item2:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item3:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item4:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item5:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item6:
+        transform: {fileID: 0}
+        weight: 0
+      m_Item7:
+        transform: {fileID: 0}
+        weight: 0
+    m_Offset: {x: 0, y: 0, z: 0}
+    m_MinLimit: -90
+    m_MaxLimit: 90
+    m_AimAxis: 4
+    m_UpAxis: 2
+    m_WorldUpType: 0
+    m_WorldUpObject: {fileID: 0}
+    m_WorldUpAxis: 2
+    m_MaintainOffset: 0
+    m_ConstrainedAxes:
+      x: 1
+      y: 1
+      z: 1
 --- !u!1 &2117970153
 GameObject:
   m_ObjectHideFlags: 0
