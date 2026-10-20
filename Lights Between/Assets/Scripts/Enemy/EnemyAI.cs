@@ -805,24 +805,10 @@ public class EnemyAI : MonoBehaviour
         agent.isStopped = true;
         agent.ResetPath();
 
-        Vector3 lookPos = new Vector3(
-            currentTarget.position.x,
-            transform.position.y,
-            currentTarget.position.z
-        );
-
-        AlignToSurface((lookPos - transform.position).normalized);
-
-        CinemachineThirdPersonFollow follow =
-            currentTarget.gameObject.GetComponentInChildren<CinemachineThirdPersonFollow>();
-
-        if (follow != null)
+        if (EnemyManager.Instance != null)
         {
-            follow.AvoidObstacles.Enabled = false;
+            EnemyManager.Instance.TriggerKillSequence();
         }
-
-        animator.SetTrigger("Attack");
-        StartCoroutine(RestartGame());
     }
 
     IEnumerator RestartGame()

@@ -11,6 +11,9 @@ public class BarricadePlankScript : MonoBehaviour, IInteractable
     [SerializeField] private string needCrowbarPrompt = "Equip crowbar to pry plank";
     [SerializeField] private string pryPrompt = "Hold to pry plank";
 
+    [Header("Narrative/Objective Lock")]
+    [SerializeField] private ObjectiveSO requiredObjective;
+
     [Header("Pop-off Physics")]
     [SerializeField] private float minPopForce = 4f;
     [SerializeField] private float maxPopForce = 7f;
@@ -81,7 +84,7 @@ public class BarricadePlankScript : MonoBehaviour, IInteractable
 
     private void Update()
     {
-        if (isDetached) return;
+        if (isDetached || !IsPlankUnlocked()) return;
         if (currentInput == null) return;
         if (holdInteraction == null) return;
 
@@ -108,9 +111,21 @@ public class BarricadePlankScript : MonoBehaviour, IInteractable
         }
     }
 
+    public bool IsPlankUnlocked()
+    {
+        if (requiredObjective == null) return true;
+
+        if (ObjectiveManager.Instance != null)
+        {
+            return ObjectiveManager.Instance.GetObjectiveStatus(requiredObjective.ID) == ObjectiveStatus.Active;
+        }
+
+        return false;
+    }
+
     public bool CanInteract()
     {
-        if (isDetached) return false;
+        if (isDetached || !IsPlankUnlocked()) return false;
 
         ResolvePlayerReferences();
 
@@ -124,7 +139,7 @@ public class BarricadePlankScript : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if (isDetached) return;
+        if (isDetached || !IsPlankUnlocked()) return;
 
         ResolvePlayerReferences();
 
@@ -196,7 +211,7 @@ public class BarricadePlankScript : MonoBehaviour, IInteractable
 
     public void PryOff()
     {
-        if (isDetached) return;
+        if (isDetached || !IsPlankUnlocked()) return;
 
         isDetached = true;
         currentInput = null;
@@ -236,6 +251,12 @@ public class BarricadePlankScript : MonoBehaviour, IInteractable
 
     private void UpdatePrompt()
     {
+        if (!IsPlankUnlocked())
+        {
+            promptMessage = string.Empty;
+            return;
+        }
+
         ResolvePlayerReferences();
 
         bool hasCrowbarAccess = false;

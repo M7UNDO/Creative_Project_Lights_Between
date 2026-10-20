@@ -206,6 +206,11 @@ public class PlayerInteraction : MonoBehaviour
             if (!cellPhone.IsPhoneUnlocked()) return false;
         }
 
+        if (interaction.Interactable is BarricadePlankScript plank)
+        {
+            if (!plank.IsPlankUnlocked()) return false;
+        }
+
         if (interaction.HasGrabbable && _fpsController.isSeated)
         {
             return false;
@@ -285,7 +290,7 @@ public class PlayerInteraction : MonoBehaviour
         else if (hitCollider.GetComponentInParent<BarricadePlankScript>() != null)
         {
             BarricadePlankScript plank = hitCollider.GetComponentInParent<BarricadePlankScript>();
-            result.Prompt = plank.promptMessage;
+            result.Prompt = plank.IsPlankUnlocked() ? plank.promptMessage : string.Empty;
             result.CanInteract = plank.CanInteract();
         }
         else if (hitCollider.TryGetComponent<KeroseneLampScript>(out KeroseneLampScript kerosene))
@@ -552,6 +557,9 @@ public class PlayerInteraction : MonoBehaviour
 
         PlayerPoseAnchor parentAnchor = ui.GetComponentInParent<PlayerPoseAnchor>();
         if (parentAnchor != null && !parentAnchor.IsAnchorUnlocked()) return false;
+
+        BarricadePlankScript parentPlank = ui.GetComponentInParent<BarricadePlankScript>();
+        if (parentPlank != null && !parentPlank.IsPlankUnlocked()) return false;
 
         return true;
     }

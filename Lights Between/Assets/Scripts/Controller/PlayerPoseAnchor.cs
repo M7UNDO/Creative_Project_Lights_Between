@@ -144,30 +144,23 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if (isTransitioning) return;
+        if (isTransitioning || isOccupied) return;
 
         if (playerInteraction != null && playerInteraction.CurrentGrabbable != null)
         {
             return;
         }
 
-        if (!isOccupied)
+        if (!IsAnchorUnlocked())
         {
-            if (!IsAnchorUnlocked())
+            if (lockedDialogue != null && DialogueManager.Instance != null)
             {
-                if (lockedDialogue != null && DialogueManager.Instance != null)
-                {
-                    DialogueManager.Instance.StartDialogue(lockedDialogue);
-                }
-                return;
+                DialogueManager.Instance.StartDialogue(lockedDialogue);
             }
+            return;
+        }
 
-            SitDown();
-        }
-        else if (canStandUp)
-        {
-            RequestStandUp();
-        }
+        SitDown();
     }
 
     public void SitDown()
@@ -292,7 +285,7 @@ public class PlayerPoseAnchor : MonoBehaviour, IInteractable
     {
         if (isOccupied)
         {
-            return canStandUp ? standPrompt : "";
+            return "";
         }
 
         if (playerInteraction != null && playerInteraction.CurrentGrabbable != null)
