@@ -67634,6 +67634,7 @@ MonoBehaviour:
   input: {fileID: 8390249214260197489}
   inventory: {fileID: 8672213539818312836}
   equipmentManager: {fileID: 8047248179988981912}
+  placementPromptUI: {fileID: 1143816946}
   previewObjectPrefab: {fileID: 2009832802834269984, guid: 07c0b5fbf6d877347a8b4b07736a8d0a, type: 3}
   playerCamera: {fileID: 9080683923482648260}
   placementSurfaceLayerMask:
@@ -82225,10 +82226,14 @@ MonoBehaviour:
   promptTextContainer: {fileID: 0}
   inputIconObject: {fileID: 332083035314885467}
   skeletonIconObject: {fileID: 8415596345442023881}
+  ignitePromptTextContainer: {fileID: 0}
+  igniteInputIconObject: {fileID: 0}
+  igniteSkeletonIconObject: {fileID: 0}
   proximityDistance: 5
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   disabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.39215687}
   _inputIconImage: {fileID: 8744976468594751898}
+  _igniteInputIconImage: {fileID: 0}
 --- !u!114 &4256110108109101590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82245,10 +82250,14 @@ MonoBehaviour:
   promptTextContainer: {fileID: 0}
   inputIconObject: {fileID: 332083033790047518}
   skeletonIconObject: {fileID: 8415596344184950668}
+  ignitePromptTextContainer: {fileID: 0}
+  igniteInputIconObject: {fileID: 0}
+  igniteSkeletonIconObject: {fileID: 0}
   proximityDistance: 5
   activeColor: {r: 1, g: 1, b: 1, a: 1}
   disabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.39215687}
   _inputIconImage: {fileID: 8744976467603001311}
+  _igniteInputIconImage: {fileID: 0}
 --- !u!1001 &4277502055425463895
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -91921,6 +91930,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: -8667043128204323470, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -8667043128204323470, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -92031,6 +92044,10 @@ PrefabInstance:
     - target: {fileID: -7940777066551086032, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_Layer
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -7747066524798389998, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -7747066524798389998, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString
@@ -92185,6 +92202,10 @@ PrefabInstance:
       value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: -5925636785132291444, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -5925636785132291444, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString
       value: Wood
       objectReference: {fileID: 0}
@@ -92200,6 +92221,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: ecc49c60200b59e4b87a602f8b8a96c1, type: 2}
+    - target: {fileID: -5731716611625591687, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: -5731716611625591687, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString
       value: Carpet
@@ -92449,6 +92474,10 @@ PrefabInstance:
       value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: -2833524777303055231, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -2833524777303055231, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString
       value: Tile
       objectReference: {fileID: 0}
@@ -92476,6 +92505,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 62d03ef2c62dd204dbcc604a955f0048, type: 2}
+    - target: {fileID: -2311443107254108939, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: -2311443107254108939, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
@@ -92645,6 +92678,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: 6e4682d803f41a64fbdd647b5067e1aa, type: 2}
     - target: {fileID: -12969772550382576, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -12969772550382576, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString
       value: Wood
       objectReference: {fileID: 0}
@@ -92672,6 +92709,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
       objectReference: {fileID: -7874896157844540411, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+    - target: {fileID: 693833829473500260, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 693833829473500260, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString
       value: Concrete
@@ -92809,6 +92850,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2100000, guid: f81dab0a185628240b99463404a923ed, type: 2}
     - target: {fileID: 2509104722090343066, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2509104722090343066, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString
       value: Wood
       objectReference: {fileID: 0}
@@ -92824,6 +92869,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
       objectReference: {fileID: 2100000, guid: 6e4682d803f41a64fbdd647b5067e1aa, type: 2}
+    - target: {fileID: 2626521743817472658, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 2626521743817472658, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString
       value: Wood
@@ -92875,6 +92924,10 @@ PrefabInstance:
     - target: {fileID: 3509343974098546336, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 3521311997139952811, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 3521311997139952811, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString
@@ -92975,6 +93028,10 @@ PrefabInstance:
     - target: {fileID: 4422452515552008657, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 4449610870671557896, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4449610870671557896, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString
@@ -93103,6 +93160,10 @@ PrefabInstance:
     - target: {fileID: 6273628541701597716, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
+      objectReference: {fileID: 0}
+    - target: {fileID: 6282657333768904669, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6282657333768904669, guid: 8770c8cfd5513bf458da8d9621658c64, type: 3}
       propertyPath: m_TagString

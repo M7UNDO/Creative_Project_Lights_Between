@@ -9,9 +9,12 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
     [SerializeField] private GameObject lampLightZone;
     [SerializeField] private GameObject flameObject;
 
-    [Header("World Space UI Prompts")]
-    [SerializeField] private WorldSpaceInteractableUI pickupUI;
-    [SerializeField] private WorldSpaceInteractableUI igniteUI;
+    [Header("World Space UI Reference")]
+    [SerializeField] private WorldSpaceInteractableUI worldSpaceUI;
+
+    [Header("Editable UI Prompts")]
+    [SerializeField] private string pickupPromptMessage = "[E] Pick up";
+    [SerializeField] private string ignitePromptMessage = "[Hold F] Ignite";
 
     [Header("Drain Settings")]
     [SerializeField] private float drainRate = 2f;
@@ -57,6 +60,11 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
 
         if (flameObject != null) flameObject.SetActive(false);
         if (PowerDisplayObj != null) PowerDisplayObj.SetActive(false);
+
+        if (worldSpaceUI == null)
+        {
+            worldSpaceUI = GetComponentInChildren<WorldSpaceInteractableUI>(true);
+        }
     }
 
     private void Start()
@@ -86,29 +94,18 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
 
     public void UpdatePrompts(bool isFocused, bool playerHasLighter)
     {
+        if (worldSpaceUI == null) return;
+
         if (!isFocused)
         {
-            if (pickupUI != null) pickupUI.HidePrompt();
-            if (igniteUI != null) igniteUI.HidePrompt();
+            worldSpaceUI.HidePrompt();
             return;
         }
 
-        if (pickupUI != null)
-        {
-            pickupUI.ShowPrompt("[E] Pick up", true, true);
-        }
+        bool showPickup = true;
+        bool showIgnite = !isIgnited && playerHasLighter && currentPower > 0f;
 
-        if (igniteUI != null)
-        {
-            if (!isIgnited && playerHasLighter && currentPower > 0f)
-            {
-                igniteUI.ShowPrompt("[Hold F] Ignite", true, true);
-            }
-            else
-            {
-                igniteUI.HidePrompt();
-            }
-        }
+        worldSpaceUI.UpdateDualPrompts(pickupPromptMessage, showPickup, ignitePromptMessage, showIgnite, true, true);
     }
 
     public void Interact()

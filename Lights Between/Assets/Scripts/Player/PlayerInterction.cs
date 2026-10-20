@@ -147,7 +147,7 @@ public class PlayerInteraction : MonoBehaviour
 
         WorldSpaceInteractableUI targetedWorldUI = FindTargetedUI(hit.collider, interaction);
 
-        if (targetedWorldUI != null && !_fpsController.isInspecting)
+        if (targetedWorldUI != null && !_fpsController.isInspecting && _currentKeroseneLamp == null)
         {
             targetedWorldUI.ShowPrompt(result.Prompt, true, result.CanInteract);
         }
@@ -315,7 +315,7 @@ public class PlayerInteraction : MonoBehaviour
             result.Prompt = "Interact";
         }
 
-        if (interaction.HasPower && interaction.Power.UsesPower)
+        if (interaction.HasPower && interaction.Power.UsesPower && _currentKeroseneLamp == null)
         {
             int powerPercent = Mathf.FloorToInt((interaction.Power.CurrentPower / interaction.Power.MaxPower) * 100f);
 

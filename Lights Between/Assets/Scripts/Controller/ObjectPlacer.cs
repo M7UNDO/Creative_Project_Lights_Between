@@ -11,6 +11,9 @@ public class ObjectPlacer : MonoBehaviour
     [SerializeField] private PlayerToolInventory inventory;
     [SerializeField] private ToolEquipmentManager equipmentManager;
 
+    [Header("UI References")]
+    [SerializeField] private GameObject placementPromptUI;
+
     [Header("Placement Parameters")]
     [SerializeField] private GameObject previewObjectPrefab;
     [SerializeField] private Camera playerCamera;
@@ -35,6 +38,14 @@ public class ObjectPlacer : MonoBehaviour
     [Header("SFX")]
     public AudioClip placementSFX;
 
+    private void Awake()
+    {
+        if (placementPromptUI != null)
+        {
+            placementPromptUI.SetActive(false);
+        }
+    }
+
     private void Update()
     {
         if (_inPlacementMode)
@@ -52,7 +63,7 @@ public class ObjectPlacer : MonoBehaviour
 
     private void UpdateInput()
     {
-        if (input.placeObject)
+        if (input != null && input.placeObject)
         {
             PlaceObject();
             input.placeObject = false;
@@ -61,16 +72,30 @@ public class ObjectPlacer : MonoBehaviour
 
     private void UpdateCurrentPlacementPosition()
     {
-        if (_previewObject == null) return;
+        if (_previewObject == null || playerCamera == null) return;
 
         Vector3 cameraForward = new Vector3(playerCamera.transform.forward.x, 0f, playerCamera.transform.forward.z);
         cameraForward.Normalize();
 
-        Vector3 startPos = playerCamera.transform.position + (cameraForward * objectDistanceFromPlayer);
-        startPos.y += raycastStartVerticalOffset;
+        float actualDistance = objectDistanceFromPlayer;
+        if (Physics.Raycast(playerCamera.transform.position, cameraForward, out RaycastHit wallHit, objectDistanceFromPlayer, placementSurfaceLayerMask, QueryTriggerInteraction.Ignore))
+        {
+            actualDistance = Mathf.Max(0.2f, wallHit.distance - 0.2f);
+        }
+
+        Vector3 targetPoint = playerCamera.transform.position + (cameraForward * actualDistance);
+
+        float maxUpwardOffset = raycastStartVerticalOffset;
+        if (Physics.Raycast(playerCamera.transform.position, Vector3.up, out RaycastHit ceilingHit, raycastStartVerticalOffset, placementSurfaceLayerMask, QueryTriggerInteraction.Ignore))
+        {
+            maxUpwardOffset = Mathf.Max(0f, ceilingHit.distance - 0.1f);
+        }
+
+        Vector3 startPos = targetPoint;
+        startPos.y = playerCamera.transform.position.y + maxUpwardOffset;
 
         RaycastHit hitInfo;
-        if (Physics.Raycast(startPos, Vector3.down, out hitInfo, raycastDistance, placementSurfaceLayerMask))
+        if (Physics.Raycast(startPos, Vector3.down, out hitInfo, raycastDistance + maxUpwardOffset, placementSurfaceLayerMask, QueryTriggerInteraction.Ignore))
         {
             float verticalOffset = GetObjectVerticalExtent(_previewObject);
             Vector3 placementPos = hitInfo.point;
@@ -86,6 +111,8 @@ public class ObjectPlacer : MonoBehaviour
 
     private float GetObjectVerticalExtent(GameObject obj)
     {
+        if (obj == null) return 0f;
+
         Renderer objectRenderer = obj.GetComponentInChildren<Renderer>();
         if (objectRenderer != null)
         {
@@ -103,13 +130,19 @@ public class ObjectPlacer : MonoBehaviour
 
     private void SetValidPreviewState()
     {
-        previewMaterial.color = validColor;
+        if (previewMaterial != null)
+        {
+            previewMaterial.color = validColor;
+        }
         _validPreviewState = true;
     }
 
     private void SetInvalidPreviewState()
     {
-        previewMaterial.color = invalidColor;
+        if (previewMaterial != null)
+        {
+            previewMaterial.color = invalidColor;
+        }
         _validPreviewState = false;
     }
 
@@ -155,6 +188,8 @@ public class ObjectPlacer : MonoBehaviour
         {
             equipmentManager.UnequipTool();
         }
+
+        ExitPlacementMode();
     }
 
     public void EnterPlacementModeFromEquip(ToolClass tool)
@@ -166,6 +201,11 @@ public class ObjectPlacer : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(0f, playerCamera.transform.eulerAngles.y, 0f);
         _previewObject = Instantiate(previewObjectPrefab, _currentPlacementPosition, rotation, transform);
         _inPlacementMode = true;
+
+        if (placementPromptUI != null)
+        {
+            placementPromptUI.SetActive(true);
+        }
     }
 
     public void ExitPlacementMode()
@@ -174,8 +214,14 @@ public class ObjectPlacer : MonoBehaviour
         {
             Destroy(_previewObject);
         }
+
         _previewObject = null;
         _inPlacementMode = false;
         _activeToolToPlace = null;
+
+        if (placementPromptUI != null)
+        {
+            placementPromptUI.SetActive(false);
+        }
     }
 }
