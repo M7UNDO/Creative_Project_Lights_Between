@@ -157,6 +157,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         ResetAnimationState();
         TurnOffLightState();
         SetBatteryUIVisible(false);
+        DismissTutorialPrompt();
 
         if (InputDeviceDetector.Instance != null)
         {
@@ -249,6 +250,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         {
             ResetAnimationState();
             TurnOffLightState();
+            DismissTutorialPrompt();
         }
         else
         {
@@ -635,19 +637,19 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         while (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive) yield return null;
 
         isShowingTogglePrompt = true;
-        yield return StartCoroutine(FadePromptRoutine(GetTogglePromptString()));
+        yield return StartCoroutine(FadePromptRoutine(GetTogglePromptString(), false));
         isShowingTogglePrompt = false;
 
         while (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive) yield return null;
 
         isShowingWheelPrompt = true;
-        yield return StartCoroutine(FadePromptRoutine(GetWheelPromptString()));
+        yield return StartCoroutine(FadePromptRoutine(GetWheelPromptString(), true));
         isShowingWheelPrompt = false;
 
         tutorialSequenceCoroutine = null;
     }
 
-    private IEnumerator FadePromptRoutine(string message)
+    private IEnumerator FadePromptRoutine(string message, bool isWheelPrompt)
     {
         if (promptTextUI == null || promptCanvasGroup == null) yield break;
 
@@ -656,24 +658,57 @@ public class FlashlightScript : MonoBehaviour, IToolPower
         float timer = 0f;
         while (timer < fadeDuration)
         {
-            timer += Time.deltaTime;
+            if (isWheelPrompt && inputHandler != null && inputHandler.wheel) break;
+            timer += Time.unscaledDeltaTime;
             promptCanvasGroup.alpha = Mathf.Lerp(promptCanvasGroup.alpha, 1f, timer / fadeDuration);
             yield return null;
         }
 
-        promptCanvasGroup.alpha = 1f;
-        yield return new WaitForSeconds(promptDuration);
+        if (!(isWheelPrompt && inputHandler != null && inputHandler.wheel))
+        {
+            promptCanvasGroup.alpha = 1f;
+            float holdTimer = 0f;
+            while (holdTimer < promptDuration)
+            {
+                if (isWheelPrompt && inputHandler != null && inputHandler.wheel) break;
+                holdTimer += Time.unscaledDeltaTime;
+                yield return null;
+            }
+        }
 
         timer = 0f;
+        float startAlpha = promptCanvasGroup.alpha;
         while (timer < fadeDuration)
         {
-            timer += Time.deltaTime;
-            promptCanvasGroup.alpha = Mathf.Lerp(1f, 0f, timer / fadeDuration);
+            timer += Time.unscaledDeltaTime;
+            promptCanvasGroup.alpha = Mathf.Lerp(startAlpha, 0f, timer / fadeDuration);
             yield return null;
         }
 
         promptCanvasGroup.alpha = 0f;
         promptTextUI.text = "";
+    }
+
+    public void DismissTutorialPrompt()
+    {
+        if (tutorialSequenceCoroutine != null)
+        {
+            StopCoroutine(tutorialSequenceCoroutine);
+            tutorialSequenceCoroutine = null;
+        }
+
+        isShowingTogglePrompt = false;
+        isShowingWheelPrompt = false;
+
+        if (promptCanvasGroup != null)
+        {
+            promptCanvasGroup.alpha = 0f;
+        }
+
+        if (promptTextUI != null)
+        {
+            promptTextUI.text = "";
+        }
     }
 
     private string GetTogglePromptString()

@@ -194,6 +194,7 @@ public class FPSController : MonoBehaviour
                 {
                     CurrentPoseAnchor.RequestStandUp();
                 }
+
             }
         }
 
@@ -243,6 +244,12 @@ public class FPSController : MonoBehaviour
                     ForceLookAt(lookAtTarget.position);
                 }
             }
+
+            if (_stamina != null)
+            {
+                _stamina.RefillStamina();
+            }
+
             CacheAnchorYaw();
         }
 

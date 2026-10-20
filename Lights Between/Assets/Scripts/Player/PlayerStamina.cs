@@ -29,10 +29,24 @@ public class PlayerStamina : MonoBehaviour
         if (staminaCanvasGroup != null) staminaCanvasGroup.alpha = 0f;
     }
 
+    private void Update()
+    {
+        UpdateUI();
+    }
+
     public void RefillStamina()
     {
         CurrentStamina = maxStamina;
         timeAtMaxStamina = hideDelay;
+        targetAlpha = 0f;
+        if (staminaCanvasGroup != null)
+        {
+            staminaCanvasGroup.alpha = 0f;
+        }
+    }
+
+    public void ForceHideUI()
+    {
         targetAlpha = 0f;
         if (staminaCanvasGroup != null)
         {
@@ -77,8 +91,6 @@ public class PlayerStamina : MonoBehaviour
                 targetAlpha = 0f;
             }
         }
-
-        UpdateUI();
     }
 
     private void UpdateUI()

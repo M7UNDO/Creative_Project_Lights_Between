@@ -167,9 +167,9 @@ public class PlayerInteraction : MonoBehaviour
 
     private bool IsInteractionAllowed(InteractionData interaction)
     {
-        if (interaction.Interactable is PlayerPoseAnchor anchor)
+        if (interaction.Interactable is PlayerPoseAnchor)
         {
-            if (_currentGrabbable != null || !anchor.IsAnchorUnlocked()) return false;
+            if (_currentGrabbable != null || _fpsController.isSeated) return false;
         }
 
         if (interaction.Interactable is ToolPickup toolPickup)
@@ -246,8 +246,16 @@ public class PlayerInteraction : MonoBehaviour
         }
         else if (hitCollider.TryGetComponent<PlayerPoseAnchor>(out PlayerPoseAnchor poseAnchor))
         {
-            result.Prompt = poseAnchor.GetPromptMessage();
-            result.CanInteract = poseAnchor.IsAnchorUnlocked();
+            if (_fpsController.isSeated)
+            {
+                result.Prompt = string.Empty;
+                result.CanInteract = false;
+            }
+            else
+            {
+                result.Prompt = poseAnchor.GetPromptMessage();
+                result.CanInteract = poseAnchor.IsAnchorUnlocked();
+            }
         }
         else if (hitCollider.TryGetComponent<DoorScript>(out DoorScript doorScript))
         {

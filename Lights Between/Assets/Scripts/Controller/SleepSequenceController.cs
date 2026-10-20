@@ -30,6 +30,11 @@ public class SleepSequenceController : MonoBehaviour
 
     private void Awake()
     {
+        if (bedPoseAnchor == null)
+        {
+            bedPoseAnchor = GetComponent<PlayerPoseAnchor>();
+        }
+
         if (postProcessingVolume != null && postProcessingVolume.profile != null)
         {
             postProcessingVolume.profile.TryGet(out vignetteComponent);
@@ -38,6 +43,11 @@ public class SleepSequenceController : MonoBehaviour
 
     private void OnEnable()
     {
+        if (bedPoseAnchor == null)
+        {
+            bedPoseAnchor = GetComponent<PlayerPoseAnchor>();
+        }
+
         if (bedPoseAnchor != null)
         {
             bedPoseAnchor.OnPoseEntered += OnPlayerEnteredBed;
@@ -62,9 +72,19 @@ public class SleepSequenceController : MonoBehaviour
     {
         float originalVignette = 0.4f;
 
-        if (bedPoseAnchor != null)
+        PlayerPoseAnchor activeAnchor = bedPoseAnchor;
+        if (activeAnchor == null)
         {
-            bedPoseAnchor.SetStandUpPermission(false);
+            FPSController player = Object.FindFirstObjectByType<FPSController>();
+            if (player != null)
+            {
+                activeAnchor = player.CurrentPoseAnchor;
+            }
+        }
+
+        if (activeAnchor != null)
+        {
+            activeAnchor.SetStandUpPermission(false);
         }
 
         if (vignetteComponent != null)
@@ -128,9 +148,9 @@ public class SleepSequenceController : MonoBehaviour
             yield return null;
         }
 
-        if (bedPoseAnchor != null)
+        if (activeAnchor != null)
         {
-            bedPoseAnchor.SetStandUpPermission(true);
+            activeAnchor.SetStandUpPermission(true);
         }
 
         if (ObjectiveManager.Instance != null && findTorchObjectiveToActivate != null)
