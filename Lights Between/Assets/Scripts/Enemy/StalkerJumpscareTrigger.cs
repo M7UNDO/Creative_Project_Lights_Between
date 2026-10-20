@@ -40,9 +40,6 @@ public class StalkerJumpscareTrigger : MonoBehaviour
     [SerializeField] private float maxAberrationIntensity = 0.85f;
     [SerializeField] private float aberrationPulseSpeed = 3.0f;
 
-    [Header("Narrative Reaction")]
-    [SerializeField] private WallTelephoneTrigger wallPhone;
-
     private BoxCollider triggerCollider;
     private bool hasTriggered;
     private Coroutine headAimCoroutine;
@@ -248,11 +245,6 @@ public class StalkerJumpscareTrigger : MonoBehaviour
         if (fpsController != null)
         {
             fpsController.SetJumpScareMode(false);
-        }
-
-        if (wallPhone != null)
-        {
-            wallPhone.SetTelephoneUnlocked(true);
         }
     }
 }

@@ -472,6 +472,15 @@ public class PlayerInteraction : MonoBehaviour
         ToolPickup parentPickup = ui.GetComponentInParent<ToolPickup>();
         if (parentPickup != null && !parentPickup.IsPickupUnlocked()) return false;
 
+        SnapZone parentSnapZone = ui.GetComponentInParent<SnapZone>();
+        if (parentSnapZone != null && !parentSnapZone.IsSnapZoneUnlocked()) return false;
+
+        WallTelephoneTrigger parentWallPhone = ui.GetComponentInParent<WallTelephoneTrigger>();
+        if (parentWallPhone != null && !parentWallPhone.IsTelephoneUnlocked()) return false;
+
+        PhoneScript parentCellPhone = ui.GetComponentInParent<PhoneScript>();
+        if (parentCellPhone != null && !parentCellPhone.IsPhoneUnlocked()) return false;
+
         PlayerPoseAnchor parentAnchor = ui.GetComponentInParent<PlayerPoseAnchor>();
         if (parentAnchor != null && !parentAnchor.IsAnchorUnlocked()) return false;
 

@@ -11,8 +11,13 @@ public class SnapZone : MonoBehaviour, IInteractable
         public string itemID;
         public Transform snapPoint;
         public GameObject visualToEnable;
+        public GameObject prefabToInstantiate;
         [HideInInspector] public bool isSnapped;
     }
+
+    [Header("Narrative/Objective Lock")]
+    [SerializeField] private ObjectiveSO requiredObjective;
+    [SerializeField] private DialogueSO lockedDialogue;
 
     [Header("Requirements & Mapping")]
     [SerializeField] private List<SnapRequirement> requirements = new List<SnapRequirement>();
@@ -26,7 +31,6 @@ public class SnapZone : MonoBehaviour, IInteractable
     [SerializeField] private ObjectiveSO performRitualObjective;
 
     [Header("Completion Cleanup")]
-    [Tooltip("If true, destroys this GameObject when complete. If false, disables the collider and script instead.")]
     [SerializeField] private bool destroySnapZoneOnComplete = false;
 
     [Header("Events & Audio")]
@@ -53,6 +57,18 @@ public class SnapZone : MonoBehaviour, IInteractable
         triggerCollider = GetComponent<Collider>();
     }
 
+    public bool IsSnapZoneUnlocked()
+    {
+        if (requiredObjective == null) return true;
+
+        if (ObjectiveManager.Instance != null)
+        {
+            return ObjectiveManager.Instance.GetObjectiveStatus(requiredObjective.ID) == ObjectiveStatus.Active;
+        }
+
+        return false;
+    }
+
     public void Interact()
     {
     }
@@ -60,6 +76,12 @@ public class SnapZone : MonoBehaviour, IInteractable
     public bool TrySnapItem(ObjectGrabbable heldItem, out Transform snapTarget)
     {
         snapTarget = null;
+
+        if (!IsSnapZoneUnlocked())
+        {
+            TriggerLockedDialogue();
+            return false;
+        }
 
         if (IsComplete() || heldItem == null) return false;
 
@@ -77,7 +99,11 @@ public class SnapZone : MonoBehaviour, IInteractable
             {
                 snapTarget = req.snapPoint != null ? req.snapPoint : transform;
 
-                if (req.visualToEnable != null)
+                if (req.prefabToInstantiate != null)
+                {
+                    Instantiate(req.prefabToInstantiate, snapTarget.position, snapTarget.rotation, snapTarget);
+                }
+                else if (req.visualToEnable != null)
                 {
                     req.visualToEnable.SetActive(true);
                 }
@@ -154,6 +180,7 @@ public class SnapZone : MonoBehaviour, IInteractable
 
     public bool CanSnap(ObjectGrabbable heldItem)
     {
+        if (!IsSnapZoneUnlocked()) return false;
         if (IsComplete() || heldItem == null) return false;
 
         if (IsInvalidItem(heldItem.ItemID)) return true;
@@ -171,6 +198,7 @@ public class SnapZone : MonoBehaviour, IInteractable
 
     public string GetPromptMessage(ObjectGrabbable heldItem)
     {
+        if (!IsSnapZoneUnlocked()) return string.Empty;
         if (IsComplete() || heldItem == null) return string.Empty;
 
         if (IsInvalidItem(heldItem.ItemID))
@@ -201,6 +229,14 @@ public class SnapZone : MonoBehaviour, IInteractable
         if (DialogueManager.Instance != null && invalidItemDialogue != null)
         {
             DialogueManager.Instance.StartDialogue(invalidItemDialogue);
+        }
+    }
+
+    private void TriggerLockedDialogue()
+    {
+        if (DialogueManager.Instance != null && lockedDialogue != null)
+        {
+            DialogueManager.Instance.StartDialogue(lockedDialogue);
         }
     }
 }

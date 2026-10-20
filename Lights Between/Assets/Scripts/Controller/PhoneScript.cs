@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerPhoneInteractable : MonoBehaviour, IInteractable
+public class PhoneScript : MonoBehaviour, IInteractable
 {
     [Header("Screen Material References")]
     [SerializeField] private MeshRenderer phoneScreenRenderer;
@@ -8,9 +8,17 @@ public class PlayerPhoneInteractable : MonoBehaviour, IInteractable
     [SerializeField] private Material screenNormalMaterial;
     [SerializeField] private Material screenDeadMaterial;
 
-    [Header("Dialogue Setup")]
+    [Header("Narrative/Objective Lock")]
+    [SerializeField] private ObjectiveSO requiredObjective;
+    [SerializeField] private DialogueSO lockedDialogue;
+
+    [Header("Dialogue & Prompt Setup")]
     [SerializeField] private DialogueSO deadPhoneDialogue;
     [SerializeField] private string promptMessage = "Check Phone";
+
+    [Header("Narrative & Objective Progression")]
+    [SerializeField] private ObjectiveSO objectiveToComplete;
+    [SerializeField] private ObjectiveSO objectiveToActivate;
 
     [Header("Event Channels")]
     [SerializeField] private GameEventSO onPhoneDiedEvent;
@@ -23,7 +31,7 @@ public class PlayerPhoneInteractable : MonoBehaviour, IInteractable
     private Material[] sharedMaterialsCache;
     private bool isPhoneDead;
 
-    public string PromptMessage => isPhoneDead ? promptMessage : "";
+    public string PromptMessage => IsPhoneUnlocked() ? promptMessage : "";
 
     private void Awake()
     {
@@ -61,9 +69,43 @@ public class PlayerPhoneInteractable : MonoBehaviour, IInteractable
         }
     }
 
+    public bool IsPhoneUnlocked()
+    {
+        if (!isPhoneDead) return false;
+
+        if (requiredObjective == null) return true;
+
+        if (ObjectiveManager.Instance != null)
+        {
+            return ObjectiveManager.Instance.GetObjectiveStatus(requiredObjective.ID) == ObjectiveStatus.Active;
+        }
+
+        return false;
+    }
+
     public void Interact()
     {
-        if (!isPhoneDead) return;
+        if (!IsPhoneUnlocked())
+        {
+            if (lockedDialogue != null && DialogueManager.Instance != null)
+            {
+                DialogueManager.Instance.StartDialogue(lockedDialogue);
+            }
+            return;
+        }
+
+        if (ObjectiveManager.Instance != null)
+        {
+            if (objectiveToComplete != null)
+            {
+                ObjectiveManager.Instance.CompleteObjective(objectiveToComplete.ID);
+            }
+
+            if (objectiveToActivate != null)
+            {
+                ObjectiveManager.Instance.ActivateObjective(objectiveToActivate);
+            }
+        }
 
         if (DialogueManager.Instance != null && deadPhoneDialogue != null)
         {

@@ -98,7 +98,7 @@ public class DoorSequenceController : MonoBehaviour
 
         if (staticSammyDollInRoom != null)
         {
-            staticSammyDollInRoom.SetActive(false);
+            Destroy(staticSammyDollInRoom);
         }
 
         if (dynamicSammyDollPrefab != null && dollSpawnPoint != null)

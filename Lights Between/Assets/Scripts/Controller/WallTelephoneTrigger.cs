@@ -7,6 +7,14 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
     [SerializeField] private string promptMessage = "Dial Police";
     [SerializeField] private bool isUnlocked = false;
 
+    [Header("Narrative/Objective Lock")]
+    [SerializeField] private ObjectiveSO requiredObjective;
+    [SerializeField] private DialogueSO lockedDialogue;
+
+    [Header("Narrative & Objective Progression")]
+    [SerializeField] private ObjectiveSO objectiveToComplete;
+    [SerializeField] private ObjectiveSO objectiveToActivate;
+
     [Header("Audio SFX")]
     [SerializeField] private AudioSource phoneAudioSource;
     [SerializeField] private AudioClip dialSFX;
@@ -16,7 +24,21 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
     [Header("Dialogue Narrative")]
     [SerializeField] private DialogueSO phoneCallDialogue;
 
-    public string PromptMessage => isUnlocked ? promptMessage : "";
+    public string PromptMessage => IsTelephoneUnlocked() ? promptMessage : "";
+
+    public bool IsTelephoneUnlocked()
+    {
+        if (!isUnlocked) return false;
+
+        if (requiredObjective == null) return true;
+
+        if (ObjectiveManager.Instance != null)
+        {
+            return ObjectiveManager.Instance.GetObjectiveStatus(requiredObjective.ID) == ObjectiveStatus.Active;
+        }
+
+        return false;
+    }
 
     public void SetTelephoneUnlocked(bool unlocked)
     {
@@ -25,7 +47,14 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        if (!isUnlocked) return;
+        if (!IsTelephoneUnlocked())
+        {
+            if (lockedDialogue != null && DialogueManager.Instance != null)
+            {
+                DialogueManager.Instance.StartDialogue(lockedDialogue);
+            }
+            return;
+        }
 
         StartCoroutine(ExecuteTelephoneSequence());
     }
@@ -35,7 +64,6 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
         isUnlocked = false;
 
         FPSController player = FindFirstObjectByType<FPSController>();
-
 
         if (player != null)
         {
@@ -67,6 +95,19 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
             }
         }
 
+        if (ObjectiveManager.Instance != null)
+        {
+            if (objectiveToComplete != null)
+            {
+                ObjectiveManager.Instance.CompleteObjective(objectiveToComplete.ID);
+            }
+
+            if (objectiveToActivate != null)
+            {
+                ObjectiveManager.Instance.ActivateObjective(objectiveToActivate);
+            }
+        }
+
         if (DialogueManager.Instance != null && phoneCallDialogue != null)
         {
             DialogueManager.Instance.StartDialogue(phoneCallDialogue);
@@ -76,7 +117,6 @@ public class WallTelephoneTrigger : MonoBehaviour, IInteractable
                 yield return null;
             }
         }
-
 
         if (player != null)
         {
