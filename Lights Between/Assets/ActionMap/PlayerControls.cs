@@ -165,7 +165,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Grab"",
+                    ""name"": ""Ignite"",
                     ""type"": ""Button"",
                     ""id"": ""39b673de-0286-4f26-913f-50013e410fd1"",
                     ""expectedControlType"": """",
@@ -689,7 +689,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";KeyboardMouse"",
-                    ""action"": ""Grab"",
+                    ""action"": ""Ignite"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -700,7 +700,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
-                    ""action"": ""Grab"",
+                    ""action"": ""Ignite"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1823,7 +1823,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Drop = m_Player.FindAction("Drop", throwIfNotFound: true);
-        m_Player_Grab = m_Player.FindAction("Grab", throwIfNotFound: true);
+        m_Player_Ignite = m_Player.FindAction("Ignite", throwIfNotFound: true);
         m_Player_WheelNavigate = m_Player.FindAction("WheelNavigate", throwIfNotFound: true);
         m_Player_TimedAction = m_Player.FindAction("TimedAction", throwIfNotFound: true);
         m_Player_Cancel = m_Player.FindAction("Cancel", throwIfNotFound: true);
@@ -1947,7 +1947,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Drop;
-    private readonly InputAction m_Player_Grab;
+    private readonly InputAction m_Player_Ignite;
     private readonly InputAction m_Player_WheelNavigate;
     private readonly InputAction m_Player_TimedAction;
     private readonly InputAction m_Player_Cancel;
@@ -2008,9 +2008,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @Drop => m_Wrapper.m_Player_Drop;
         /// <summary>
-        /// Provides access to the underlying input action "Player/Grab".
+        /// Provides access to the underlying input action "Player/Ignite".
         /// </summary>
-        public InputAction @Grab => m_Wrapper.m_Player_Grab;
+        public InputAction @Ignite => m_Wrapper.m_Player_Ignite;
         /// <summary>
         /// Provides access to the underlying input action "Player/WheelNavigate".
         /// </summary>
@@ -2125,9 +2125,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Drop.started += instance.OnDrop;
             @Drop.performed += instance.OnDrop;
             @Drop.canceled += instance.OnDrop;
-            @Grab.started += instance.OnGrab;
-            @Grab.performed += instance.OnGrab;
-            @Grab.canceled += instance.OnGrab;
+            @Ignite.started += instance.OnIgnite;
+            @Ignite.performed += instance.OnIgnite;
+            @Ignite.canceled += instance.OnIgnite;
             @WheelNavigate.started += instance.OnWheelNavigate;
             @WheelNavigate.performed += instance.OnWheelNavigate;
             @WheelNavigate.canceled += instance.OnWheelNavigate;
@@ -2211,9 +2211,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Drop.started -= instance.OnDrop;
             @Drop.performed -= instance.OnDrop;
             @Drop.canceled -= instance.OnDrop;
-            @Grab.started -= instance.OnGrab;
-            @Grab.performed -= instance.OnGrab;
-            @Grab.canceled -= instance.OnGrab;
+            @Ignite.started -= instance.OnIgnite;
+            @Ignite.performed -= instance.OnIgnite;
+            @Ignite.canceled -= instance.OnIgnite;
             @WheelNavigate.started -= instance.OnWheelNavigate;
             @WheelNavigate.performed -= instance.OnWheelNavigate;
             @WheelNavigate.canceled -= instance.OnWheelNavigate;
@@ -2672,12 +2672,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDrop(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Grab" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Ignite" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnGrab(InputAction.CallbackContext context);
+        void OnIgnite(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "WheelNavigate" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

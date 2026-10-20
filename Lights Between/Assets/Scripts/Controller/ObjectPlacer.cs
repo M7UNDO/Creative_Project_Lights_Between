@@ -128,13 +128,23 @@ public class ObjectPlacer : MonoBehaviour
             return;
 
         Quaternion rotation = Quaternion.Euler(0f, playerCamera.transform.eulerAngles.y, 0f);
-        Instantiate(_activeToolToPlace.toolPrefab, _currentPlacementPosition, rotation);
+        GameObject placedObject = Instantiate(_activeToolToPlace.toolPrefab, _currentPlacementPosition, rotation);
+
+        if (equipmentManager != null && equipmentManager.CurrentToolObject != null)
+        {
+            KeroseneLampScript heldLamp = equipmentManager.CurrentToolObject.GetComponentInChildren<KeroseneLampScript>();
+            KeroseneLampScript placedLamp = placedObject.GetComponentInChildren<KeroseneLampScript>();
+
+            if (heldLamp != null && placedLamp != null)
+            {
+                placedLamp.SetPowerAndIgnitedState(heldLamp.CurrentPower, heldLamp.IsIgnited);
+            }
+        }
 
         if (placementSFX != null)
         {
             AudioSource.PlayClipAtPoint(placementSFX, _currentPlacementPosition);
         }
-
 
         if (inventory != null)
         {

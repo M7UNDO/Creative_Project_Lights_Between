@@ -34,6 +34,7 @@ public class PlayerInteraction : MonoBehaviour
     private FPSController _fpsController;
     private GameObject _mainCamera;
     private KeroseneLampScript _currentKeroseneLamp;
+    private PlayerToolInventory _playerInventory;
 
     private void Awake()
     {
@@ -45,10 +46,16 @@ public class PlayerInteraction : MonoBehaviour
         _input = GetComponent<InputHandler>();
         _fpsController = GetComponent<FPSController>();
         _keyInventory = GetComponent<IKeyInventory>();
+        _playerInventory = GetComponent<PlayerToolInventory>();
 
         if (_keyInventory == null)
         {
             _keyInventory = GetComponentInChildren<IKeyInventory>();
+        }
+
+        if (_playerInventory == null)
+        {
+            _playerInventory = GetComponentInChildren<PlayerToolInventory>();
         }
     }
 
@@ -88,6 +95,13 @@ public class PlayerInteraction : MonoBehaviour
         if (previousLamp != null && previousLamp != _currentKeroseneLamp)
         {
             previousLamp.HidePower();
+            previousLamp.UpdatePrompts(false, false);
+        }
+
+        if (_currentKeroseneLamp != null)
+        {
+            bool hasLighter = _playerInventory != null && _playerInventory.HasToolType(ToolType.Lighter);
+            _currentKeroseneLamp.UpdatePrompts(true, hasLighter);
         }
 
         HandleLastInteractableTransition();
@@ -278,6 +292,7 @@ public class PlayerInteraction : MonoBehaviour
         {
             _currentKeroseneLamp = kerosene;
             _currentKeroseneLamp.DisplayPower();
+            result.Prompt = string.Empty;
         }
         else if (hitCollider.TryGetComponent<ToolPickup>(out ToolPickup pickup))
         {
@@ -348,6 +363,18 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (DialogueManager.Instance != null && DialogueManager.Instance.IsDialogueActive) return;
 
+        if (_currentKeroseneLamp != null)
+        {
+            if (_input.ignite)
+            {
+                _currentKeroseneLamp.TryIgnite();
+            }
+            else
+            {
+                _currentKeroseneLamp.CancelIgniteHold();
+            }
+        }
+
         if (_input.drop)
         {
             if (_currentGrabbable != null)
@@ -387,6 +414,7 @@ public class PlayerInteraction : MonoBehaviour
                 else if (currentInteractable is KeroseneLampScript kerosene)
                 {
                     kerosene.Interact();
+                    _input.interact = false;
                 }
                 else if (currentInteractable is BarricadePlankScript plank)
                 {
@@ -416,11 +444,6 @@ public class PlayerInteraction : MonoBehaviour
             if (currentInteractable is DoorScript door)
             {
                 door.CancelInteract();
-            }
-
-            if (currentInteractable is KeroseneLampScript kerosene)
-            {
-                kerosene.CancelInteract();
             }
 
             if (currentInteractable is BarricadePlankScript plank)
@@ -472,7 +495,7 @@ public class PlayerInteraction : MonoBehaviour
             }
             else if (_lastInteractable is KeroseneLampScript lastLamp)
             {
-                lastLamp.CancelInteract();
+                lastLamp.CancelIgniteHold();
             }
             else if (_lastInteractable is BarricadePlankScript lastPlank)
             {

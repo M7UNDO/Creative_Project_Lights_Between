@@ -9,6 +9,10 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
     [SerializeField] private GameObject lampLightZone;
     [SerializeField] private GameObject flameObject;
 
+    [Header("World Space UI Prompts")]
+    [SerializeField] private WorldSpaceInteractableUI pickupUI;
+    [SerializeField] private WorldSpaceInteractableUI igniteUI;
+
     [Header("Drain Settings")]
     [SerializeField] private float drainRate = 2f;
     [SerializeField] private float defaultMaxPower = 100f;
@@ -21,19 +25,22 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
     [SerializeField] private AudioSource wickAudioSource;
     [SerializeField] private AudioClip sparkWickClip;
 
+    [Header("Pickup Settings")]
+    [SerializeField] private ToolClass lampToolData;
+
     private ToolClass toolData;
     private float currentPower;
     private float maxPower;
     private bool isEquipped;
-
-    public float CurrentPower => currentPower;
-    public float MaxPower => maxPower > 0f ? maxPower : defaultMaxPower;
-    public bool UsesPower => toolData != null ? toolData.usesPower : true;
-
     private bool isIgnited;
 
     private ToolEquipmentManager playerEquipmentManager;
     private PlayerToolInventory playerInventory;
+
+    public float CurrentPower => currentPower;
+    public float MaxPower => maxPower > 0f ? maxPower : defaultMaxPower;
+    public bool UsesPower => toolData != null ? toolData.usesPower : true;
+    public bool IsIgnited => isIgnited;
 
     private void Awake()
     {
@@ -48,15 +55,8 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
             wickAudioSource.clip = sparkWickClip;
         }
 
-        if (flameObject != null)
-        {
-            flameObject.SetActive(false);
-        }
-
-        if (PowerDisplayObj != null)
-        {
-            PowerDisplayObj.SetActive(false);
-        }
+        if (flameObject != null) flameObject.SetActive(false);
+        if (PowerDisplayObj != null) PowerDisplayObj.SetActive(false);
     }
 
     private void Start()
@@ -84,9 +84,41 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
         }
     }
 
+    public void UpdatePrompts(bool isFocused, bool playerHasLighter)
+    {
+        if (!isFocused)
+        {
+            if (pickupUI != null) pickupUI.HidePrompt();
+            if (igniteUI != null) igniteUI.HidePrompt();
+            return;
+        }
+
+        if (pickupUI != null)
+        {
+            pickupUI.ShowPrompt("[E] Pick up", true, true);
+        }
+
+        if (igniteUI != null)
+        {
+            if (!isIgnited && playerHasLighter && currentPower > 0f)
+            {
+                igniteUI.ShowPrompt("[Hold F] Ignite", true, true);
+            }
+            else
+            {
+                igniteUI.HidePrompt();
+            }
+        }
+    }
+
     public void Interact()
     {
-        if (isIgnited) return;
+        PickupLamp();
+    }
+
+    public void TryIgnite()
+    {
+        if (isIgnited || currentPower <= 0f) return;
 
         ResolvePlayerReferences();
 
@@ -97,7 +129,7 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
 
         ToolClass lighterData = playerInventory.GetToolByType(ToolType.Lighter);
 
-        if (playerEquipmentManager != null && !playerEquipmentManager.IsEquipped(lighterData))
+        if (playerEquipmentManager != null && lighterData != null && !playerEquipmentManager.IsEquipped(lighterData))
         {
             playerEquipmentManager.EquipTool(lighterData);
         }
@@ -113,11 +145,18 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
 
         if (holdInteraction != null)
         {
-            holdInteraction.BeginHold();
+            if (!holdInteraction.IsHolding)
+            {
+                holdInteraction.BeginHold();
+            }
+        }
+        else
+        {
+            Ignite();
         }
     }
 
-    public void CancelInteract()
+    public void CancelIgniteHold()
     {
         if (holdInteraction != null && holdInteraction.IsHolding)
         {
@@ -125,32 +164,22 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
         }
     }
 
-    public void DisplayPower()
+    private void PickupLamp()
     {
-        if (isIgnited)
+        if (isEquipped) return;
+
+        ResolvePlayerReferences();
+
+        if (playerInventory != null && lampToolData != null)
         {
-            if (PowerDisplayObj != null)
+            playerInventory.AddTool(lampToolData);
+
+            if (playerEquipmentManager != null && !playerEquipmentManager.HasToolEquipped)
             {
-                PowerDisplayObj.SetActive(true);
+                playerEquipmentManager.EquipTool(lampToolData);
             }
-            UpdatePowerFill();
-        }
-    }
 
-    public void HidePower()
-    {
-        if (PowerDisplayObj != null)
-        {
-            PowerDisplayObj.SetActive(false);
-        }
-    }
-
-    private void UpdatePowerFill()
-    {
-        if (powerRadialFill != null)
-        {
-            float fillPercent = currentPower / maxPower;
-            powerRadialFill.fillAmount = fillPercent;
+            Destroy(gameObject);
         }
     }
 
@@ -161,19 +190,25 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
         currentPower = maxPower;
         isEquipped = true;
 
-        if (lampLightObject != null)
+        if (isIgnited)
         {
-            lampLightObject.SetActive(true);
+            HandlePower(true);
         }
+    }
 
-        if (lampLightZone != null)
-        {
-            lampLightZone.SetActive(true);
-        }
+    public void SetPowerAndIgnitedState(float powerAmount, bool lit)
+    {
+        currentPower = Mathf.Clamp(powerAmount, 0f, MaxPower);
+        isIgnited = lit && currentPower > 0f;
+
+        HandlePower(isIgnited);
+        UpdatePowerFill();
     }
 
     public void Ignite()
     {
+        if (currentPower <= 0f) return;
+
         isIgnited = true;
 
         if (wickAudioSource != null)
@@ -185,19 +220,31 @@ public class KeroseneLampScript : MonoBehaviour, IInteractable, IToolPower
 
     private void HandlePower(bool power)
     {
-        if (lampLightObject != null)
-        {
-            lampLightObject.SetActive(power);
-        }
+        if (lampLightObject != null) lampLightObject.SetActive(power);
+        if (lampLightZone != null) lampLightZone.SetActive(power);
+        if (flameObject != null) flameObject.SetActive(power);
+    }
 
-        if (lampLightZone != null)
+    public void DisplayPower()
+    {
+        if (isIgnited)
         {
-            lampLightZone.SetActive(power);
+            if (PowerDisplayObj != null) PowerDisplayObj.SetActive(true);
+            UpdatePowerFill();
         }
+    }
 
-        if (flameObject != null)
+    public void HidePower()
+    {
+        if (PowerDisplayObj != null) PowerDisplayObj.SetActive(false);
+    }
+
+    private void UpdatePowerFill()
+    {
+        if (powerRadialFill != null)
         {
-            flameObject.SetActive(power);
+            float fillPercent = currentPower / MaxPower;
+            powerRadialFill.fillAmount = fillPercent;
         }
     }
 

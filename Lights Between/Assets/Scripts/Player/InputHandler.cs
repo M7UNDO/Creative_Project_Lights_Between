@@ -16,6 +16,7 @@ public class InputHandler : MonoBehaviour
     public bool interact;
     public bool grab;
     public bool drop;
+    public bool ignite;
     public bool wheel;
     public bool toggleFlashlight;
     public bool changeBattery;
@@ -70,12 +71,13 @@ public class InputHandler : MonoBehaviour
 
         playerControls.Player.Interact.performed += ctx => InteractInput(true);
         playerControls.Player.Interact.canceled += ctx => InteractInput(false);
-
-        playerControls.Player.Grab.performed += ctx => GrabInput(true);
-        playerControls.Player.Grab.canceled += ctx => GrabInput(false);
+;
 
         playerControls.Player.Drop.performed += ctx => DropInput(true);
         playerControls.Player.Drop.canceled += ctx => DropInput(false);
+
+        playerControls.Player.Ignite.performed += ctx => IgniteInput(true);
+        playerControls.Player.Ignite.canceled += ctx => IgniteInput(false);
 
         playerControls.Player.TimedAction.performed += ctx => TimedActionInput(true);
         playerControls.Player.TimedAction.canceled += ctx => TimedActionInput(false);
@@ -166,6 +168,11 @@ public class InputHandler : MonoBehaviour
     public void DropInput(bool newDropState)
     {
         drop = newDropState;
+    }
+
+    public void IgniteInput(bool newIgniteState)
+    {
+        ignite = newIgniteState;
     }
 
     public void StandUpInput(bool newStandUpState)
@@ -269,6 +276,7 @@ public class InputHandler : MonoBehaviour
         back = false;
         pause = false;
         inventory = false;
+        ignite = false;
     }
 
     private void OnApplicationFocus(bool hasFocus)
