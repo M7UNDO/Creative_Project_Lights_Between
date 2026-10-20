@@ -675,7 +675,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Morrow Family Farm
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e11004719f61f8f49949b588d2ba4d90, type: 2}
   m_sharedMaterial: {fileID: 547524008177833359, guid: e11004719f61f8f49949b588d2ba4d90, type: 2}
@@ -955,7 +955,7 @@ MonoBehaviour:
   delayBetweenDoorSounds: 1.5
   postDoorCloseDelay: 1
   asyncLoader: {fileID: 627766392}
-  targetSceneIndex: 1
+  targetSceneIndex: 2
 --- !u!1 &1470399788
 GameObject:
   m_ObjectHideFlags: 0
@@ -1417,6 +1417,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1816314002}
     m_Modifications:
+    - target: {fileID: 981783777037864820, guid: a471b98f16bb35943a2210932b499f0d, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 981783777037864820, guid: a471b98f16bb35943a2210932b499f0d, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 981783777037864820, guid: a471b98f16bb35943a2210932b499f0d, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2528171874833289684, guid: a471b98f16bb35943a2210932b499f0d, type: 3}
       propertyPath: m_Pivot.x
       value: 0

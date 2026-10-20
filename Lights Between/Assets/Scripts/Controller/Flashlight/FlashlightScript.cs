@@ -119,6 +119,7 @@ public class FlashlightScript : MonoBehaviour, IToolPower
     private float lastToggleTime = -999f;
     private float lastEmptyPromptTime = -999f;
 
+    public bool IsOn => isOn;
     public float CurrentPower => currentBatteryPower;
     public float MaxPower => maxPower;
     public bool UsesPower => toolData != null && toolData.usesPower;

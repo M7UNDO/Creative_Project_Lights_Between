@@ -345,6 +345,13 @@ public class EnemyAI : MonoBehaviour
             crawlSource.Pause();
         }
 
+        if (currentState != State.Chase && currentState != State.Catch && currentState != State.Retreat)
+        {
+            suspicion = suspicionThreshold;
+            hasAlerted = true;
+            ChangeState(State.Chase);
+        }
+
         AlignToSurface(transform.forward);
     }
 

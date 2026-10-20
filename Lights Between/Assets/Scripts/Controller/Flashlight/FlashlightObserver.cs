@@ -16,6 +16,7 @@ public class FlashlightObserver : MonoBehaviour
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private LayerMask occlusionLayers;
     [SerializeField] private float playerViewMaxAngle = 45f;
+    [SerializeField] private float maxDetectionRange = 18f;
     [SerializeField] private Vector3 raycastTargetOffset = new Vector3(0f, 1f, 0f);
 
     public bool IsObserving { get; private set; }
@@ -73,14 +74,15 @@ public class FlashlightObserver : MonoBehaviour
         if (playerCamera == null) playerCamera = Camera.main;
         if (flashlight == null || spotLight == null || target == null || playerCamera == null) return false;
 
-        if (flashlight.CurrentPower <= 0f || flashlight.requiresBatteryChange) return false;
+        if (!flashlight.IsOn || flashlight.CurrentPower <= 0f || flashlight.requiresBatteryChange) return false;
 
         Vector3 rayOrigin = spotLight.transform.position + (spotLight.transform.forward * 0.2f);
         Vector3 targetPos = target.position + raycastTargetOffset;
         Vector3 dirToEnemy = (targetPos - rayOrigin).normalized;
         float distanceToEnemy = Vector3.Distance(rayOrigin, targetPos);
 
-        if (distanceToEnemy > spotLight.range) return false;
+        float effectiveRange = Mathf.Min(spotLight.range, maxDetectionRange);
+        if (distanceToEnemy > effectiveRange) return false;
 
         float spotAngleThreshold = spotLight.spotAngle * 0.5f;
         float angleToTorchForward = Vector3.Angle(spotLight.transform.forward, dirToEnemy);

@@ -197,7 +197,7 @@ MonoBehaviour:
   fpsController: {fileID: 0}
   holdInteraction: {fileID: 0}
   animator: {fileID: 4752251087503716841}
-  batteryItemData: {fileID: 0}
+  batteryItemData: {fileID: 11400000, guid: add5410f0401059418f2d7d2aebf9391, type: 2}
   inventoryManager: {fileID: 0}
   lightCookie: {fileID: 2800000, guid: adfa0ebfcb79c7042be5b04397144b3e, type: 3}
   glassRenderer: {fileID: 3583905205337786264}
@@ -253,6 +253,7 @@ MonoBehaviour:
   flashlight: {fileID: 7542178472900831559}
   spotLight: {fileID: 6486629864566378680}
   playerCamera: {fileID: 0}
+  targetCreature: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 2048
@@ -260,6 +261,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 193
   playerViewMaxAngle: 45
+  maxDetectionRange: 18
   raycastTargetOffset: {x: 0, y: 1, z: 0}
 --- !u!82 &5937618049106195511
 AudioSource:
