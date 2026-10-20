@@ -8010,6 +8010,7 @@ MonoBehaviour:
   promptText: Place Pizza
   destroyObjectOnSnap: 1
   performRitualObjective: {fileID: 0}
+  disableColliderOnComplete: 1
   destroySnapZoneOnComplete: 0
   interactionChannel: {fileID: 0}
   interactionEventID: 
@@ -22235,6 +22236,7 @@ MonoBehaviour:
   promptText: Place Bag
   destroyObjectOnSnap: 1
   performRitualObjective: {fileID: 0}
+  disableColliderOnComplete: 0
   destroySnapZoneOnComplete: 1
   interactionChannel: {fileID: 0}
   interactionEventID: PackBags
@@ -42116,6 +42118,7 @@ MonoBehaviour:
   promptText: Attach Lever
   destroyObjectOnSnap: 1
   performRitualObjective: {fileID: 11400000, guid: 630c1401e1a5cef4b8f008c50ba12f1f, type: 2}
+  disableColliderOnComplete: 1
   destroySnapZoneOnComplete: 0
   interactionChannel: {fileID: 11400000, guid: cb19ddd6cccc2bb4491ea76187c72150, type: 2}
   interactionEventID: BreakerRepaired
@@ -57439,8 +57442,8 @@ Transform:
   m_GameObject: {fileID: 919132149416854824}
   serializedVersion: 2
   m_LocalRotation: {x: -4.5596826e-17, y: -0.7446527, z: 0.6674522, w: 4.0869664e-17}
-  m_LocalPosition: {x: 19.391, y: 0.81, z: 15.141}
-  m_LocalScale: {x: 0.9, y: 0.8999999, z: 0.8999999}
+  m_LocalPosition: {x: 19.318, y: 0.81, z: 15.141}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1280860378}
@@ -105042,6 +105045,7 @@ MonoBehaviour:
   promptText: Place
   destroyObjectOnSnap: 0
   performRitualObjective: {fileID: 0}
+  disableColliderOnComplete: 1
   destroySnapZoneOnComplete: 0
   interactionChannel: {fileID: 11400000, guid: cb19ddd6cccc2bb4491ea76187c72150, type: 2}
   interactionEventID: ReturnDoll
@@ -111154,7 +111158,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallTelephoneTrigger
   promptMessage: Dial Police
-  isUnlocked: 0
   requiredObjective: {fileID: 11400000, guid: 9279de01a749e7d45b11d73cdd8e7617, type: 2}
   lockedDialogue: {fileID: 0}
   objectiveToComplete: {fileID: 0}

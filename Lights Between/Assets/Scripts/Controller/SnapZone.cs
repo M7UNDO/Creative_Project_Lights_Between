@@ -31,6 +31,7 @@ public class SnapZone : MonoBehaviour, IInteractable
     [SerializeField] private ObjectiveSO performRitualObjective;
 
     [Header("Completion Cleanup")]
+    [SerializeField] private bool disableColliderOnComplete = true;
     [SerializeField] private bool destroySnapZoneOnComplete = false;
 
     [Header("Events & Audio")]
@@ -163,9 +164,21 @@ public class SnapZone : MonoBehaviour, IInteractable
 
     private void CleanupSnapZone()
     {
-        if (triggerCollider != null)
+        if (disableColliderOnComplete)
         {
-            triggerCollider.enabled = false;
+            if (triggerCollider != null)
+            {
+                triggerCollider.enabled = false;
+            }
+
+            WorldSpaceInteractableUI[] childUIs = GetComponentsInChildren<WorldSpaceInteractableUI>(true);
+            foreach (WorldSpaceInteractableUI ui in childUIs)
+            {
+                if (ui != null)
+                {
+                    Destroy(ui.gameObject);
+                }
+            }
         }
 
         if (destroySnapZoneOnComplete)
