@@ -191,6 +191,11 @@ public class PlayerInteraction : MonoBehaviour
             if (!toolPickup.IsPickupUnlocked()) return false;
         }
 
+        if (interaction.Interactable is BreakerLeverSnapZone leverSnapZone)
+        {
+            if (!leverSnapZone.IsSnapZoneUnlocked()) return false;
+        }
+
         if (interaction.Interactable is SnapZone snapZone)
         {
             if (!snapZone.IsSnapZoneUnlocked()) return false;
@@ -209,6 +214,11 @@ public class PlayerInteraction : MonoBehaviour
         if (interaction.Interactable is BarricadePlankScript plank)
         {
             if (!plank.IsPlankUnlocked()) return false;
+        }
+
+        if (interaction.Interactable is BreakerLever lever)
+        {
+            if (!lever.IsLeverUnlocked()) return false;
         }
 
         if (interaction.HasGrabbable && _fpsController.isSeated)
@@ -240,7 +250,20 @@ public class PlayerInteraction : MonoBehaviour
             CanInteract = true
         };
 
-        if (hitCollider.TryGetComponent<SnapZone>(out SnapZone snapZone))
+        if (hitCollider.TryGetComponent<BreakerLeverSnapZone>(out BreakerLeverSnapZone leverSnap))
+        {
+            if (!leverSnap.IsSnapZoneUnlocked())
+            {
+                result.Prompt = string.Empty;
+                result.CanInteract = false;
+            }
+            else
+            {
+                result.Prompt = leverSnap.GetPromptMessage(_currentGrabbable);
+                result.CanInteract = leverSnap.CanSnap(_currentGrabbable);
+            }
+        }
+        else if (hitCollider.TryGetComponent<SnapZone>(out SnapZone snapZone))
         {
             if (!snapZone.IsSnapZoneUnlocked())
             {
@@ -305,7 +328,8 @@ public class PlayerInteraction : MonoBehaviour
         }
         else if (hitCollider.TryGetComponent<BreakerLever>(out BreakerLever lever))
         {
-            result.Prompt = lever.promptMessage;
+            result.Prompt = lever.IsLeverUnlocked() ? lever.promptMessage : string.Empty;
+            result.CanInteract = lever.IsLeverUnlocked();
         }
         else if (hitCollider.TryGetComponent<BaseOpenable>(out BaseOpenable openable))
         {
@@ -396,7 +420,18 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (currentInteractable != null && (!(currentInteractable is MonoBehaviour mb) || mb.enabled))
             {
-                if (currentInteractable is SnapZone snapZone)
+                if (currentInteractable is BreakerLeverSnapZone leverSnap)
+                {
+                    ObjectGrabbable itemToSnap = _currentGrabbable;
+
+                    if (leverSnap.TrySnapItem(itemToSnap, out Transform snapTarget))
+                    {
+                        ClearCurrentGrabbableForSnap(snapTarget, leverSnap.DestroyObjectOnSnap);
+                    }
+
+                    _input.interact = false;
+                }
+                else if (currentInteractable is SnapZone snapZone)
                 {
                     ObjectGrabbable itemToSnap = _currentGrabbable;
 
@@ -543,6 +578,9 @@ public class PlayerInteraction : MonoBehaviour
 
     private bool IsUIUnlocked(WorldSpaceInteractableUI ui)
     {
+        BreakerLeverSnapZone parentBreakerSnap = ui.GetComponentInParent<BreakerLeverSnapZone>();
+        if (parentBreakerSnap != null && !parentBreakerSnap.IsSnapZoneUnlocked()) return false;
+
         ToolPickup parentPickup = ui.GetComponentInParent<ToolPickup>();
         if (parentPickup != null && !parentPickup.IsPickupUnlocked()) return false;
 
@@ -560,6 +598,9 @@ public class PlayerInteraction : MonoBehaviour
 
         BarricadePlankScript parentPlank = ui.GetComponentInParent<BarricadePlankScript>();
         if (parentPlank != null && !parentPlank.IsPlankUnlocked()) return false;
+
+        BreakerLever parentLever = ui.GetComponentInParent<BreakerLever>();
+        if (parentLever != null && !parentLever.IsLeverUnlocked()) return false;
 
         return true;
     }

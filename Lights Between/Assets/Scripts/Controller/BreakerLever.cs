@@ -18,6 +18,18 @@ public class BreakerLever : MonoBehaviour, IInteractable
     [SerializeField] private Vector3 leverOffRotationEuler;
     [SerializeField] private Vector3 leverOnRotationEuler;
 
+    [Header("Missing Lever Settings")]
+    [SerializeField] private string missingPromptMessage = "Inspect Breaker";
+    [SerializeField] private DialogueSO missingLeverDialogueSO;
+    [TextArea(2, 4)]
+    [SerializeField]
+    private string[] missingLeverDialogue = new string[]
+    {
+        "The lever's been torn right off.",
+        "I need to find something that fits into this slot to turn the power back on."
+    };
+
+    [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip switchOnSFX;
     [SerializeField] private AudioClip switchOffSFX;
@@ -30,6 +42,7 @@ public class BreakerLever : MonoBehaviour, IInteractable
     private Quaternion offRotation;
     private Quaternion onRotation;
     private Coroutine rotationCoroutine;
+    private bool hasPlayedMissingDialogue = false;
 
     private void Awake()
     {
@@ -62,9 +75,32 @@ public class BreakerLever : MonoBehaviour, IInteractable
         UpdateVisualsAndPrompts();
     }
 
+    public bool IsLeverUnlocked()
+    {
+        bool isMissing = connectedBreaker != null && connectedBreaker.IsLeverMissing;
+
+        if (!isMissing)
+        {
+            return true;
+        }
+
+        return !hasPlayedMissingDialogue;
+    }
+
     public void Interact()
     {
-        if (connectedBreaker != null && connectedBreaker.IsLeverMissing) return;
+        bool isMissing = connectedBreaker != null && connectedBreaker.IsLeverMissing;
+
+        if (isMissing)
+        {
+            if (!hasPlayedMissingDialogue)
+            {
+                hasPlayedMissingDialogue = true;
+                TriggerMissingDialogue();
+                UpdateVisualsAndPrompts();
+            }
+            return;
+        }
 
         isLeverUp = !isLeverUp;
         UpdateVisualsAndPrompts();
@@ -72,6 +108,20 @@ public class BreakerLever : MonoBehaviour, IInteractable
         StartLeverAnimation();
 
         NotifyStateChanged();
+    }
+
+    private void TriggerMissingDialogue()
+    {
+        if (DialogueManager.Instance == null) return;
+
+        if (missingLeverDialogueSO != null)
+        {
+            DialogueManager.Instance.StartDialogue(missingLeverDialogueSO);
+        }
+        else if (missingLeverDialogue != null && missingLeverDialogue.Length > 0)
+        {
+            DialogueManager.Instance.StartCustomLines(missingLeverDialogue, managePlayerMode: true);
+        }
     }
 
     public void SetLeverUpState(bool leverUp, bool animate = true)
@@ -121,7 +171,7 @@ public class BreakerLever : MonoBehaviour, IInteractable
 
         if (leverWorldSpaceUI != null)
         {
-            leverWorldSpaceUI.SetActive(showLeverVisuals);
+            leverWorldSpaceUI.SetActive(showLeverVisuals && IsLeverUnlocked());
         }
 
         if (leverCollider != null)
@@ -131,7 +181,7 @@ public class BreakerLever : MonoBehaviour, IInteractable
 
         if (isMissing)
         {
-            promptMessage = string.Empty;
+            promptMessage = !hasPlayedMissingDialogue ? missingPromptMessage : string.Empty;
         }
         else
         {

@@ -7,6 +7,7 @@ public static class InteractionIDs
     public const string RestorePower = "RestorePower";
     public const string InvestigatePower = "InvestigatePower";
     public const string ReachBreaker = "ReachBreaker";
+    public const string FindLever = "FindLever";
     public const string CallForHelp = "CallForHelp";
     public const string Telephone = "Telephone";
     public const string ReturnDoll = "ReturnDoll";
