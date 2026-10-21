@@ -8,10 +8,10 @@ public class BreakerLever : MonoBehaviour, IInteractable
     [SerializeField] private ElectricBoxBreaker connectedBreaker;
 
     [SerializeField] private bool isLeverUp = true;
-    [SerializeField] private bool isLeverMissing = false;
     [SerializeField] private float smoothSpeed = 1.5f;
 
     [SerializeField] private Transform leverHandleTransform;
+    [SerializeField] private Renderer[] leverHandleRenderers;
     [SerializeField] private Collider leverCollider;
     [SerializeField] private GameObject leverWorldSpaceUI;
 
@@ -26,7 +26,6 @@ public class BreakerLever : MonoBehaviour, IInteractable
 
     public string promptMessage { get; private set; }
     public bool IsLeverUp => isLeverUp;
-    public bool IsLeverMissing => isLeverMissing;
 
     private Quaternion offRotation;
     private Quaternion onRotation;
@@ -52,52 +51,92 @@ public class BreakerLever : MonoBehaviour, IInteractable
             leverCollider = leverHandleTransform.GetComponent<Collider>();
         }
 
-        UpdatePromptMessage();
+        if (leverHandleRenderers == null || leverHandleRenderers.Length == 0)
+        {
+            if (leverHandleTransform != null)
+            {
+                leverHandleRenderers = leverHandleTransform.GetComponentsInChildren<Renderer>(true);
+            }
+        }
+
+        UpdateVisualsAndPrompts();
     }
 
     public void Interact()
     {
-        if (isLeverMissing) return;
+        if (connectedBreaker != null && connectedBreaker.IsLeverMissing) return;
 
         isLeverUp = !isLeverUp;
-        UpdatePromptMessage();
+        UpdateVisualsAndPrompts();
         PlaySwitchSFX(isLeverUp);
         StartLeverAnimation();
 
         NotifyStateChanged();
     }
 
-    public void SetLeverMissingState(bool missing)
+    public void SetLeverUpState(bool leverUp, bool animate = true)
     {
-        isLeverMissing = missing;
-        if (missing) isLeverUp = false;
+        isLeverUp = leverUp;
+        UpdateVisualsAndPrompts();
 
-        UpdatePromptMessage();
-
-        NotifyStateChanged();
-    }
-
-    public void AttachMissingLever()
-    {
-        isLeverMissing = false;
-        isLeverUp = true;
-
-        UpdatePromptMessage();
-        StartLeverAnimation();
+        if (animate)
+        {
+            StartLeverAnimation();
+        }
+        else if (leverHandleTransform != null)
+        {
+            leverHandleTransform.localRotation = isLeverUp ? onRotation : offRotation;
+        }
 
         NotifyStateChanged();
     }
 
     public void TripLever()
     {
-        if (!isLeverUp || isLeverMissing) return;
+        if (!isLeverUp || (connectedBreaker != null && connectedBreaker.IsLeverMissing)) return;
 
         isLeverUp = false;
-        UpdatePromptMessage();
+        UpdateVisualsAndPrompts();
         PlaySwitchSFX(false);
         StartLeverAnimation();
 
         NotifyStateChanged();
+    }
+
+    public void UpdateVisualsAndPrompts()
+    {
+        bool isMissing = connectedBreaker != null && connectedBreaker.IsLeverMissing;
+        bool showLeverVisuals = !isMissing;
+
+        if (leverHandleRenderers != null)
+        {
+            for (int i = 0; i < leverHandleRenderers.Length; i++)
+            {
+                if (leverHandleRenderers[i] != null)
+                {
+                    leverHandleRenderers[i].enabled = showLeverVisuals;
+                }
+            }
+        }
+
+        if (leverWorldSpaceUI != null)
+        {
+            leverWorldSpaceUI.SetActive(showLeverVisuals);
+        }
+
+        if (leverCollider != null)
+        {
+            leverCollider.enabled = true;
+        }
+
+        if (isMissing)
+        {
+            promptMessage = string.Empty;
+        }
+        else
+        {
+            promptMessage = isLeverUp ? "Pull down" : "Pull up";
+        }
     }
 
     private void PlaySwitchSFX(bool turningOn)
@@ -118,17 +157,6 @@ public class BreakerLever : MonoBehaviour, IInteractable
             StopCoroutine(rotationCoroutine);
         }
         rotationCoroutine = StartCoroutine(AnimateLever());
-    }
-
-    private void UpdatePromptMessage()
-    {
-        if (isLeverMissing)
-        {
-            promptMessage = string.Empty;
-            return;
-        }
-
-        promptMessage = isLeverUp ? "Pull down" : "Pull up";
     }
 
     private IEnumerator AnimateLever()

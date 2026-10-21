@@ -5,43 +5,37 @@ using UnityEngine.Events;
 [RequireComponent(typeof(AudioSource))]
 public class ElectricBoxBreaker : MonoBehaviour
 {
-    [Header("Lever Mechanics")]
     [SerializeField] private BreakerLever connectedLever;
 
-    [Header("Power Input Connection")]
     [SerializeField] private GeneratorPowerSystem connectedGenerator;
 
-    [Header("Breaker Status Indicator Lights")]
+    [SerializeField] private bool isLeverMissing = false;
+    [SerializeField] private GameObject snapZoneObject;
+
     [SerializeField] private Renderer redStatusRenderer;
     [SerializeField] private Renderer greenStatusRenderer;
     [SerializeField] private Color redIndicatorColor = Color.red;
     [SerializeField] private Color greenIndicatorColor = Color.green;
 
-    [Header("Connected Power Grid Outputs")]
     [SerializeField] private Light[] connectedLights;
     [SerializeField] private GameObject[] connectedLightObjects;
 
-    [Header("Material Swapping Renderers")]
     [SerializeField] private Renderer[] swappableLightRenderers;
     [SerializeField] private Material lightOffMaterial;
     [SerializeField] private Material lightOnMaterial;
 
-    [Header("Emission Toggling Renderers")]
     [SerializeField] private Renderer[] emissiveLightRenderers;
     [SerializeField] private Color emissionOnColor = Color.white;
     [SerializeField] private Color emissionOffColor = Color.black;
 
-    [Header("Baked Lightmaps")]
     [SerializeField] private Texture2D[] darkLightmapDir;
     [SerializeField] private Texture2D[] darkLightmapColour;
     [SerializeField] private Texture2D[] brightLightmapDir;
     [SerializeField] private Texture2D[] brightLightmapColour;
 
-    [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip powerOutageSFX;
 
-    [Header("Events")]
     public UnityEvent onPowerRestored;
     public UnityEvent onPowerSevered;
 
@@ -55,8 +49,10 @@ public class ElectricBoxBreaker : MonoBehaviour
 
     private bool previousGridState;
 
-    public bool IsGridActive => connectedLever != null
-        && !connectedLever.IsLeverMissing
+    public bool IsLeverMissing => isLeverMissing;
+
+    public bool IsGridActive => !isLeverMissing
+        && connectedLever != null
         && connectedLever.IsLeverUp
         && connectedGenerator != null
         && connectedGenerator.CurrentPower > 0f;
@@ -67,6 +63,11 @@ public class ElectricBoxBreaker : MonoBehaviour
         emissionPropertyBlock = new MaterialPropertyBlock();
 
         BuildLightmapDataCache();
+
+        if (snapZoneObject != null)
+        {
+            snapZoneObject.SetActive(isLeverMissing);
+        }
     }
 
     private void OnEnable()
@@ -99,7 +100,53 @@ public class ElectricBoxBreaker : MonoBehaviour
 
     private void Start()
     {
+        if (connectedLever != null)
+        {
+            connectedLever.UpdateVisualsAndPrompts();
+        }
+
         previousGridState = IsGridActive;
+        RefreshPowerGrid();
+    }
+
+    public void SetLeverMissingState(bool missing)
+    {
+        isLeverMissing = missing;
+
+        if (snapZoneObject != null)
+        {
+            snapZoneObject.SetActive(isLeverMissing);
+        }
+
+        if (connectedLever != null)
+        {
+            if (missing)
+            {
+                connectedLever.SetLeverUpState(false, false);
+            }
+            else
+            {
+                connectedLever.UpdateVisualsAndPrompts();
+            }
+        }
+
+        RefreshPowerGrid();
+    }
+
+    public void AttachMissingLever()
+    {
+        isLeverMissing = false;
+
+        if (snapZoneObject != null)
+        {
+            snapZoneObject.SetActive(false);
+        }
+
+        if (connectedLever != null)
+        {
+            connectedLever.SetLeverUpState(true, true);
+        }
+
         RefreshPowerGrid();
     }
 

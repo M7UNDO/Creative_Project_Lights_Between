@@ -303,9 +303,9 @@ public class PlayerInteraction : MonoBehaviour
         {
             result.Prompt = pickup.PromptMessage;
         }
-        else if (hitCollider.TryGetComponent<ElectricBoxBreaker>(out ElectricBoxBreaker electricBox))
+        else if (hitCollider.TryGetComponent<BreakerLever>(out BreakerLever lever))
         {
-            result.Prompt = electricBox.promptMessage;
+            result.Prompt = lever.promptMessage;
         }
         else if (hitCollider.TryGetComponent<BaseOpenable>(out BaseOpenable openable))
         {
