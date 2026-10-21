@@ -6,9 +6,12 @@ using UnityEngine.Animations.Rigging;
 
 public class EnemyAI : MonoBehaviour
 {
+    public enum PatrolZone { House, Basement }
+
     [Header("References")]
     public Animator animator;
-    public Transform waypointGroup;
+    public Transform houseWaypointGroup;
+    public Transform basementWaypointGroup;
     public AISensor sensor;
     public FlashlightObserver flashlightObserver;
 
@@ -141,27 +144,48 @@ public class EnemyAI : MonoBehaviour
         agent.angularSpeed = 360f;
         agent.updateRotation = false;
 
-        if (waypointGroup != null && waypointGroup.childCount > 0)
+        UpdateHeadAim(0f);
+    }
+
+    public void ActivateCreature(PatrolZone zone)
+    {
+        gameObject.SetActive(true);
+        SwitchZone(zone);
+    }
+
+    public void SwitchZone(PatrolZone zone)
+    {
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
+
+        Transform selectedGroup = (zone == PatrolZone.House) ? houseWaypointGroup : basementWaypointGroup;
+
+        if (selectedGroup != null && selectedGroup.childCount > 0)
         {
-            waypoints = new Transform[waypointGroup.childCount];
+            waypoints = new Transform[selectedGroup.childCount];
+            for (int i = 0; i < selectedGroup.childCount; i++)
+            {
+                waypoints[i] = selectedGroup.GetChild(i);
+            }
 
-            for (int i = 0; i < waypointGroup.childCount; i++)
-                waypoints[i] = waypointGroup.GetChild(i);
-
+            agent.Warp(waypoints[0].position);
             patrolStartPoint = waypoints[0].position;
+
+            currentWaypointIndex = waypoints.Length > 1 ? 1 : 0;
+
+            suspicion = 0f;
+            hasAlerted = false;
+            hasDetectedPlayer = false;
+            currentTarget = null;
+            isIdle = false;
+
+            ChangeState(State.Patrol);
+            agent.SetDestination(waypoints[currentWaypointIndex].position);
         }
         else
         {
             waypoints = null;
+            ChangeState(State.Patrol);
         }
-
-        ChangeState(State.Patrol);
-        if (waypoints != null && waypoints.Length > 0)
-        {
-            GoToNextWaypoint();
-        }
-
-        UpdateHeadAim(0f);
     }
 
     private void OnEnable()

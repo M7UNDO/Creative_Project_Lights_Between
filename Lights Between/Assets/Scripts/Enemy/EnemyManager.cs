@@ -36,11 +36,28 @@ public class EnemyManager : MonoBehaviour
         ResolveReferences();
     }
 
-    public void ActivateEnemy()
+    public void ActivateEnemy(EnemyAI.PatrolZone zone)
     {
         if (enemyObject != null)
         {
             enemyObject.SetActive(true);
+        }
+
+        ResolveReferences();
+
+        if (enemyAI != null)
+        {
+            enemyAI.ActivateCreature(zone);
+        }
+    }
+
+    public void SwitchEnemyZone(EnemyAI.PatrolZone zone)
+    {
+        ResolveReferences();
+
+        if (enemyAI != null)
+        {
+            enemyAI.SwitchZone(zone);
         }
     }
 

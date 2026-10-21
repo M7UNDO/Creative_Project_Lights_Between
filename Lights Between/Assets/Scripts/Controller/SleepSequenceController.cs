@@ -11,6 +11,9 @@ public class SleepSequenceController : MonoBehaviour
     [SerializeField] private GeneratorPowerSystem targetGenerator;
     [SerializeField] private Volume postProcessingVolume;
 
+    [Header("Scare Activation")]
+    [SerializeField] private GameObject scareObject;
+
     [Header("Objects to Deactivate on Interaction")]
     [SerializeField] private List<GameObject> objectsToDeactivate = new List<GameObject>();
 
@@ -119,6 +122,11 @@ public class SleepSequenceController : MonoBehaviour
         if (targetGenerator != null)
         {
             targetGenerator.ForceOutageNoFuel();
+        }
+
+        if (scareObject != null)
+        {
+            scareObject.SetActive(true);
         }
 
         if (BackgroundMusicManager.Instance != null)

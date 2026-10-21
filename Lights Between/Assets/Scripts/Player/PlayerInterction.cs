@@ -61,7 +61,7 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
-        if (_fpsController.isInMiniGame || _fpsController.isInspecting || _fpsController.isJumpscareActive || _fpsController.isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen || DrawingUIController.isDrawingOpen)
+        if (EnemyManager.IsGameOver || _fpsController.isInMiniGame || _fpsController.isInspecting || _fpsController.isJumpscareActive || _fpsController.isDialogueActive || PauseManager.IsGamePaused || NoteUIController.isNoteOpen || DrawingUIController.isDrawingOpen)
         {
             HideActiveWorldUI();
             return;
@@ -640,7 +640,7 @@ public class PlayerInteraction : MonoBehaviour
                            && !_fpsController.isJumpscareActive
                            && !_fpsController.isDialogueActive
                            && !PauseManager.IsGamePaused
-                           && !LevelManager.IsGameOver
+                           && !EnemyManager.IsGameOver
                            && !NoteUIController.isNoteOpen
                            && !DrawingUIController.isDrawingOpen;
 

@@ -1,32 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(AudioSource))]
-public class ElectricBoxBreaker : MonoBehaviour, IInteractable
+public class ElectricBoxBreaker : MonoBehaviour
 {
+    [Header("Lever Mechanics")]
+    [SerializeField] private BreakerLever connectedLever;
+
     [Header("Power Input Connection")]
     [SerializeField] private GeneratorPowerSystem connectedGenerator;
-
-    [Header("Breaker State")]
-    [SerializeField] private bool isLeverUp = true;
-    [SerializeField] private bool isLeverMissing = false;
-    [SerializeField] private float smoothSpeed = 1.5f;
-
-    [Header("Lever Handle Animation & Mesh")]
-    [SerializeField] private Transform leverHandleTransform;
-    [SerializeField] private Renderer[] leverHandleRenderers;
-    [SerializeField] private Collider leverCollider;
-    [SerializeField] private GameObject leverWorldSpaceUI;
-
-    [Header("Repair Snap Zone Target")]
-    [SerializeField] private GameObject snapZoneObject;
-
-    [Header("Rotations")]
-    [SerializeField] private Vector3 leverOffRotationEuler;
-    [SerializeField] private Vector3 leverOnRotationEuler;
 
     [Header("Breaker Status Indicator Lights")]
     [SerializeField] private Renderer redStatusRenderer;
@@ -56,8 +39,6 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip switchOnSFX;
-    [SerializeField] private AudioClip switchOffSFX;
     [SerializeField] private AudioClip powerOutageSFX;
 
     [Header("Events")]
@@ -65,12 +46,6 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
     public UnityEvent onPowerSevered;
 
     public event Action<bool> OnPowerGridStateChanged;
-
-    public string promptMessage { get; private set; }
-
-    private Quaternion offRotation;
-    private Quaternion onRotation;
-    private Coroutine rotationCoroutine;
 
     private LightmapData[] darkLightmaps;
     private LightmapData[] brightLightmaps;
@@ -80,51 +55,41 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
 
     private bool previousGridState;
 
-    public bool IsGridActive => !isLeverMissing && isLeverUp && connectedGenerator != null && connectedGenerator.CurrentPower > 0f;
-    public bool IsLeverMissing => isLeverMissing;
+    public bool IsGridActive => connectedLever != null
+        && !connectedLever.IsLeverMissing
+        && connectedLever.IsLeverUp
+        && connectedGenerator != null
+        && connectedGenerator.CurrentPower > 0f;
 
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
-        offRotation = Quaternion.Euler(leverOffRotationEuler);
-        onRotation = Quaternion.Euler(leverOnRotationEuler);
-
-        if (leverHandleTransform != null)
-        {
-            leverHandleTransform.localRotation = isLeverUp ? onRotation : offRotation;
-        }
-
-        if (leverCollider == null && leverHandleTransform != null)
-        {
-            leverCollider = leverHandleTransform.GetComponent<Collider>();
-        }
-
         emissionPropertyBlock = new MaterialPropertyBlock();
 
         BuildLightmapDataCache();
-        UpdateLeverMeshVisibility();
-        UpdatePromptMessage();
-
-        if (snapZoneObject != null)
-        {
-            snapZoneObject.SetActive(isLeverMissing);
-        }
     }
 
-    private void Start()
+    private void OnEnable()
     {
+        if (connectedLever != null)
+        {
+            connectedLever.OnLeverStateChanged += RefreshPowerGrid;
+        }
+
         if (connectedGenerator != null)
         {
             connectedGenerator.onGeneratorStarted.AddListener(RefreshPowerGrid);
             connectedGenerator.onGeneratorStopped.AddListener(RefreshPowerGrid);
         }
-
-        previousGridState = IsGridActive;
-        RefreshPowerGrid();
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
+        if (connectedLever != null)
+        {
+            connectedLever.OnLeverStateChanged -= RefreshPowerGrid;
+        }
+
         if (connectedGenerator != null)
         {
             connectedGenerator.onGeneratorStarted.RemoveListener(RefreshPowerGrid);
@@ -132,109 +97,18 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         }
     }
 
-    public void SetLeverMissingState(bool missing)
+    private void Start()
     {
-        isLeverMissing = missing;
-        if (missing) isLeverUp = false;
-
-        UpdateLeverMeshVisibility();
-        UpdatePromptMessage();
-        RefreshPowerGrid();
-    }
-
-    public void AttachMissingLever()
-    {
-        isLeverMissing = false;
-        isLeverUp = true;
-
-        UpdateLeverMeshVisibility();
-        UpdatePromptMessage();
-
-        if (rotationCoroutine != null)
-        {
-            StopCoroutine(rotationCoroutine);
-        }
-        rotationCoroutine = StartCoroutine(AnimateLever());
-
-        RefreshPowerGrid();
-    }
-
-    private void UpdateLeverMeshVisibility()
-    {
-        bool showLeverComponents = !isLeverMissing;
-
-        if (leverHandleRenderers != null && leverHandleRenderers.Length > 0)
-        {
-            for (int i = 0; i < leverHandleRenderers.Length; i++)
-            {
-                if (leverHandleRenderers[i] != null)
-                {
-                    leverHandleRenderers[i].enabled = showLeverComponents;
-                }
-            }
-        }
-        else if (leverHandleTransform != null)
-        {
-            leverHandleTransform.gameObject.SetActive(showLeverComponents);
-        }
-
-        if (leverCollider != null)
-        {
-            leverCollider.enabled = showLeverComponents;
-        }
-
-        if (leverWorldSpaceUI != null)
-        {
-            leverWorldSpaceUI.SetActive(showLeverComponents);
-        }
-
-        if (snapZoneObject != null)
-        {
-            snapZoneObject.SetActive(isLeverMissing);
-        }
-    }
-
-    public void Interact()
-    {
-        if (isLeverMissing) return;
-
-        isLeverUp = !isLeverUp;
-        UpdatePromptMessage();
-
-        if (audioSource != null)
-        {
-            AudioClip primarySFX = isLeverUp ? switchOnSFX : switchOffSFX;
-            if (primarySFX != null) audioSource.PlayOneShot(primarySFX);
-        }
-
-        if (rotationCoroutine != null)
-        {
-            StopCoroutine(rotationCoroutine);
-        }
-        rotationCoroutine = StartCoroutine(AnimateLever());
-
+        previousGridState = IsGridActive;
         RefreshPowerGrid();
     }
 
     public void TripBreaker()
     {
-        if (!isLeverUp || isLeverMissing) return;
-
-        isLeverUp = false;
-        UpdatePromptMessage();
-
-        if (audioSource != null && switchOffSFX != null)
+        if (connectedLever != null)
         {
-            audioSource.PlayOneShot(switchOffSFX);
+            connectedLever.TripLever();
         }
-
-        if (rotationCoroutine != null)
-        {
-            StopCoroutine(rotationCoroutine);
-        }
-        rotationCoroutine = StartCoroutine(AnimateLever());
-
-        RefreshPowerGrid();
     }
 
     public void RefreshPowerGrid()
@@ -404,33 +278,5 @@ public class ElectricBoxBreaker : MonoBehaviour, IInteractable
         {
             SetRendererEmission(emissiveLightRenderers[i], lightsAreOn, emissionOnColor);
         }
-    }
-
-    private void UpdatePromptMessage()
-    {
-        if (isLeverMissing)
-        {
-            promptMessage = string.Empty;
-            return;
-        }
-
-        promptMessage = isLeverUp ? "Pull down" : "Pull up";
-    }
-
-    private IEnumerator AnimateLever()
-    {
-        Quaternion targetRotation = isLeverUp ? onRotation : offRotation;
-
-        while (Quaternion.Angle(leverHandleTransform.localRotation, targetRotation) > 0.1f)
-        {
-            leverHandleTransform.localRotation = Quaternion.Slerp(
-                leverHandleTransform.localRotation,
-                targetRotation,
-                Time.deltaTime * 8f * smoothSpeed
-            );
-            yield return null;
-        }
-
-        leverHandleTransform.localRotation = targetRotation;
     }
 }
