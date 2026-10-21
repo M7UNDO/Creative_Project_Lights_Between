@@ -6,10 +6,11 @@ using UnityEngine.Events;
 public class ElectricBoxBreaker : MonoBehaviour
 {
     [SerializeField] private BreakerLever connectedLever;
-
     [SerializeField] private GeneratorPowerSystem connectedGenerator;
 
     [SerializeField] private bool isLeverMissing = false;
+    [SerializeField] private bool isSnapZoneUnlocked = false;
+    [SerializeField] private bool autoUnlockSnapZoneOnMissing = true;
     [SerializeField] private GameObject snapZoneObject;
 
     [SerializeField] private Renderer redStatusRenderer;
@@ -50,24 +51,24 @@ public class ElectricBoxBreaker : MonoBehaviour
     private bool previousGridState;
 
     public bool IsLeverMissing => isLeverMissing;
+    public bool IsSnapZoneUnlocked => isSnapZoneUnlocked;
 
     public bool IsGridActive => !isLeverMissing
         && connectedLever != null
         && connectedLever.IsLeverUp
-        && connectedGenerator != null
-        && connectedGenerator.CurrentPower > 0f;
+        && (connectedGenerator == null || connectedGenerator.CurrentPower > 0f);
 
     private void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+
         emissionPropertyBlock = new MaterialPropertyBlock();
 
         BuildLightmapDataCache();
-
-        if (snapZoneObject != null)
-        {
-            snapZoneObject.SetActive(isLeverMissing);
-        }
+        UpdateSnapZoneVisibility();
     }
 
     private void OnEnable()
@@ -109,14 +110,22 @@ public class ElectricBoxBreaker : MonoBehaviour
         RefreshPowerGrid();
     }
 
+    public void UnlockRepairSnapZone()
+    {
+        isSnapZoneUnlocked = true;
+        UpdateSnapZoneVisibility();
+    }
+
     public void SetLeverMissingState(bool missing)
     {
         isLeverMissing = missing;
 
-        if (snapZoneObject != null)
+        if (missing && autoUnlockSnapZoneOnMissing)
         {
-            snapZoneObject.SetActive(isLeverMissing);
+            isSnapZoneUnlocked = true;
         }
+
+        UpdateSnapZoneVisibility();
 
         if (connectedLever != null)
         {
@@ -136,11 +145,9 @@ public class ElectricBoxBreaker : MonoBehaviour
     public void AttachMissingLever()
     {
         isLeverMissing = false;
+        isSnapZoneUnlocked = false;
 
-        if (snapZoneObject != null)
-        {
-            snapZoneObject.SetActive(false);
-        }
+        UpdateSnapZoneVisibility();
 
         if (connectedLever != null)
         {
@@ -187,9 +194,17 @@ public class ElectricBoxBreaker : MonoBehaviour
         previousGridState = targetState;
     }
 
+    private void UpdateSnapZoneVisibility()
+    {
+        if (snapZoneObject != null && isLeverMissing && isSnapZoneUnlocked)
+        {
+            snapZoneObject.SetActive(true);
+        }
+    }
+
     private void UpdateStatusIndicators()
     {
-        bool hasGeneratorPower = connectedGenerator != null && connectedGenerator.CurrentPower > 0f;
+        bool hasGeneratorPower = connectedGenerator == null || connectedGenerator.CurrentPower > 0f;
 
         SetRendererEmission(greenStatusRenderer, hasGeneratorPower, greenIndicatorColor);
         SetRendererEmission(redStatusRenderer, !hasGeneratorPower, redIndicatorColor);
@@ -202,23 +217,6 @@ public class ElectricBoxBreaker : MonoBehaviour
         rendererTarget.GetPropertyBlock(emissionPropertyBlock);
         emissionPropertyBlock.SetColor(EmissionColorID, isEmissiveOn ? emissiveColor : Color.black);
         rendererTarget.SetPropertyBlock(emissionPropertyBlock);
-
-        Material[] sharedMats = rendererTarget.sharedMaterials;
-        if (sharedMats == null) return;
-
-        for (int i = 0; i < sharedMats.Length; i++)
-        {
-            if (sharedMats[i] == null) continue;
-
-            if (isEmissiveOn)
-            {
-                sharedMats[i].EnableKeyword("_EMISSION");
-            }
-            else
-            {
-                sharedMats[i].DisableKeyword("_EMISSION");
-            }
-        }
     }
 
     private void BuildLightmapDataCache()

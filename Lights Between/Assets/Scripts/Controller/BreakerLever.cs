@@ -75,6 +75,45 @@ public class BreakerLever : MonoBehaviour, IInteractable
         UpdateVisualsAndPrompts();
     }
 
+    private void OnEnable()
+    {
+        RegisterDialogueEvent();
+    }
+
+    private void OnDisable()
+    {
+        UnregisterDialogueEvent();
+    }
+
+    private void RegisterDialogueEvent()
+    {
+        if (missingLeverDialogueSO != null && missingLeverDialogueSO.OnDialogueCompletedEvent != null)
+        {
+            missingLeverDialogueSO.OnDialogueCompletedEvent.RegisterListener(OnDialogueCompleted);
+        }
+    }
+
+    private void UnregisterDialogueEvent()
+    {
+        if (missingLeverDialogueSO != null && missingLeverDialogueSO.OnDialogueCompletedEvent != null)
+        {
+            missingLeverDialogueSO.OnDialogueCompletedEvent.UnregisterListener(OnDialogueCompleted);
+        }
+    }
+
+    private void OnDialogueCompleted()
+    {
+        if (connectedBreaker != null)
+        {
+            connectedBreaker.UnlockRepairSnapZone();
+        }
+
+        if (EnemyManager.Instance != null)
+        {
+            EnemyManager.Instance.ActivateEnemy(EnemyAI.PatrolZone.Basement);
+        }
+    }
+
     public bool IsLeverUnlocked()
     {
         bool isMissing = connectedBreaker != null && connectedBreaker.IsLeverMissing;
@@ -120,7 +159,7 @@ public class BreakerLever : MonoBehaviour, IInteractable
         }
         else if (missingLeverDialogue != null && missingLeverDialogue.Length > 0)
         {
-            DialogueManager.Instance.StartCustomLines(missingLeverDialogue, managePlayerMode: true);
+            DialogueManager.Instance.StartCustomLines(missingLeverDialogue, OnDialogueCompleted, managePlayerMode: true);
         }
     }
 

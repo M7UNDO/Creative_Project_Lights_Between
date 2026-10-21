@@ -11,7 +11,7 @@ public class BreakerLeverSnapZone : MonoBehaviour, IInteractable
     [SerializeField] private string requiredItemID = "BreakerLever";
     [SerializeField] private Transform snapPoint;
     [SerializeField] private string promptText = "Attach Lever";
-    [SerializeField] private bool destroyObjectOnSnap = true;
+    [SerializeField] private bool destroyObjectOnSnap = false;
 
     [Header("Narrative & Objectives")]
     [SerializeField] private ObjectiveSO requiredObjective;
@@ -138,11 +138,16 @@ public class BreakerLeverSnapZone : MonoBehaviour, IInteractable
         {
             if (ui != null)
             {
-                Destroy(ui.gameObject);
+                Collider[] uiColliders = ui.GetComponentsInChildren<Collider>(true);
+                foreach (Collider col in uiColliders)
+                {
+                    col.enabled = false;
+                }
+
+                ui.HidePrompt();
+                ui.gameObject.SetActive(false);
             }
         }
-
-        enabled = false;
     }
 
     private void TriggerLockedDialogue()

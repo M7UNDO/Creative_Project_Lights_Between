@@ -25,6 +25,8 @@ public class PlayerInteraction : MonoBehaviour
     [Header("Grab Settings")]
     [SerializeField] private LayerMask heldLayer;
     [SerializeField] private Transform objectGrabPointTransform;
+    [SerializeField] private float throwForce = 12f;
+    [SerializeField] private float throwUpwardForce = 2f;
 
     private ObjectGrabbable _currentGrabbable;
     private ObjectGrabbable _hoveredGrabbable;
@@ -408,8 +410,16 @@ public class PlayerInteraction : MonoBehaviour
         {
             if (_currentGrabbable != null)
             {
-                _currentGrabbable.Drop();
+                ObjectGrabbable itemToThrow = _currentGrabbable;
+                itemToThrow.Drop();
                 _currentGrabbable = null;
+
+                Rigidbody rb = itemToThrow.GetComponent<Rigidbody>();
+                if (rb != null && _mainCamera != null)
+                {
+                    Vector3 throwVector = (_mainCamera.transform.forward * throwForce) + (_mainCamera.transform.up * throwUpwardForce);
+                    rb.AddForce(throwVector, ForceMode.Impulse);
+                }
 
                 if (dropUI != null) dropUI.SetActive(false);
             }
