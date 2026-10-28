@@ -5785,6 +5785,7 @@ GameObject:
   - component: {fileID: 7029662551910435942}
   - component: {fileID: 6204616507076585757}
   - component: {fileID: 2003313962}
+  - component: {fileID: 7029662551910435943}
   m_Layer: 5
   m_Name: Flashing_Txt
   m_TagString: Untagged
@@ -7402,7 +7403,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
+  m_spriteAsset: {fileID: 11400000, guid: 1f1a624077f0263479550cc34d1a06b6, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
@@ -7673,6 +7674,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 243297140816445687}
   m_CullTransparentMesh: 1
+--- !u!114 &7029662551910435943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 243297140816445687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef54f2e002b07b9438161237b6ad261f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InputTextPrompt
+  textComponent: {fileID: 0}
+  formatTemplate: Press {0} to Start
+  useKeyboardSprites: 0
+  keyboardInputText: '[SPACE] '
+  keyboardPrimarySpriteName: 
+  keyboardSecondarySpriteName: 
+  xboxPrimarySpriteName: Menu
+  xboxSecondarySpriteName: 
+  playstationPrimarySpriteName: Create
+  playstationSecondarySpriteName: 
 --- !u!223 &7123386879928790114
 Canvas:
   m_ObjectHideFlags: 0
