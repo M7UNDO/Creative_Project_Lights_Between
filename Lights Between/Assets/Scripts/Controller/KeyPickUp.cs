@@ -2,18 +2,21 @@ using UnityEngine;
 
 public class KeyPickUp : MonoBehaviour, IInteractable
 {
-    [Header("References", order = 0)]
+    [Header("References")]
     [Space(5)]
     [SerializeField] private ItemClass keyItemData;
+    [SerializeField] private string promptMessage = "Pick up";
 
-    [Header("Key Settings", order = 1)]
+    [Header("Key Settings")]
     [Space(5)]
     public string KeyID = "Garage Key";
     public ObjectiveSO objectiveSO;
 
-    [Header("SFX", order = 2)]
+    [Header("SFX")]
     [Space(5)]
     public AudioClip pickUpSFX;
+
+    public string PromptMessage => promptMessage;
 
     public void Interact()
     {

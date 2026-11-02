@@ -19,7 +19,6 @@ public class ElectricBoxBreaker : MonoBehaviour
     [SerializeField] private Color greenIndicatorColor = Color.green;
 
     [SerializeField] private Light[] connectedLights;
-    [SerializeField] private GameObject[] connectedLightObjects;
 
     [SerializeField] private Renderer[] swappableLightRenderers;
     [SerializeField] private Material lightOffMaterial;
@@ -29,11 +28,6 @@ public class ElectricBoxBreaker : MonoBehaviour
     [SerializeField] private Color emissionOnColor = Color.white;
     [SerializeField] private Color emissionOffColor = Color.black;
 
-    [SerializeField] private Texture2D[] darkLightmapDir;
-    [SerializeField] private Texture2D[] darkLightmapColour;
-    [SerializeField] private Texture2D[] brightLightmapDir;
-    [SerializeField] private Texture2D[] brightLightmapColour;
-
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip powerOutageSFX;
 
@@ -41,9 +35,6 @@ public class ElectricBoxBreaker : MonoBehaviour
     public UnityEvent onPowerSevered;
 
     public event Action<bool> OnPowerGridStateChanged;
-
-    private LightmapData[] darkLightmaps;
-    private LightmapData[] brightLightmaps;
 
     private MaterialPropertyBlock emissionPropertyBlock;
     private static readonly int EmissionColorID = Shader.PropertyToID("_EmissionColor");
@@ -67,7 +58,6 @@ public class ElectricBoxBreaker : MonoBehaviour
 
         emissionPropertyBlock = new MaterialPropertyBlock();
 
-        BuildLightmapDataCache();
         UpdateSnapZoneVisibility();
     }
 
@@ -171,7 +161,6 @@ public class ElectricBoxBreaker : MonoBehaviour
 
         OnPowerGridStateChanged?.Invoke(targetState);
 
-        SwitchLightmaps(targetState);
         UpdateLightsState(targetState);
         UpdateSwappedMaterials(targetState);
         UpdateEmissiveMaterials(targetState);
@@ -219,47 +208,6 @@ public class ElectricBoxBreaker : MonoBehaviour
         rendererTarget.SetPropertyBlock(emissionPropertyBlock);
     }
 
-    private void BuildLightmapDataCache()
-    {
-        if (darkLightmapColour != null)
-        {
-            int darkCount = darkLightmapColour.Length;
-            darkLightmaps = new LightmapData[darkCount];
-            for (int i = 0; i < darkCount; i++)
-            {
-                darkLightmaps[i] = new LightmapData
-                {
-                    lightmapColor = darkLightmapColour[i],
-                    lightmapDir = (darkLightmapDir != null && i < darkLightmapDir.Length) ? darkLightmapDir[i] : null
-                };
-            }
-        }
-
-        if (brightLightmapColour != null)
-        {
-            int brightCount = brightLightmapColour.Length;
-            brightLightmaps = new LightmapData[brightCount];
-            for (int i = 0; i < brightCount; i++)
-            {
-                brightLightmaps[i] = new LightmapData
-                {
-                    lightmapColor = brightLightmapColour[i],
-                    lightmapDir = (brightLightmapDir != null && i < brightLightmapDir.Length) ? brightLightmapDir[i] : null
-                };
-            }
-        }
-    }
-
-    private void SwitchLightmaps(bool isPowered)
-    {
-        LightmapData[] targetLightmaps = isPowered ? brightLightmaps : darkLightmaps;
-
-        if (targetLightmaps != null && targetLightmaps.Length > 0)
-        {
-            LightmapSettings.lightmaps = targetLightmaps;
-        }
-    }
-
     private void UpdateLightsState(bool targetState)
     {
         if (connectedLights != null)
@@ -267,14 +215,6 @@ public class ElectricBoxBreaker : MonoBehaviour
             for (int i = 0; i < connectedLights.Length; i++)
             {
                 if (connectedLights[i] != null) connectedLights[i].enabled = targetState;
-            }
-        }
-
-        if (connectedLightObjects != null)
-        {
-            for (int i = 0; i < connectedLightObjects.Length; i++)
-            {
-                if (connectedLightObjects[i] != null) connectedLightObjects[i].SetActive(targetState);
             }
         }
     }

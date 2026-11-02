@@ -328,6 +328,10 @@ public class PlayerInteraction : MonoBehaviour
         {
             result.Prompt = pickup.PromptMessage;
         }
+        else if (hitCollider.TryGetComponent<KeyPickUp>(out KeyPickUp keyPickUp))
+        {
+            result.Prompt = keyPickUp.PromptMessage;
+        }
         else if (hitCollider.TryGetComponent<BreakerLever>(out BreakerLever lever))
         {
             result.Prompt = lever.IsLeverUnlocked() ? lever.promptMessage : string.Empty;
