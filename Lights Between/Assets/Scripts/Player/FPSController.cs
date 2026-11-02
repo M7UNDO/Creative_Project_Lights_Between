@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -37,6 +38,11 @@ public class FPSController : MonoBehaviour
     public float BottomClamp = -90.0f;
     public float HeldObjectTopClamp = 30.0f;
     public float HeldObjectBottomClamp = -30.0f;
+
+    [Header("Cinemachine FOV Settings")]
+    [SerializeField] private CinemachineCamera cinemachineCamera;
+    [SerializeField] private float sprintFOV = 75.0f;
+    [SerializeField] private float fovTransitionSpeed = 5.0f;
 
     [Header("Horizontal Clamp Settings")]
     public float dialogueHorizontalClamp = 45.0f;
@@ -125,6 +131,9 @@ public class FPSController : MonoBehaviour
     private float _baseYaw;
     private float _currentRelativeYaw;
 
+    private float _defaultFOV;
+    private bool _isSprinting;
+
     public InputHandler InputHandler => _input;
     public CharacterController Controller => _controller;
 
@@ -175,11 +184,17 @@ public class FPSController : MonoBehaviour
 
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
+
+        if (cinemachineCamera != null)
+        {
+            _defaultFOV = cinemachineCamera.Lens.FieldOfView;
+        }
     }
 
     private void Update()
     {
         UpdateSensitivityMultiplier();
+        UpdateFOV();
 
         if (EnemyManager.IsGameOver || isInMiniGame || isInspecting || isJumpscareActive || isDialogueActive || PauseManager.IsGamePaused || InventoryUI.IsInventoryOpen || NoteUIController.isNoteOpen || DrawingUIController.isDrawingOpen) return;
 
@@ -194,7 +209,6 @@ public class FPSController : MonoBehaviour
                 {
                     CurrentPoseAnchor.RequestStandUp();
                 }
-
             }
         }
 
@@ -217,6 +231,14 @@ public class FPSController : MonoBehaviour
     {
         float targetMultiplier = isDialogueActive ? dialogueSensitivityMultiplier : 1.0f;
         _currentSensitivityMultiplier = Mathf.Lerp(_currentSensitivityMultiplier, targetMultiplier, Time.deltaTime * sensitivityTransitionSpeed);
+    }
+
+    private void UpdateFOV()
+    {
+        if (cinemachineCamera == null) return;
+
+        float targetFOV = _isSprinting ? sprintFOV : _defaultFOV;
+        cinemachineCamera.Lens.FieldOfView = Mathf.Lerp(cinemachineCamera.Lens.FieldOfView, targetFOV, Time.deltaTime * fovTransitionSpeed);
     }
 
     public void SetSeatedState(bool seated, Transform seatPoint = null, Transform lookAtTarget = null, PlayerPoseAnchor anchor = null)
@@ -404,6 +426,7 @@ public class FPSController : MonoBehaviour
     {
         bool isMoving = _input.move != Vector2.zero;
         bool canSprint = isMoving && _input.sprint && _stamina != null && _stamina.CurrentStamina > 0f;
+        _isSprinting = canSprint;
 
         if (_stamina != null)
         {
