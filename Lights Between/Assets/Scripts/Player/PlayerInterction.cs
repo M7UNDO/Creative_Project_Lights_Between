@@ -543,6 +543,11 @@ public class PlayerInteraction : MonoBehaviour
     {
         if (currentInteractable != _lastInteractable)
         {
+            if (_lastInteractable is IFocusable lastFocusable)
+            {
+                lastFocusable.OnFocusExit();
+            }
+
             if (_lastInteractable is DoorScript lastDoor)
             {
                 lastDoor.CancelInteract();
@@ -554,6 +559,11 @@ public class PlayerInteraction : MonoBehaviour
             else if (_lastInteractable is BarricadePlankScript lastPlank)
             {
                 lastPlank.CancelInteract();
+            }
+
+            if (currentInteractable is IFocusable newFocusable)
+            {
+                newFocusable.OnFocusEnter();
             }
         }
 
@@ -658,6 +668,11 @@ public class PlayerInteraction : MonoBehaviour
 
     public void ClearInteractionState()
     {
+        if (currentInteractable is IFocusable focusable)
+        {
+            focusable.OnFocusExit();
+        }
+
         currentInteractable = null;
         _hoveredGrabbable = null;
         isInteractable = false;

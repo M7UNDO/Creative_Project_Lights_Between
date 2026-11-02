@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8515619194569163926}
   - component: {fileID: 3823690634280236789}
   - component: {fileID: 1837857640724052443}
+  - component: {fileID: 5914962307592464340}
   m_Layer: 7
   m_Name: AA battery_PickUp
   m_TagString: Untagged
@@ -127,3 +128,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BatteryPickUp
   batteryItemData: {fileID: 11400000, guid: add5410f0401059418f2d7d2aebf9391, type: 2}
   pickUpSFX: {fileID: 8300000, guid: 84cb48d76150d1b4d9246b2823153192, type: 3}
+--- !u!114 &5914962307592464340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7882717851536894407}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 669f5743088bf5a47a15e44b1bae1087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemPulseHighlight
+  targetRenderer: {fileID: 8515619194569163926}
+  proximityDistance: 3
+  highlightColor: {r: 0.3745098, g: 0.3745098, b: 0.3745098, a: 1}
+  pulseSpeed: 3
